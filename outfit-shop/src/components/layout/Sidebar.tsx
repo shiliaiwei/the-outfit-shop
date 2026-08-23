@@ -3,100 +3,101 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  LayoutDashboard,
-  Package,
-  Users,
-  TrendingUp,
-  Settings,
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-  ShoppingCart,
-  Truck,
-  History,
-  Store,
-  FolderTree,
-  Award,
-  Sliders,
-  BrainCircuit,
-  Activity,
-  ShieldCheck,
-  Tag,
-  Layout,
-  FileText,
-  Building2,
-  Image as ImageIcon,
-  Ticket,
-  Zap,
-  Box,
-  Key,
-  LineChart,
-  ShoppingBag,
-  Clock
-} from "lucide-react";
+  faGaugeHigh,
+  faBox,
+  faUsers,
+  faArrowTrendUp,
+  faGear,
+  faRightFromBracket,
+  faChevronLeft,
+  faChevronRight,
+  faCartShopping,
+  faTruck,
+  faClockRotateLeft,
+  faStore,
+  faFolderTree,
+  faAward,
+  faSliders,
+  faMicrochip,
+  faWaveSquare,
+  faShieldHalved,
+  faTag,
+  faTableColumns,
+  faFileLines,
+  faBuilding,
+  faImage,
+  faTicket,
+  faBolt,
+  faBoxesStacked,
+  faKey,
+  faChartLine,
+  faBagShopping,
+  faClock
+} from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, roles: ["ADMIN", "MANAGER"] },
+  { name: "Dashboard", href: "/admin/dashboard", icon: faGaugeHigh, roles: ["ADMIN", "MANAGER"] },
   {
     group: "Customer CRM",
     items: [
-      { name: "Customers", href: "/admin/customers", icon: Users, roles: ["ADMIN", "MANAGER", "CASHIER"] },
-      { name: "Order Hub", href: "/admin/orders", icon: ShoppingBag, roles: ["ADMIN", "MANAGER"] },
+      { name: "Customers", href: "/admin/customers", icon: faUsers, roles: ["ADMIN", "MANAGER", "CASHIER"] },
+      { name: "Order Hub", href: "/admin/orders", icon: faBagShopping, roles: ["ADMIN", "MANAGER"] },
     ]
   },
   {
     group: "Inventory",
     items: [
-      { name: "Products", href: "/admin/inventory", icon: Package, roles: ["ADMIN", "MANAGER", "STAFF"] },
-      { name: "Purchases", href: "/admin/inventory/purchases", icon: FileText, roles: ["ADMIN", "MANAGER"] },
-      { name: "Stock Ledger", href: "/admin/inventory/movements", icon: History, roles: ["ADMIN", "MANAGER"] },
-      { name: "Transfers", href: "/admin/inventory/transfers", icon: Truck, roles: ["ADMIN", "MANAGER"] },
-      { name: "FIFO Batches", href: "/admin/inventory/batches", icon: Box, roles: ["ADMIN", "MANAGER"] },
-      { name: "Suppliers", href: "/admin/inventory/suppliers", icon: Store, roles: ["ADMIN", "MANAGER"] },
+      { name: "Products", href: "/admin/inventory", icon: faBox, roles: ["ADMIN", "MANAGER", "STAFF"] },
+      { name: "Purchases", href: "/admin/inventory/purchases", icon: faFileLines, roles: ["ADMIN", "MANAGER"] },
+      { name: "Stock Ledger", href: "/admin/inventory/movements", icon: faClockRotateLeft, roles: ["ADMIN", "MANAGER"] },
+      { name: "Transfers", href: "/admin/inventory/transfers", icon: faTruck, roles: ["ADMIN", "MANAGER"] },
+      { name: "FIFO Batches", href: "/admin/inventory/batches", icon: faBoxesStacked, roles: ["ADMIN", "MANAGER"] },
+      { name: "Suppliers", href: "/admin/inventory/suppliers", icon: faStore, roles: ["ADMIN", "MANAGER"] },
     ]
   },
   {
     group: "Catalog",
     items: [
-      { name: "Categories", href: "/admin/catalog/categories", icon: FolderTree, roles: ["ADMIN", "MANAGER"] },
-      { name: "Brands", href: "/admin/catalog/brands", icon: Award, roles: ["ADMIN", "MANAGER"] },
-      { name: "Promotions", href: "/admin/catalog/promotions", icon: Tag, roles: ["ADMIN", "MANAGER"] },
-      { name: "Attributes", href: "/admin/catalog/attributes", icon: Sliders, roles: ["ADMIN", "MANAGER"] },
+      { name: "Categories", href: "/admin/catalog/categories", icon: faFolderTree, roles: ["ADMIN", "MANAGER"] },
+      { name: "Brands", href: "/admin/catalog/brands", icon: faAward, roles: ["ADMIN", "MANAGER"] },
+      { name: "Promotions", href: "/admin/catalog/promotions", icon: faTag, roles: ["ADMIN", "MANAGER"] },
+      { name: "Attributes", href: "/admin/catalog/attributes", icon: faSliders, roles: ["ADMIN", "MANAGER"] },
     ]
   },
   {
     group: "Intelligence",
     items: [
-      { name: "AI Insights", href: "/admin/intelligence", icon: BrainCircuit, roles: ["ADMIN", "MANAGER"] },
-      { name: "MIS Reports", href: "/admin/reports", icon: TrendingUp, roles: ["ADMIN", "MANAGER"] },
-      { name: "AI Forecast", href: "/admin/reports/ai-forecast", icon: LineChart, roles: ["ADMIN", "MANAGER"] },
+      { name: "AI Insights", href: "/admin/intelligence", icon: faMicrochip, roles: ["ADMIN", "MANAGER"] },
+      { name: "MIS Reports", href: "/admin/reports", icon: faArrowTrendUp, roles: ["ADMIN", "MANAGER"] },
+      { name: "AI Forecast", href: "/admin/reports/ai-forecast", icon: faChartLine, roles: ["ADMIN", "MANAGER"] },
     ]
   },
   {
     group: "Operations",
     items: [
-      { name: "POS Terminal", href: "/pos", icon: ShoppingCart, roles: ["ADMIN", "MANAGER", "CASHIER"] },
-      { name: "Shipping", href: "/admin/operations/shipping", icon: Truck, roles: ["ADMIN", "MANAGER"] },
-      { name: "Branches", href: "/admin/operations/branches", icon: Building2, roles: ["ADMIN", "MANAGER"] },
-      { name: "Media Assets", href: "/admin/operations/images", icon: ImageIcon, roles: ["ADMIN", "MANAGER"] },
-      { name: "Gift Cards", href: "/admin/operations/gift-cards", icon: Ticket, roles: ["ADMIN", "MANAGER"] },
-      { name: "Banner CMS", href: "/admin/operations/banners", icon: Layout, roles: ["ADMIN", "MANAGER"] },
+      { name: "POS Terminal", href: "/pos", icon: faCartShopping, roles: ["ADMIN", "MANAGER", "CASHIER"] },
+      { name: "Shipping", href: "/admin/operations/shipping", icon: faTruck, roles: ["ADMIN", "MANAGER"] },
+      { name: "Branches", href: "/admin/operations/branches", icon: faBuilding, roles: ["ADMIN", "MANAGER"] },
+      { name: "Media Assets", href: "/admin/operations/images", icon: faImage, roles: ["ADMIN", "MANAGER"] },
+      { name: "Gift Cards", href: "/admin/operations/gift-cards", icon: faTicket, roles: ["ADMIN", "MANAGER"] },
+      { name: "Banner CMS", href: "/admin/operations/banners", icon: faTableColumns, roles: ["ADMIN", "MANAGER"] },
     ]
   },
-  { name: "Employees", href: "/admin/employees", icon: Users, roles: ["ADMIN"] },
+  { name: "Employees", href: "/admin/employees", icon: faUsers, roles: ["ADMIN"] },
   {
     group: "System",
     items: [
-      { name: "Infrastructure", href: "/admin/system/monitor", icon: Activity, roles: ["ADMIN"] },
-      { name: "User Accounts", href: "/admin/system/accounts", icon: Key, roles: ["ADMIN"] },
-      { name: "Security & Logs", href: "/admin/system/security", icon: History, roles: ["ADMIN"] },
-      { name: "Shift Audit", href: "/admin/system/shifts", icon: Clock, roles: ["ADMIN", "MANAGER"] },
-      { name: "Developer Webhooks", href: "/admin/system/webhooks", icon: Zap, roles: ["ADMIN"] },
-      { name: "Compliance", href: "/admin/system/gdpr", icon: ShieldCheck, roles: ["ADMIN", "MANAGER"] },
-      { name: "Settings", href: "/admin/settings", icon: Settings, roles: ["ADMIN", "MANAGER"] },
+      { name: "Infrastructure", href: "/admin/system/monitor", icon: faWaveSquare, roles: ["ADMIN"] },
+      { name: "User Accounts", href: "/admin/system/accounts", icon: faKey, roles: ["ADMIN"] },
+      { name: "Security & Logs", href: "/admin/system/security", icon: faClockRotateLeft, roles: ["ADMIN"] },
+      { name: "Shift Audit", href: "/admin/system/shifts", icon: faClock, roles: ["ADMIN", "MANAGER"] },
+      { name: "Developer Webhooks", href: "/admin/system/webhooks", icon: faBolt, roles: ["ADMIN"] },
+      { name: "Compliance", href: "/admin/system/gdpr", icon: faShieldHalved, roles: ["ADMIN", "MANAGER"] },
+      { name: "Settings", href: "/admin/settings", icon: faGear, roles: ["ADMIN", "MANAGER"] },
     ]
   },
 ];
@@ -107,7 +108,7 @@ export function Sidebar() {
   const { user, logout } = useAuth();
 
   const renderLink = (item: any) => {
-    const Icon = item.icon;
+    const iconDef = item.icon;
     const active = pathname === item.href;
     return (
       <Link
@@ -120,7 +121,7 @@ export function Sidebar() {
             : "text-text-muted hover:bg-bg hover:text-text"
         )}
       >
-        <Icon className={cn("h-4 w-4", collapsed ? "mr-0" : "mr-3")} />
+        <FontAwesomeIcon icon={iconDef} className={cn("h-4 w-4", collapsed ? "mr-0" : "mr-3", active ? "text-white" : "text-[#1E2631]")} />
         {!collapsed && <span>{item.name}</span>}
       </Link>
     );
@@ -142,14 +143,14 @@ export function Sidebar() {
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="rounded-md p-1 hover:bg-bg text-text-muted"
+          className="rounded-md p-1 hover:bg-bg text-text-muted cursor-pointer"
         >
-          {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          <FontAwesomeIcon icon={collapsed ? faChevronRight : faChevronLeft} className="text-[#1E2631] text-sm" />
         </button>
       </div>
 
       <nav className="flex-1 space-y-4 p-3 overflow-y-auto overflow-x-hidden">
-        {navItems.map((item: any, idx) => {
+        {navItems.map((item: any) => {
           if (item.group) {
             const visibleItems = item.items.filter((sub: any) =>
               !sub.roles || (user && sub.roles.includes(user.role))
@@ -177,10 +178,10 @@ export function Sidebar() {
         <button
           onClick={logout}
           className={cn(
-            "flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-text-muted hover:bg-danger/10 hover:text-danger transition-colors"
+            "flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-text-muted hover:bg-danger/10 hover:text-danger transition-colors cursor-pointer"
           )}
         >
-          <LogOut className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-3")} />
+          <FontAwesomeIcon icon={faRightFromBracket} className={cn("h-4 w-4 text-[#1E2631]", collapsed ? "mr-0" : "mr-3")} />
           {!collapsed && <span>Logout</span>}
         </button>
       </div>

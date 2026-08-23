@@ -547,3 +547,27 @@ modal {
 ::-webkit-scrollbar-thumb:hover {
   background: #8E9AA8;
 }
+
+/* SOLID BLACK DASHBOARD & ADMIN ICON SYSTEM (Mandatory Standard) */
+[data-role="admin"] svg.lucide,
+[data-role="staff"] svg.lucide,
+aside svg.lucide,
+header svg.lucide,
+main svg.lucide,
+[data-role="admin"] svg.svg-inline--fa,
+[data-role="staff"] svg.svg-inline--fa,
+aside svg.svg-inline--fa,
+header svg.svg-inline--fa,
+main svg.svg-inline--fa {
+  color: #1E2631;
+  fill: currentColor;
+}
+
+/* Retain high-contrast white glyphs for active filled buttons */
+button.btn-liquid-terracotta svg,
+button.bg-primary svg,
+button.bg-danger svg,
+.bg-primary svg {
+  color: #FFFFFF !important;
+  fill: currentColor !important;
+}

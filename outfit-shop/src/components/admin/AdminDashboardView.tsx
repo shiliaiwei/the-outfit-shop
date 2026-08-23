@@ -1,17 +1,8 @@
 'use client';
 
 import React from 'react';
-import { 
-  TrendingUp, 
-  Users, 
-  Package, 
-  ShieldCheck, 
-  Activity, 
-  Sliders, 
-  ArrowUpRight,
-  Server,
-  Lock
-} from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWaveSquare, faSliders, faLock } from '@fortawesome/free-solid-svg-icons';
 import { RegisterTelemetry } from '@/types';
 
 const REGISTERS: RegisterTelemetry[] = [
@@ -94,7 +85,7 @@ export function AdminDashboardView() {
       <div className="liquid-glass p-5 flex flex-col gap-4">
         <div className="flex items-center justify-between border-b border-[#5A6678]/15 pb-3">
           <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4 text-[#C84428]" />
+            <FontAwesomeIcon icon={faWaveSquare} className="w-4 h-4 text-[#1E2631]" />
             <h3 className="font-display font-black text-base text-[#1E2631]">
               Live Register Telemetry &amp; Operator Stream
             </h3>
@@ -147,17 +138,17 @@ export function AdminDashboardView() {
         
         <div className="liquid-glass p-4 flex flex-col gap-3">
           <div className="flex items-center gap-2 text-sm font-bold text-[#1E2631]">
-            <Sliders className="w-4 h-4 text-[#C84428]" />
+            <FontAwesomeIcon icon={faSliders} className="w-4 h-4 text-[#1E2631]" />
             <span>Store Level Policy &amp; Floor Overrides</span>
           </div>
           <p className="text-xs text-[#5A6678] leading-relaxed">
             Configure register transaction caps, manager authorization thresholds, and drawer reconciliation rules for shift closings.
           </p>
           <div className="flex gap-2 mt-auto pt-2">
-            <button className="btn-9px bg-white border border-[#5A6678]/15 hover:border-[#C84428] text-xs font-bold text-[#1E2631] px-3 py-2 flex-1 transition-all">
+            <button className="btn-9px bg-white border border-[#5A6678]/15 hover:border-[#C84428] text-xs font-bold text-[#1E2631] px-3 py-2 flex-1 transition-all cursor-pointer">
               Manage Role Permissions
             </button>
-            <button className="btn-9px bg-[#C84428] text-white text-xs font-bold px-4 py-2 hover:bg-[#B33920] transition-all">
+            <button className="btn-9px bg-[#C84428] text-white text-xs font-bold px-4 py-2 hover:bg-[#B33920] transition-all cursor-pointer">
               Audit Shift Logs
             </button>
           </div>
@@ -165,7 +156,7 @@ export function AdminDashboardView() {
 
         <div className="liquid-glass p-4 flex flex-col gap-3">
           <div className="flex items-center gap-2 text-sm font-bold text-[#1E2631]">
-            <Lock className="w-4 h-4 text-sky-600" />
+            <FontAwesomeIcon icon={faLock} className="w-4 h-4 text-[#1E2631]" />
             <span>Cryptographic Keyrings &amp; API Gateways</span>
           </div>
           <p className="text-xs text-[#5A6678] leading-relaxed">

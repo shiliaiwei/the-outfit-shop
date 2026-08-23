@@ -10,26 +10,21 @@ import {
   Tooltip,
   ResponsiveContainer
 } from "recharts";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  TrendingUp,
-  Package,
-  Users,
-  DollarSign,
-  ArrowUpRight,
-  ArrowDownRight,
-  BrainCircuit,
-  Zap,
-  Activity,
-  ShieldCheck,
-  RefreshCw,
-  ShoppingBag,
-  Clock,
-  Target,
-  Award,
-  AlertTriangle,
-  Download,
-  CheckCircle2
-} from "lucide-react";
+  faMicrochip,
+  faRotate,
+  faDollarSign,
+  faBagShopping,
+  faBox,
+  faUsers,
+  faDownload,
+  faBolt,
+  faTriangleExclamation,
+  faCircleCheck,
+  faArrowTrendUp,
+  faArrowTrendDown
+} from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/hooks/useAuth";
 import { reportService } from "@/services/reportService";
 import { cn } from "@/lib/utils";
@@ -161,9 +156,7 @@ export default function DashboardPage() {
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <div className="space-y-3">
           <div className="flex items-center gap-4">
-             <div className="p-3 rounded-[3px] border border-border bg-bg text-text shadow-sm">
-                <BrainCircuit size={28} className="text-text" />
-             </div>
+             <FontAwesomeIcon icon={faMicrochip} className="text-[#1E2631] text-3xl h-8 w-8" />
              <div>
                 <h1 className="text-5xl font-black text-text uppercase tracking-tighter leading-none">
                   {isAdmin ? "Command Hub" : "Terminal View"}
@@ -185,20 +178,20 @@ export default function DashboardPage() {
            </div>
            <button
              onClick={loadMasterData}
-             className="btn-liquid btn-liquid-glass p-3.5 shadow-sm group hover:border-border transition-all"
+             className="btn-liquid btn-liquid-glass p-3.5 shadow-sm group hover:border-border transition-all cursor-pointer"
              title="Sync Real-time Data"
            >
-             <RefreshCw size={16} className={cn("text-text transition-transform", loading && "animate-spin")} />
+             <FontAwesomeIcon icon={faRotate} className={cn("text-[#1E2631] text-sm h-4 w-4 transition-transform", loading && "animate-spin")} />
            </button>
         </div>
       </div>
 
       {/* 2. DYNAMIC INTEL GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <MetricCard title="Gross Income (30D)" value={`$${total30dRevenue.toLocaleString()}`} change="+12.5%" trend="up" icon={DollarSign} loading={loading} />
-        <MetricCard title="Verified Orders" value={total30dOrders.toLocaleString()} change="+8.2%" trend="up" icon={ShoppingBag} loading={loading} />
-        <MetricCard title="Asset Velocity" value="2.4x" change="-0.1%" trend="down" icon={Package} loading={loading} />
-        <MetricCard title="Active Patronage" value="842" change="+42" trend="up" icon={Users} loading={loading} />
+        <MetricCard title="Gross Income (30D)" value={`$${total30dRevenue.toLocaleString()}`} change="+12.5%" trend="up" icon={faDollarSign} loading={loading} />
+        <MetricCard title="Verified Orders" value={total30dOrders.toLocaleString()} change="+8.2%" trend="up" icon={faBagShopping} loading={loading} />
+        <MetricCard title="Asset Velocity" value="2.4x" change="-0.1%" trend="down" icon={faBox} loading={loading} />
+        <MetricCard title="Active Patronage" value="842" change="+42" trend="up" icon={faUsers} loading={loading} />
       </div>
 
       {/* 3. PRIMARY ANALYTICS ENGINE */}
@@ -219,9 +212,9 @@ export default function DashboardPage() {
                <div className="h-6 w-px bg-border/40" />
                <button
                  onClick={handleDownloadDataset}
-                 className="flex items-center gap-1.5 text-[10px] font-black uppercase text-text hover:text-primary border-b border-text/40 hover:border-primary transition-all pb-0.5 tracking-widest"
+                 className="flex items-center gap-1.5 text-[10px] font-black uppercase text-text hover:text-primary border-b border-text/40 hover:border-primary transition-all pb-0.5 tracking-widest cursor-pointer"
                >
-                 <Download size={12} className="text-text" /> Download Full Dataset
+                 <FontAwesomeIcon icon={faDownload} className="text-[#1E2631] text-xs h-3 w-3" /> Download Full Dataset
                </button>
             </div>
           </div>
@@ -279,10 +272,8 @@ export default function DashboardPage() {
         <div className="space-y-8">
            {/* AI Prediction Portal */}
            <div className="liquid-glass p-8 border-border bg-surface shadow-xl space-y-6">
-              <div className="flex items-center gap-3">
-                 <div className="p-2 bg-bg rounded-[3px] border border-border text-text">
-                    <Zap size={16} className="text-text" />
-                 </div>
+              <div className="flex items-center gap-2.5">
+                 <FontAwesomeIcon icon={faBolt} className="text-[#1E2631] text-sm h-4 w-4" />
                  <h3 className="text-xs font-black text-text uppercase tracking-[0.2em]">Predictive Insight</h3>
               </div>
               <p className="text-xs text-text/80 leading-relaxed font-medium">
@@ -292,15 +283,15 @@ export default function DashboardPage() {
                  <button
                    onClick={handleAllocateAssets}
                    disabled={allocating}
-                   className="w-full btn-liquid btn-liquid-terracotta py-3 text-[10px] font-black uppercase tracking-[0.2em] shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                   className="w-full btn-liquid btn-liquid-terracotta py-3 text-[10px] font-black uppercase tracking-[0.2em] shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                  >
                    {allocating ? (
                      <>
-                       <RefreshCw size={14} className="animate-spin text-white" /> Allocating Buffer...
+                       <FontAwesomeIcon icon={faRotate} className="animate-spin text-white text-xs h-3.5 w-3.5" /> Allocating Buffer...
                      </>
                    ) : allocated ? (
                      <>
-                       <CheckCircle2 size={14} className="text-white" /> Buffer Allocated
+                       <FontAwesomeIcon icon={faCircleCheck} className="text-white text-xs h-3.5 w-3.5" /> Buffer Allocated
                      </>
                    ) : (
                      "Allocate Assets"
@@ -328,9 +319,7 @@ export default function DashboardPage() {
                        className="group flex gap-3 items-center p-3 rounded-[3px] border border-border bg-bg/40 hover:bg-bg/80 cursor-pointer transition-all"
                        title="Click to resolve alert"
                      >
-                        <div className="shrink-0 p-1.5 bg-bg rounded-[2px] border border-border text-text">
-                           <AlertTriangle size={14} className="text-text" />
-                        </div>
+                        <FontAwesomeIcon icon={faTriangleExclamation} className="text-[#1E2631] text-xs h-3.5 w-3.5 shrink-0" />
                         <div className="min-w-0 flex-1">
                            <p className="text-[9px] font-black uppercase tracking-wider text-text">{a.title}</p>
                            <p className="text-[8px] font-mono text-text-muted truncate">{a.desc}</p>
@@ -349,20 +338,18 @@ export default function DashboardPage() {
   );
 }
 
-function MetricCard({ title, value, change, trend, icon: Icon, loading }: any) {
+function MetricCard({ title, value, change, trend, icon, loading }: any) {
   return (
     <div className="liquid-glass p-8 shadow-xl group hover:border-border transition-all duration-500 relative">
       <div className="flex items-center justify-between mb-8">
-        <div className="p-3 bg-bg border border-border text-text rounded-[3px] shadow-sm">
-          <Icon size={20} className="text-text" />
-        </div>
+        <FontAwesomeIcon icon={icon} className="text-[#1E2631] text-xl h-6 w-6" />
         {change && (
           <div className={cn(
             "flex items-center gap-1 px-2 py-0.5 rounded-[2px] text-[9px] font-black uppercase tracking-tighter border",
             trend === "up" ? "bg-success/10 text-success border-success/20" : "bg-danger/10 text-danger border-danger/20"
           )}>
             {change}
-            {trend === "up" ? <ArrowUpRight size={12} className="text-current" /> : <ArrowDownRight size={12} className="text-current" />}
+            <FontAwesomeIcon icon={trend === "up" ? faArrowTrendUp : faArrowTrendDown} className="h-3 w-3 text-current" />
           </div>
         )}
       </div>

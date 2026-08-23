@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { BrandWordmark } from '@/components/brand/BrandWordmark';
 import { Globe, Copy, Check, ArrowRight, ShieldCheck, Mail, Sparkles, Feather, Ruler, Truck, RotateCcw, Package, Layers } from 'lucide-react';
 import { CustomerGuideTopic } from './CustomerGuideModal';
@@ -40,14 +41,12 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
           {/* Brand & Newsletter Column (5 cols) */}
           <div className="md:col-span-5 flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-[2px] bg-white border border-white/20 flex items-center justify-center">
-                <img src="/OutFIT/OutFIT.svg" alt="OUTFIT" className="w-5 h-5 object-contain" />
-              </div>
+              <img src="/OutFIT/OutFIT.svg" alt="OUTFIT" className="w-6 h-6 object-contain" />
               <BrandWordmark size="md" invert={true} />
             </div>
 
             <p className="text-xs text-[#8E9AA8] max-w-sm leading-relaxed">
-              Curated contemporary tailoring, traceable Normandy linen, and premium archival streetwear essentials.
+              Modern tailored silhouettes, sustainably sourced European textiles, and enduring archival wardrobe essentials.
             </p>
 
             {/* Newsletter Input Form */}
@@ -77,19 +76,19 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
               onClick={() => onOpenTopic?.('all-pieces')}
               className="text-left text-[#8E9AA8] hover:text-[#C84428] cursor-pointer transition-colors"
             >
-              All Pieces
+              All Collections
             </button>
             <button 
               onClick={() => onOpenTopic?.('overshirts')}
               className="text-left text-[#8E9AA8] hover:text-[#C84428] cursor-pointer transition-colors"
             >
-              Overshirts
+              Structured Overshirts
             </button>
             <button 
               onClick={() => onOpenTopic?.('supima-knits')}
               className="text-left text-[#8E9AA8] hover:text-[#C84428] cursor-pointer transition-colors"
             >
-              Supima Knits
+              Supima Cotton Knits
             </button>
             <button 
               onClick={() => onOpenTopic?.('tailored-trousers')}
@@ -114,19 +113,19 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
               onClick={() => onOpenTopic?.('normandy-linen')}
               className="text-left text-[#8E9AA8] hover:text-[#C84428] cursor-pointer transition-colors"
             >
-              Normandy Linen
+              Linen Fabric Heritage
             </button>
             <button 
               onClick={() => onOpenTopic?.('fit-guide')}
               className="text-left text-[#8E9AA8] hover:text-[#C84428] cursor-pointer transition-colors"
             >
-              Fit Guide
+              Size &amp; Fit Guide
             </button>
             <button 
               onClick={() => onOpenTopic?.('care-guide')}
               className="text-left text-[#8E9AA8] hover:text-[#C84428] cursor-pointer transition-colors"
             >
-              Care Guide
+              Care &amp; Longevity
             </button>
             <button 
               onClick={() => onOpenTopic?.('shipping-duties')}
@@ -138,8 +137,14 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
               onClick={() => onOpenTopic?.('returns-exchange')}
               className="text-left text-[#8E9AA8] hover:text-[#C84428] cursor-pointer transition-colors"
             >
-              Returns &amp; Exchange
+              Returns &amp; Exchanges
             </button>
+            <Link 
+              href="/login"
+              className="text-left text-[#8E9AA8] hover:text-[#C84428] cursor-pointer transition-colors"
+            >
+              Login
+            </Link>
           </div>
 
           {/* Social Channels & Communities (3 cols) */}
@@ -148,16 +153,16 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
               Social &amp; Channels
             </span>
 
-            {/* Icon-Only Platform Grid */}
-            <div className="flex flex-wrap gap-2">
+            {/* Clean Icon Row (No background shape) */}
+            <div className="flex flex-wrap items-center gap-3">
               {/* TikTok */}
               <a
                 href="#"
                 onClick={(e) => e.preventDefault()}
                 title="TikTok"
-                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+                className="p-1 hover:text-white transition-all group cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 fill-current text-[#8E9AA8] group-hover:text-white transition-colors" viewBox="0 0 24 24">
                   <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.41a6.33 6.33 0 0 0-.85-.06 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.48c1.33.95 2.95 1.52 4.7 1.57v-3.36h-.93z"/>
                 </svg>
               </a>
@@ -167,9 +172,9 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
                 href="#"
                 onClick={(e) => e.preventDefault()}
                 title="Instagram"
-                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+                className="p-1 hover:text-white transition-all group cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5 fill-none stroke-current stroke-2 text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 fill-none stroke-current stroke-2 text-[#8E9AA8] group-hover:text-white transition-colors" viewBox="0 0 24 24">
                   <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
                   <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
@@ -181,9 +186,9 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
                 href="#"
                 onClick={(e) => e.preventDefault()}
                 title="Facebook"
-                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+                className="p-1 hover:text-white transition-all group cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 fill-current text-[#8E9AA8] group-hover:text-white transition-colors" viewBox="0 0 24 24">
                   <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
                 </svg>
               </a>
@@ -193,9 +198,9 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
                 href="#"
                 onClick={(e) => e.preventDefault()}
                 title="YouTube"
-                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+                className="p-1 hover:text-white transition-all group cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 fill-current text-[#8E9AA8] group-hover:text-white transition-colors" viewBox="0 0 24 24">
                   <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
                   <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#1E2631"/>
                 </svg>
@@ -206,9 +211,9 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
                 href="#"
                 onClick={(e) => e.preventDefault()}
                 title="Shopify"
-                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+                className="p-1 hover:text-white transition-all group cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 fill-current text-[#8E9AA8] group-hover:text-white transition-colors" viewBox="0 0 24 24">
                   <path d="M19.5 4.5h-3.8A4.7 4.7 0 0 0 11 1.2a4.7 4.7 0 0 0-4.7 3.3H2.5L1 21.8a1 1 0 0 0 1 1.2h18a1 1 0 0 0 1-1.2L19.5 4.5zm-8.5-1.5a2.7 2.7 0 0 1 2.7 1.5H8.3a2.7 2.7 0 0 1 2.7-1.5z"/>
                 </svg>
               </a>
@@ -218,9 +223,9 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
                 href="#"
                 onClick={(e) => e.preventDefault()}
                 title="Telegram"
-                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+                className="p-1 hover:text-white transition-all group cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 fill-current text-[#8E9AA8] group-hover:text-white transition-colors" viewBox="0 0 24 24">
                   <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l-.313 4.674c.458 0 .66-.21.916-.458l2.199-2.138 4.573 3.378c.843.464 1.448.225 1.658-.783l2.997-14.133c.307-1.231-.469-1.787-1.506-1.507z"/>
                 </svg>
               </a>
@@ -230,9 +235,9 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
                 href="#"
                 onClick={(e) => e.preventDefault()}
                 title="X (Twitter)"
-                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+                className="p-1 hover:text-white transition-all group cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 fill-current text-[#8E9AA8] group-hover:text-white transition-colors" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
               </a>
@@ -265,6 +270,7 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
             <button onClick={() => onOpenTopic?.('care-guide')} className="hover:text-white cursor-pointer transition-colors">Privacy Policy</button>
             <button onClick={() => onOpenTopic?.('returns-exchange')} className="hover:text-white cursor-pointer transition-colors">Terms of Service</button>
             <button onClick={() => onOpenTopic?.('shipping-duties')} className="hover:text-white cursor-pointer transition-colors">Security Audit</button>
+            <Link href="/login" className="hover:text-white cursor-pointer transition-colors">Login</Link>
           </div>
         </div>
 

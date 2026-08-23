@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono, Kantumruy_Pro, Caveat, Playfair_Display, Bodoni_Moda } from "next/font/google";
 import "./globals.css";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config } from "@fortawesome/fontawesome-svg-core";
+config.autoAddCss = false;
 import { AuthProvider } from "@/hooks/useAuth";
 import { Toaster } from "sonner";
 
