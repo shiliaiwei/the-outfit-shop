@@ -29,10 +29,13 @@ export default function CustomersPage() {
     load();
   }, []);
 
-  const filtered = customers.filter(c =>
-    c.customer_name.toLowerCase().includes(search.toLowerCase()) ||
-    c.phone.includes(search)
-  );
+  const list = Array.isArray(customers) ? customers : [];
+  const filtered = list.filter(c => {
+    const name = String(c.customer_name || c.name || "").toLowerCase();
+    const phone = String(c.phone || "");
+    const q = search.toLowerCase();
+    return name.includes(q) || phone.includes(q);
+  });
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">

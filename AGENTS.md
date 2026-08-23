@@ -19,4 +19,6 @@ Before executing any `git push` or `git merge` to any remote or branch:
 3. **Referenced Rules**:
    - [.agents/rules/git-workflow.md](.agents/rules/git-workflow.md)
    - [.agents/rules/brand-select-dropdowns.md](.agents/rules/brand-select-dropdowns.md)
+   - [.agents/rules/authentication-ui-standards.md](.agents/rules/authentication-ui-standards.md)
+   - [.agents/rules/icon-design-standards.md](.agents/rules/icon-design-standards.md)
    - [.agents/skills/liquid-glass-design-system/SKILL.md](.agents/skills/liquid-glass-design-system/SKILL.md)

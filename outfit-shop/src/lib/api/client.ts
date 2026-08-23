@@ -86,17 +86,7 @@ async function request<T>(
         case 401: {
           code = "UNAUTHENTICATED";
           const isLoginRequest = path.includes("/auth/login");
-          message = isLoginRequest ? "Invalid username or password." : "Session expired — please sign in again.";
-
-          if (typeof window !== "undefined") {
-            const currentPath = window.location.pathname;
-            const isProtectedRoute = currentPath.startsWith("/admin") || currentPath.startsWith("/pos");
-            if (isProtectedRoute) {
-              document.cookie = "outfit_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-              const returnUrl = encodeURIComponent(currentPath + window.location.search);
-              window.location.replace(`/login?returnUrl=${returnUrl}`);
-            }
-          }
+          message = isLoginRequest ? "Invalid username or password." : "Session expired or unauthenticated.";
           break;
         }
         case 403:

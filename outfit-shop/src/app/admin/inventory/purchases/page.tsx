@@ -82,7 +82,7 @@ export default function PurchasesPage() {
                     <td className="px-6 py-4 text-xs text-text uppercase font-bold">{po.supplier_name || `Supplier #${po.supplier_id}`}</td>
                     <td className="px-6 py-4"><POStatusBadge status={po.status} /></td>
                     <td className="px-6 py-4 text-xs text-text-muted font-mono">{new Date(po.expected_date).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 text-sm font-black text-text font-mono">${po.total_cost.toFixed(2)}</td>
+                    <td className="px-6 py-4 text-sm font-black text-text font-mono">${Number(po.total_cost ?? po.grand_total ?? po.total_amount ?? 0).toFixed(2)}</td>
                     <td className="px-6 py-4 text-right">
                        <button className="p-2 text-text-muted hover:text-primary"><MoreVertical size={16} /></button>
                     </td>

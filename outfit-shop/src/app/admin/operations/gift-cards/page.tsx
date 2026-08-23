@@ -72,8 +72,8 @@ export default function GiftCardsPage() {
                     <td className="px-6 py-4">
                        <CardStatusBadge status={c.status} />
                     </td>
-                    <td className="px-6 py-4 text-xs text-text-muted font-mono">${c.initial_balance.toFixed(2)}</td>
-                    <td className="px-6 py-4 text-sm font-black text-text font-mono">${c.current_balance.toFixed(2)}</td>
+                    <td className="px-6 py-4 text-xs text-text-muted font-mono">${Number(c.initial_balance ?? 0).toFixed(2)}</td>
+                    <td className="px-6 py-4 text-sm font-black text-text font-mono">${Number(c.current_balance ?? 0).toFixed(2)}</td>
                     <td className="px-6 py-4 text-xs text-text-muted font-mono">{new Date(c.expiry_date).toLocaleDateString()}</td>
                     <td className="px-6 py-4 text-right">
                        <button className="p-2 text-text-muted hover:text-primary transition-colors"><MoreVertical size={16} /></button>

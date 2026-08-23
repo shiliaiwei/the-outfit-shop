@@ -80,15 +80,19 @@ export function OrderDetailsSheet({ order, isOpen, onClose, onVoidSuccess }: Ord
             <div className="space-y-3">
                <h4 className="text-[10px] font-black text-text uppercase tracking-widest border-b border-border pb-2">Line Items</h4>
                <div className="space-y-3">
-                  {order.items?.map((item: any) => (
-                    <div key={item.id} className="flex justify-between items-start">
-                       <div>
-                          <p className="text-xs font-bold text-text uppercase">{item.product_name}</p>
-                          <p className="text-[9px] font-mono text-text-muted mt-0.5">{item.sku} × {item.quantity}</p>
-                       </div>
-                       <span className="text-xs font-black text-text font-mono">${(item.price * item.quantity).toFixed(2)}</span>
-                    </div>
-                  ))}
+                  {order.items?.map((item: any) => {
+                    const price = Number(item.price ?? item.unit_price ?? 0);
+                    const qty = Number(item.quantity ?? item.qty ?? 1);
+                    return (
+                      <div key={item.id} className="flex justify-between items-start">
+                         <div>
+                            <p className="text-xs font-bold text-text uppercase">{item.product_name}</p>
+                            <p className="text-[9px] font-mono text-text-muted mt-0.5">{item.sku} × {qty}</p>
+                         </div>
+                         <span className="text-xs font-black text-text font-mono">${(price * qty).toFixed(2)}</span>
+                      </div>
+                    );
+                  })}
                </div>
             </div>
 
@@ -96,15 +100,15 @@ export function OrderDetailsSheet({ order, isOpen, onClose, onVoidSuccess }: Ord
             <div className="p-4 rounded-card border border-border bg-bg/10 space-y-2">
                <div className="flex justify-between text-[10px] font-mono text-text-muted uppercase">
                   <span>Subtotal</span>
-                  <span>${order.subtotal?.toFixed(2) || "0.00"}</span>
+                  <span>${Number(order.subtotal ?? order.sub_total ?? 0).toFixed(2)}</span>
                </div>
                <div className="flex justify-between text-[10px] font-mono text-text-muted uppercase">
                   <span>Tax (5%)</span>
-                  <span>${order.tax?.toFixed(2) || "0.00"}</span>
+                  <span>${Number(order.tax ?? order.tax_amount ?? 0).toFixed(2)}</span>
                </div>
                <div className="flex justify-between items-center pt-2 border-t border-border mt-2">
                   <span className="text-xs font-black text-text uppercase tracking-wider">Grand Total</span>
-                  <span className="text-lg font-black text-primary font-mono">${order.total?.toFixed(2) || "0.00"}</span>
+                  <span className="text-lg font-black text-primary font-mono">${Number(order.total ?? order.grand_total ?? order.total_amount ?? 0).toFixed(2)}</span>
                </div>
             </div>
 
@@ -112,7 +116,7 @@ export function OrderDetailsSheet({ order, isOpen, onClose, onVoidSuccess }: Ord
             <div className="flex items-center gap-4 text-[9px] font-mono text-text-muted uppercase tracking-widest">
                <div className="flex items-center gap-1.5">
                   <Clock size={12} />
-                  <span>Placed: {new Date(order.created_at).toLocaleString()}</span>
+                  <span>Placed: {new Date(order.created_at || Date.now()).toLocaleString()}</span>
                </div>
             </div>
           </div>

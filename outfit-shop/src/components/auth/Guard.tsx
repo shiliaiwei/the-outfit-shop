@@ -15,15 +15,18 @@ export function Guard({ children, allowedRoles }: GuardProps) {
   const router = useRouter();
   const pathname = usePathname();
 
+  const userRole = String(user?.role || "").toUpperCase();
+  const isAllowed = !allowedRoles || allowedRoles.some(r => String(r).toUpperCase() === userRole);
+
   useEffect(() => {
     if (!loading) {
       if (!user) {
         router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
-      } else if (allowedRoles && !allowedRoles.includes(user.role)) {
+      } else if (!isAllowed) {
         router.push("/unauthorized");
       }
     }
-  }, [user, loading, allowedRoles, router, pathname]);
+  }, [user, loading, isAllowed, router, pathname]);
 
   if (loading) {
     return (
@@ -33,7 +36,7 @@ export function Guard({ children, allowedRoles }: GuardProps) {
     );
   }
 
-  if (!user || (allowedRoles && !allowedRoles.includes(user.role))) {
+  if (!user || !isAllowed) {
     return null;
   }
 
