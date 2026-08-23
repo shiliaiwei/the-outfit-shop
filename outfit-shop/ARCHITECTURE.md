@@ -49,10 +49,13 @@ Predictive analytics powered by multi-cycle neural forecasting:
 - **APM Telemetry:** Real-time throughput and p95 latency monitoring.
 
 ## 🏗️ Technical Stack
-- **Next.js 16+ (App Router):** Core framework.
-- **Tailwind CSS 4.0:** Styling engine.
+- **Next.js 16+ (App Router):** Core framework (Turbopack).
+- **React 19:** View layer and concurrency.
+- **Tailwind CSS 4.0:** High-performance styling engine.
+- **TanStack Query (React Query):** Server-state caching and synchronization.
+- **Zod 3:** Schema validation and type inference envelopes.
 - **Recharts:** High-density data visualization.
-- **Sonner:** System-level notifications.
+- **Sonner:** System-level notification dispatch.
 
 ---
 © 2026 OUTFIT Master Platform. Technical Documentation.
