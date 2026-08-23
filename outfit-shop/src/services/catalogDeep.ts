@@ -135,3 +135,5 @@ export const catalogDeepService = {
     return await api.delete(`/colors/${id}`);
   },
 };
+
+export const CatalogDeepService = catalogDeepService;
