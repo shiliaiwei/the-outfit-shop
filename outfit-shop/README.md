@@ -55,11 +55,4 @@ OUTFIT is a production-grade, high-density Admin Dashboard and Live POS Terminal
    npm run build
    ```
 
-## 📘 Documentation
-- [Architecture & Design System](ARCHITECTURE.md)
-- [API Specification](../OutfitShop_Master_Collection.json)
-- [Liquid Glass Design System](../.agents/skills/liquid-glass-design-system/SKILL.md)
-- [Brand Selection Guidelines](../.agents/rules/brand-select-dropdowns.md)
-
----
 © 2026 OUTFIT Master Platform. Confidential & Proprietary.
