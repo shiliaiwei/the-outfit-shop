@@ -1,25 +1,30 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const res = await fetch('https://api.kesararamwithdigital.tech/api/v1/products?per_page=200', {
+    const { searchParams } = new URL(request.url);
+    const queryString = searchParams.toString();
+    const targetUrl = `https://api.kesararamwithdigital.tech/api/v1/products${queryString ? `?${queryString}` : ''}`;
+
+    const res = await fetch(targetUrl, {
       headers: {
         'Accept': 'application/json',
         'User-Agent': 'OutFIT-Haute-Atelier/1.0',
       },
-      next: { revalidate: 60 }, // Cache for 60s
+      next: { revalidate: 30 }, // Cache for 30s
     });
 
     if (!res.ok) {
       // Fallback try HTTP if SSL had an edge handshake issue
-      const fallbackRes = await fetch('http://api.kesararamwithdigital.tech/api/v1/products?per_page=200', {
+      const fallbackUrl = `http://api.kesararamwithdigital.tech/api/v1/products${queryString ? `?${queryString}` : ''}`;
+      const fallbackRes = await fetch(fallbackUrl, {
         headers: { 'Accept': 'application/json' },
       });
       if (fallbackRes.ok) {
         const data = await fallbackRes.json();
         return NextResponse.json(data);
       }
-      return NextResponse.json({ error: 'Failed to fetch upstream products' }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to fetch upstream products' }, { status: res.status || 500 });
     }
 
     const data = await res.json();
@@ -31,3 +36,4 @@ export async function GET() {
     );
   }
 }
+

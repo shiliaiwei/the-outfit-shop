@@ -128,7 +128,7 @@ export function AtelierGuideModal({ topic, onClose, onSelectCategory }: AtelierG
     },
     'all-pieces': {
       title: 'Complete Haute Collection',
-      subtitle: 'Discover all 177 verified luxury pieces currently in live atelier sync',
+      subtitle: 'Discover our verified luxury pieces currently in live atelier sync',
       icon: <Package className="w-5 h-5 text-[#C84428]" />,
       badge: 'Full Catalog',
       sections: [

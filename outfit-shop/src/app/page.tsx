@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { ShopProduct, CartItem, CurrencyCode } from '@/types';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { ShopProduct, CartItem, CurrencyCode, ApiPagination, ApiCategory, ApiBrand } from '@/types';
 import { CatalogService } from '@/services/catalogService';
 import { ShopHeader } from '@/components/shop/ShopHeader';
 import { HeroSection } from '@/components/shop/HeroSection';
@@ -12,7 +12,7 @@ import { CheckoutReceiptModal } from '@/components/shop/CheckoutReceiptModal';
 import { AtelierCraftStory } from '@/components/shop/AtelierCraftStory';
 import { ShopFooter } from '@/components/shop/ShopFooter';
 import { AtelierGuideModal, AtelierGuideTopic } from '@/components/shop/AtelierGuideModal';
-import { BrandSelectDropdown } from '@/components/shop/BrandSelectDropdown';
+import { CatalogPagination } from '@/components/shop/CatalogPagination';
 import { 
   SlidersHorizontal, 
   ArrowUpDown, 
@@ -21,24 +21,44 @@ import {
   Layers, 
   PackageX,
   RefreshCw,
-  Plus
+  Search,
+  Filter
 } from 'lucide-react';
 
+const INITIAL_PAGINATION: ApiPagination = {
+  current_page: 1,
+  per_page: 24,
+  total_items: 1843,
+  total_pages: 77,
+  has_next: true,
+  has_previous: false,
+  from: 1,
+  to: 24,
+  next_cursor: null,
+  previous_cursor: null,
+};
+
 export default function HomePage() {
-  // 1. Live Catalog State
+  // 1. Live Catalog & Dynamic Pagination State (Read directly from response.meta.pagination)
   const [products, setProducts] = useState<ShopProduct[]>([]);
+  const [heroProducts, setHeroProducts] = useState<ShopProduct[]>([]);
+  const [pagination, setPagination] = useState<ApiPagination>(INITIAL_PAGINATION);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isCatalogLoading, setIsCatalogLoading] = useState<boolean>(false);
   const [currency, setCurrency] = useState<CurrencyCode>('USD');
 
-  // 2. Filter, Search & Sort State
+  // 2. Filter, Search, Pagination & Sort State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(24);
   const [activeCategory, setActiveCategory] = useState<string>('All');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [activeSort, setActiveSort] = useState<'featured' | 'price-asc' | 'price-desc' | 'stock' | 'name'>('featured');
   const [selectedBrand, setSelectedBrand] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [debouncedSearch, setDebouncedSearch] = useState<string>('');
+  const [activeSort, setActiveSort] = useState<'featured' | 'price-asc' | 'price-desc' | 'stock' | 'name'>('featured');
 
-  // 3. Pagination State (52 items per page — No auto scroll refresh, strictly manual Load More button)
-  const PAGE_SIZE = 52;
-  const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
+  // 3. Live Metadata (Categories & Brands fetched from backend)
+  const [categoriesList, setCategoriesList] = useState<ApiCategory[]>([]);
+  const [brandsList, setBrandsList] = useState<ApiBrand[]>([]);
 
   // 4. Cart & Modals State
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -48,99 +68,149 @@ export default function HomePage() {
   const [activeGuideTopic, setActiveGuideTopic] = useState<AtelierGuideTopic>(null);
 
   const catalogRef = useRef<HTMLDivElement>(null);
+  const isFirstMount = useRef<boolean>(true);
 
-  // Reset pagination on filter or search change
+  // Debounce search query
   useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [activeCategory, selectedBrand, searchQuery, activeSort]);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-  // Fetch live products on mount
+  // Fetch Categories & Brands on Mount
   useEffect(() => {
-    let isMounted = true;
-    async function loadCatalog() {
-      setIsLoading(true);
-      const items = await CatalogService.getLiveProducts();
-      if (isMounted) {
-        setProducts(items);
-        setIsLoading(false);
+    async function loadMeta() {
+      try {
+        const [cats, brs] = await Promise.all([
+          CatalogService.getCategories(),
+          CatalogService.getBrands()
+        ]);
+        if (cats && cats.length > 0) setCategoriesList(cats);
+        if (brs && brs.length > 0) setBrandsList(brs);
+      } catch {
+        // Fallback
       }
     }
-    loadCatalog();
-    return () => {
-      isMounted = false;
-    };
+    loadMeta();
   }, []);
 
-  // Extract unique categories & brands from live products
-  const categories = useMemo(() => {
-    const raw = ['All', ...new Set(products.map((p) => p.category).filter(Boolean))];
-    return raw.slice(0, 10);
-  }, [products]);
+  // Map activeCategory name to category_id
+  const selectedCategoryId = useMemo(() => {
+    if (activeCategory === 'All') return undefined;
+    const found = categoriesList.find(
+      (c) => c.category_name.toLowerCase() === activeCategory.toLowerCase()
+    );
+    return found ? found.category_id : undefined;
+  }, [activeCategory, categoriesList]);
 
-  const brands = useMemo(() => {
-    const raw = ['All', ...new Set(products.map((p) => p.brand).filter(Boolean))];
-    return raw.slice(0, 8);
-  }, [products]);
-
-  // Filter and Sort Products
-  const filteredProducts = useMemo(() => {
-    let list = [...products];
-
-    // Filter by category
-    if (activeCategory !== 'All') {
-      list = list.filter((p) => p.category.toLowerCase() === activeCategory.toLowerCase());
+  // Load Products with Dynamic Backend REST API Pagination
+  const fetchProducts = useCallback(async (page: number, itemsPerPage: number, isInitial = false) => {
+    if (isInitial) {
+      setIsLoading(true);
+    } else {
+      setIsCatalogLoading(true);
     }
 
-    // Filter by brand
-    if (selectedBrand !== 'All') {
-      list = list.filter((p) => p.brand.toLowerCase() === selectedBrand.toLowerCase());
+    try {
+      const result = await CatalogService.getLiveProducts({
+        page,
+        per_page: itemsPerPage,
+        brand: selectedBrand !== 'All' ? selectedBrand : undefined,
+        category_id: selectedCategoryId,
+        q: debouncedSearch.trim() || undefined
+      });
+
+      setProducts(result.products);
+      setPagination(result.pagination);
+
+      // Populate hero showcase if empty
+      if (isInitial || heroProducts.length === 0) {
+        setHeroProducts(result.products);
+      }
+    } catch {
+      // CatalogService handles internal fallback
+    } finally {
+      setIsLoading(false);
+      setIsCatalogLoading(false);
+    }
+  }, [selectedBrand, selectedCategoryId, debouncedSearch, heroProducts.length]);
+
+  // Reset to page 1 when filters or search change
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      fetchProducts(1, perPage, true);
+      return;
     }
 
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim();
-      list = list.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.brand.toLowerCase().includes(q) ||
-          p.sku.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
-      );
-    }
+    setCurrentPage(1);
+    fetchProducts(1, perPage, false);
+  }, [activeCategory, selectedBrand, debouncedSearch]);
 
-    // Sorting
+  // Fetch when page or perPage changes
+  const handlePageChange = (newPage: number) => {
+    if (newPage === currentPage) return;
+    setCurrentPage(newPage);
+    fetchProducts(newPage, perPage, false);
+
+    // Smooth scroll back to catalog view
+    if (catalogRef.current) {
+      const topOffset = catalogRef.current.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: Math.max(0, topOffset), behavior: 'smooth' });
+    }
+  };
+
+  const handlePerPageChange = (newPerPage: number) => {
+    if (newPerPage === perPage) return;
+    setPerPage(newPerPage);
+    setCurrentPage(1);
+    fetchProducts(1, newPerPage, false);
+  };
+
+  // Client-side sorting for current page pieces
+  const sortedProducts = useMemo(() => {
+    const list = [...products];
     switch (activeSort) {
       case 'price-asc':
-        list.sort((a, b) => a.price - b.price);
-        break;
+        return list.sort((a, b) => a.price - b.price);
       case 'price-desc':
-        list.sort((a, b) => b.price - a.price);
-        break;
+        return list.sort((a, b) => b.price - a.price);
       case 'stock':
-        list.sort((a, b) => b.stock - a.stock);
-        break;
+        return list.sort((a, b) => b.stock - a.stock);
       case 'name':
-        list.sort((a, b) => a.name.localeCompare(b.name));
-        break;
+        return list.sort((a, b) => a.name.localeCompare(b.name));
       case 'featured':
       default:
-        // Prioritize items with images and higher stock
-        list.sort((a, b) => (b.imageUrl ? 1 : 0) - (a.imageUrl ? 1 : 0));
-        break;
+        return list.sort((a, b) => (b.imageUrl ? 1 : 0) - (a.imageUrl ? 1 : 0));
     }
+  }, [products, activeSort]);
 
+  // Curated category filter pills
+  const categories = useMemo(() => {
+    const list: string[] = ['All'];
+    if (categoriesList.length > 0) {
+      categoriesList.forEach((c) => {
+        if (!list.includes(c.category_name)) list.push(c.category_name);
+      });
+    } else {
+      list.push('T-Shirts & Tops', 'Hoodies & Sweatshirts', 'Jackets & Outerwear', 'Pants & Shorts', 'Footwear & Sneakers');
+    }
+    return list.slice(0, 7);
+  }, [categoriesList]);
+
+  // Curated brand filter pills
+  const brandPills = useMemo(() => {
+    const list: string[] = ['All'];
+    if (brandsList.length > 0) {
+      brandsList.slice(0, 6).forEach((b) => {
+        if (!list.includes(b.brand_name)) list.push(b.brand_name);
+      });
+    } else {
+      list.push('Louis Vuitton', 'Stussy', 'Nike', 'Tesla', 'xAI Grok');
+    }
     return list;
-  }, [products, activeCategory, selectedBrand, searchQuery, activeSort]);
-
-  const displayedProducts = useMemo(() => {
-    return filteredProducts.slice(0, visibleCount);
-  }, [filteredProducts, visibleCount]);
-
-  const handleLoadMore = (e?: React.MouseEvent) => {
-    if (e) e.preventDefault();
-    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, filteredProducts.length));
-  };
+  }, [brandsList]);
 
   // Cart operations
   const handleAddToCart = (product: ShopProduct, size: string, qty: number = 1) => {
@@ -191,18 +261,10 @@ export default function HomePage() {
     catalogRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const sortOptions = [
-    { value: 'featured', label: 'Sort: Featured' },
-    { value: 'price-asc', label: 'Price: Low to High' },
-    { value: 'price-desc', label: 'Price: High to Low' },
-    { value: 'stock', label: 'Stock Quantity' },
-    { value: 'name', label: 'Alphabetical' }
-  ];
-
   return (
     <div className="min-h-screen flex flex-col justify-between bg-[#F8F7F4] text-[#1E2631] font-sans selection:bg-[#C84428] selection:text-white relative">
       
-      {/* 1. Global Public Header with Live Utilities */}
+      {/* 1. Global Public Header with Live Utilities & Dynamic Backend Count */}
       <ShopHeader
         cartCount={cartItems.reduce((acc, i) => acc + i.qty, 0)}
         wishlistCount={0}
@@ -211,55 +273,55 @@ export default function HomePage() {
         onOpenCart={() => setIsCartOpen(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        totalProductsCount={products.length}
+        totalProductsCount={pagination.total_items}
       />
 
       {/* 2. Hero Editorial Showcase with Dual-Split Parallax Blur */}
       <HeroSection
-        totalCount={products.length}
-        products={products}
+        totalCount={pagination.total_items}
+        products={heroProducts.length > 0 ? heroProducts : products}
         currency={currency}
         onExploreClick={scrollToCatalog}
         onQuickView={setQuickViewProduct}
         onAddToCart={handleAddToCart}
       />
 
-      {/* 3. Main Catalog Section */}
+      {/* 3. Main Catalog Section with Live REST API Dynamic Pagination */}
       <main ref={catalogRef} className="w-full max-w-7xl mx-auto px-3 sm:px-6 py-6 flex-1">
         
-        {/* Streamlined Minimalist Luxury Toolbar (Single Clean Row, Zero Clutter, Less Taps) */}
+        {/* Streamlined Minimalist Luxury Toolbar */}
         <div className="liquid-glass bg-white/95 border border-[#5A6678]/15 rounded-[2px] p-2 sm:p-2.5 mb-6 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
           
-          {/* Left: Essential Curated Categories (Clean & Direct) */}
+          {/* Left: Essential Curated Categories (Live dynamic filters) */}
           <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto scrollbar-none">
-            {categories.slice(0, 5).map((cat) => {
+            {categories.map((cat) => {
               const isSelected = activeCategory === cat;
               return (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`btn-liquid px-3.5 py-1.5 rounded-[2px] text-xs font-mono font-bold whitespace-nowrap cursor-pointer transition-all ${
+                  className={`btn-liquid px-3 py-1.5 rounded-[2px] text-xs font-mono font-bold whitespace-nowrap cursor-pointer transition-all ${
                     isSelected
                       ? 'btn-liquid-active bg-[#1E2631] text-white'
                       : 'btn-liquid-glass text-[#5A6678] hover:text-[#1E2631]'
                   }`}
                 >
-                  {cat === 'Mens Ready-to-Wear Updated' ? 'Ready-to-Wear' : cat}
+                  {cat}
                 </button>
               );
             })}
           </div>
 
-          {/* Right: Curated Brand Selector + Count + Branded Liquid Glass Sort */}
+          {/* Right: Curated Brand Selector + Live Count + 1-Tap Sort */}
           <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-between md:justify-end text-xs font-mono">
             
             {/* Quick Brand Pills */}
-            <div className="flex items-center gap-1">
-              {brands.map((b) => (
+            <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
+              {brandPills.map((b) => (
                 <button
                   key={b}
                   onClick={() => setSelectedBrand(b)}
-                  className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer ${
+                  className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer whitespace-nowrap ${
                     selectedBrand === b
                       ? 'btn-liquid-terracotta'
                       : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
@@ -270,7 +332,7 @@ export default function HomePage() {
               ))}
             </div>
 
-            {/* Creative Outside Sort Filter Switcher (1-Tap Instant Sort, No Hidden Dropdown) */}
+            {/* 1-Tap Instant Sort Switcher */}
             <div className="flex items-center gap-1 pl-2 border-l border-[#5A6678]/15 ml-auto md:ml-0">
               <span className="text-[#8E9AA8] text-[10px] font-bold uppercase tracking-wider hidden lg:inline mr-1">
                 Sort:
@@ -279,7 +341,7 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={() => setActiveSort('featured')}
-                className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+                className={`btn-liquid px-2 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
                   activeSort === 'featured'
                     ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
                     : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
@@ -292,7 +354,7 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={() => setActiveSort('price-asc')}
-                className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+                className={`btn-liquid px-2 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
                   activeSort === 'price-asc'
                     ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
                     : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
@@ -305,7 +367,7 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={() => setActiveSort('price-desc')}
-                className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+                className={`btn-liquid px-2 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
                   activeSort === 'price-desc'
                     ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
                     : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
@@ -318,30 +380,30 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={() => setActiveSort('stock')}
-                className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+                className={`btn-liquid px-2 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
                   activeSort === 'stock'
                     ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
                     : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
                 }`}
-                title="Sort by Available Stock"
+                title="Sort by Stock Quantity"
               >
                 Stock
               </button>
             </div>
 
-            {/* Live Count */}
+            {/* Dynamic Total Items Indicator */}
             <div className="flex items-center gap-1.5 pl-2 border-l border-[#5A6678]/15 text-[#8E9AA8] text-[11px] whitespace-nowrap hidden xl:flex">
-              <strong className="text-[#1E2631]">{displayedProducts.length}</strong>/{filteredProducts.length}
+              Page <strong className="text-[#1E2631]">{pagination.current_page}</strong> of <strong className="text-[#1E2631]">{pagination.total_pages}</strong>
             </div>
 
           </div>
 
         </div>
 
-        {/* Product Grid */}
-        {isLoading ? (
+        {/* Product Grid / Loading / Empty States */}
+        {isLoading || isCatalogLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, i) => (
+            {Array.from({ length: perPage || 8 }).map((_, i) => (
               <div
                 key={i}
                 className="bg-white/70 border border-[#5A6678]/10 rounded-[2px] p-3 aspect-[4/6] animate-pulse flex flex-col justify-between"
@@ -355,14 +417,14 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        ) : filteredProducts.length === 0 ? (
+        ) : sortedProducts.length === 0 ? (
           <div className="p-12 text-center liquid-glass bg-white/90 rounded-[2px] border border-[#5A6678]/15 flex flex-col items-center">
             <PackageX className="w-10 h-10 text-[#8E9AA8] mb-3" />
             <h3 className="text-base font-display font-bold text-[#1E2631]">
-              No Pieces Match Your Filter
+              No Pieces Match Your Criteria
             </h3>
             <p className="text-xs text-[#5A6678] mt-1 mb-4">
-              Try adjusting your category or search parameters
+              {debouncedSearch ? `No results found for "${debouncedSearch}"` : 'Try adjusting your category or brand filters'}
             </p>
             <button
               onClick={() => {
@@ -372,13 +434,13 @@ export default function HomePage() {
               }}
               className="btn-liquid btn-liquid-charcoal px-5 py-2.5 text-xs font-mono font-bold uppercase rounded-[2px] cursor-pointer"
             >
-              Reset Filters
+              Reset All Filters
             </button>
           </div>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {displayedProducts.map((p) => {
+              {sortedProducts.map((p) => {
                 const totalInCart = cartItems
                   .filter((item) => item.productId === p.id)
                   .reduce((acc, item) => acc + item.qty, 0);
@@ -396,43 +458,13 @@ export default function HomePage() {
               })}
             </div>
 
-            {/* Pagination Progress & Elevated Liquid Glass Load More Button */}
-            {filteredProducts.length > 0 && (
-              <div className="mt-12 mb-6 flex flex-col items-center justify-center gap-3">
-                <div className="flex flex-col items-center gap-1.5 w-full max-w-xs text-center">
-                  <span className="text-[11px] font-mono text-[#5A6678]">
-                    Showing <strong className="text-[#1E2631]">{displayedProducts.length}</strong> of{' '}
-                    <strong className="text-[#1E2631]">{filteredProducts.length}</strong> Pieces
-                  </span>
-                  <div className="w-full bg-slate-200 h-1.5 rounded-[2px] overflow-hidden">
-                    <div
-                      className="h-full bg-[#1E2631] transition-all duration-300"
-                      style={{
-                        width: `${Math.min(
-                          100,
-                          Math.round((displayedProducts.length / filteredProducts.length) * 100)
-                        )}%`
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {displayedProducts.length < filteredProducts.length ? (
-                  <button
-                    onClick={handleLoadMore}
-                    className="btn-liquid btn-liquid-terracotta px-8 py-3.5 rounded-[2px] text-xs font-mono font-bold uppercase tracking-wider shadow-md flex items-center gap-2 group cursor-pointer"
-                  >
-                    <RefreshCw className="w-4 h-4 text-white group-hover:rotate-180 transition-all duration-500" />
-                    <span>Load More Pieces ({filteredProducts.length - displayedProducts.length} Remaining)</span>
-                  </button>
-                ) : (
-                  <div className="text-[11px] font-mono text-[#8E9AA8] py-2 flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>All {filteredProducts.length} Atelier Pieces Loaded</span>
-                  </div>
-                )}
-              </div>
-            )}
+            {/* Dynamic Catalog Pagination Component (All states driven by response.meta.pagination) */}
+            <CatalogPagination
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onPerPageChange={handlePerPageChange}
+              isLoading={isCatalogLoading}
+            />
           </>
         )}
 
@@ -485,3 +517,4 @@ export default function HomePage() {
     </div>
   );
 }
+

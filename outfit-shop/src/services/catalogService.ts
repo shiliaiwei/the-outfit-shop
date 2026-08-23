@@ -1,4 +1,13 @@
-import { ApiProduct, ShopProduct, CurrencyCode } from '@/types';
+import { 
+  ApiProduct, 
+  ShopProduct, 
+  CurrencyCode, 
+  ProductQueryParams, 
+  PaginatedProductsResult, 
+  ApiPagination, 
+  ApiCategory, 
+  ApiBrand 
+} from '@/types';
 
 const API_BASE_URL = 'https://api.kesararamwithdigital.tech/api/v1';
 
@@ -96,14 +105,45 @@ const VERIFIED_FALLBACK_PRODUCTS: ShopProduct[] = [
 ];
 
 export const CatalogService = {
-  // Fetch real-time products from the public API endpoint or proxy
-  async getLiveProducts(): Promise<ShopProduct[]> {
+  // Fetch real-time products with dynamic query parameters from the backend REST API
+  async getLiveProducts(params?: ProductQueryParams): Promise<PaginatedProductsResult> {
+    const page = params?.page || 1;
+    const perPage = params?.per_page || 24;
+
+    const query = new URLSearchParams();
+    query.set('page', String(page));
+    query.set('per_page', String(perPage));
+    if (params?.brand && params.brand !== 'All') {
+      query.set('brand', params.brand);
+    }
+    if (params?.category_id && params.category_id !== 'All') {
+      query.set('category_id', String(params.category_id));
+    }
+    if (params?.q && params.q.trim()) {
+      query.set('q', params.q.trim());
+    }
+
+    const queryString = query.toString();
+
+    const fallbackPagination: ApiPagination = {
+      current_page: page,
+      per_page: perPage,
+      total_items: VERIFIED_FALLBACK_PRODUCTS.length,
+      total_pages: Math.max(1, Math.ceil(VERIFIED_FALLBACK_PRODUCTS.length / perPage)),
+      has_next: false,
+      has_previous: page > 1,
+      from: VERIFIED_FALLBACK_PRODUCTS.length > 0 ? (page - 1) * perPage + 1 : 0,
+      to: Math.min(page * perPage, VERIFIED_FALLBACK_PRODUCTS.length),
+      next_cursor: null,
+      previous_cursor: null,
+    };
+
     try {
       let json: any = null;
-      
+
       // 1. Try Next.js internal edge proxy first (Zero CORS)
       try {
-        const proxyRes = await fetch('/api/products', {
+        const proxyRes = await fetch(`/api/products?${queryString}`, {
           headers: { 'Accept': 'application/json' },
           cache: 'no-store'
         });
@@ -115,8 +155,8 @@ export const CatalogService = {
       }
 
       // 2. If proxy didn't return data, fetch direct endpoint
-      if (!json || !json.data || !Array.isArray(json.data) || json.data.length === 0) {
-        const res = await fetch(`${API_BASE_URL}/products?per_page=200`, {
+      if (!json || !json.data) {
+        const res = await fetch(`${API_BASE_URL}/products?${queryString}`, {
           headers: { 'Accept': 'application/json' },
           cache: 'no-store'
         });
@@ -125,8 +165,11 @@ export const CatalogService = {
         }
       }
 
-      if (!json || !json.data || !Array.isArray(json.data) || json.data.length === 0) {
-        return VERIFIED_FALLBACK_PRODUCTS;
+      if (!json || !json.data || !Array.isArray(json.data)) {
+        return {
+          products: VERIFIED_FALLBACK_PRODUCTS,
+          pagination: fallbackPagination,
+        };
       }
 
       // Helper to strictly ban generic placeholders and bleu-SNPCodeLab
@@ -158,8 +201,6 @@ export const CatalogService = {
           primaryImg = EDITORIAL_FALLBACK_IMAGES[index % EDITORIAL_FALLBACK_IMAGES.length];
         }
 
-        const finalGallery = galleryUrls.length > 0 ? galleryUrls : [primaryImg];
-
         // Determine price and stock from variants
         let calculatedPrice = 85.00;
         let calculatedStock = 18;
@@ -175,6 +216,7 @@ export const CatalogService = {
         }
 
         const categoryName = p.category?.category_name || 'Ready-to-Wear';
+        const categoryId = p.category?.category_id || p.category_id;
         const brandName = p.brand || 'OutFIT Atelier';
         const materialName = p.material_fabric || '100% Organic Tailored Cotton • 220 GSM';
         const seasonName = p.season_collection || 'Core Atelier 2026';
@@ -184,6 +226,7 @@ export const CatalogService = {
           name: p.product_name || `Atelier Piece #${p.product_id}`,
           brand: brandName,
           category: categoryName,
+          categoryId: categoryId,
           description: p.description || 'Expertly structured haute tailoring garment designed with quiet luxury aesthetics.',
           price: calculatedPrice,
           originalPrice: calculatedPrice > 100 ? calculatedPrice * 1.2 : undefined,
@@ -203,10 +246,108 @@ export const CatalogService = {
         };
       });
 
-      return products;
+      // Parse metadata pagination directly from API
+      const rawPagination = json.meta?.pagination;
+      const pagination: ApiPagination = rawPagination
+        ? {
+            current_page: Number(rawPagination.current_page) || page,
+            per_page: Number(rawPagination.per_page) || perPage,
+            total_items: Number(rawPagination.total_items) ?? products.length,
+            total_pages: Number(rawPagination.total_pages) || 1,
+            has_next: Boolean(rawPagination.has_next),
+            has_previous: Boolean(rawPagination.has_previous),
+            from: rawPagination.from !== undefined && rawPagination.from !== null ? Number(rawPagination.from) : (products.length > 0 ? (page - 1) * perPage + 1 : 0),
+            to: rawPagination.to !== undefined && rawPagination.to !== null ? Number(rawPagination.to) : (products.length > 0 ? (page - 1) * perPage + products.length : 0),
+            next_cursor: rawPagination.next_cursor || null,
+            previous_cursor: rawPagination.previous_cursor || null,
+          }
+        : {
+            current_page: page,
+            per_page: perPage,
+            total_items: products.length,
+            total_pages: Math.max(1, Math.ceil(products.length / perPage)),
+            has_next: false,
+            has_previous: page > 1,
+            from: products.length > 0 ? (page - 1) * perPage + 1 : 0,
+            to: (page - 1) * perPage + products.length,
+            next_cursor: null,
+            previous_cursor: null,
+          };
+
+      return {
+        products,
+        pagination,
+      };
     } catch {
-      return VERIFIED_FALLBACK_PRODUCTS;
+      return {
+        products: VERIFIED_FALLBACK_PRODUCTS,
+        pagination: fallbackPagination,
+      };
     }
+  },
+
+  // Fetch live categories from backend API
+  async getCategories(): Promise<ApiCategory[]> {
+    try {
+      const res = await fetch('/api/categories', { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && Array.isArray(json.data)) {
+          return json.data;
+        }
+      }
+    } catch {
+      // Fallback
+    }
+
+    try {
+      const directRes = await fetch(`${API_BASE_URL}/categories`);
+      if (directRes.ok) {
+        const json = await directRes.json();
+        if (json.data && Array.isArray(json.data)) {
+          return json.data;
+        }
+      }
+    } catch {
+      // Fallback
+    }
+
+    return [
+      { category_id: 1, category_name: 'T-Shirts & Tops' },
+      { category_id: 2, category_name: 'Hoodies & Sweatshirts' },
+      { category_id: 3, category_name: 'Jackets & Outerwear' },
+      { category_id: 4, category_name: 'Pants & Shorts' },
+      { category_id: 13, category_name: 'Ready-to-Wear & Luxury Goods' }
+    ];
+  },
+
+  // Fetch live brands from backend API
+  async getBrands(): Promise<ApiBrand[]> {
+    try {
+      const res = await fetch('/api/brands', { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && Array.isArray(json.data)) {
+          return json.data;
+        }
+      }
+    } catch {
+      // Fallback
+    }
+
+    try {
+      const directRes = await fetch(`${API_BASE_URL}/brands`);
+      if (directRes.ok) {
+        const json = await directRes.json();
+        if (json.data && Array.isArray(json.data)) {
+          return json.data;
+        }
+      }
+    } catch {
+      // Fallback
+    }
+
+    return [];
   },
 
   // Currency formatting helper
@@ -222,3 +363,4 @@ export const CatalogService = {
     }
   }
 };
+

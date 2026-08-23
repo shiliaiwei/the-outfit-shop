@@ -127,11 +127,71 @@ export interface ApiProduct {
   primary_image?: ApiImage | null;
 }
 
+export interface ApiPagination {
+  current_page: number;
+  per_page: number;
+  total_items: number;
+  total_pages: number;
+  has_next: boolean;
+  has_previous: boolean;
+  from: number | null;
+  to: number | null;
+  next_cursor?: string | null;
+  previous_cursor?: string | null;
+}
+
+export interface ApiBrand {
+  brand_id: number;
+  brand_name: string;
+  slug: string;
+  logo_url?: string | null;
+  banner_url?: string | null;
+  country_of_origin?: string | null;
+  description?: string | null;
+  website_url?: string | null;
+  is_featured?: boolean;
+  products_count?: number;
+}
+
+export interface ApiProductResponse {
+  success: boolean;
+  status_code: number;
+  message?: string;
+  data: ApiProduct[];
+  meta?: {
+    system?: string;
+    api_version?: string;
+    processing_time_ms?: number;
+    pagination?: ApiPagination;
+  };
+  links?: {
+    self?: string;
+    first?: string;
+    last?: string;
+    previous?: string | null;
+    next?: string | null;
+  };
+}
+
+export interface ProductQueryParams {
+  page?: number;
+  per_page?: number;
+  brand?: string;
+  category_id?: number | string;
+  q?: string;
+}
+
+export interface PaginatedProductsResult {
+  products: ShopProduct[];
+  pagination: ApiPagination;
+}
+
 export interface ShopProduct {
   id: string;
   name: string;
   brand: string;
   category: string;
+  categoryId?: number;
   description: string;
   price: number;
   originalPrice?: number;
@@ -165,3 +225,4 @@ export interface CartItem {
   imageUrl?: string;
   image?: string;
 }
+
