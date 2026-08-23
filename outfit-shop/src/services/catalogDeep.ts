@@ -43,21 +43,21 @@ const CategoryListResp = ApiEnvelope(
 const BrandListResp = ApiEnvelope(
   z.union([z.array(z.any()), z.any()]).transform((d: any) => {
     const list = Array.isArray(d) ? d : (Array.isArray(d?.brands) ? d.brands : []);
-    return list.map((item) => ({ ...item, id: item.id ?? item.brand_id ?? Math.floor(Math.random() * 10000) }));
+    return list.map((item: any) => ({ ...item, id: item.id ?? item.brand_id ?? Math.floor(Math.random() * 10000) }));
   })
 );
 
 const SizeListResp = ApiEnvelope(
   z.union([z.array(z.any()), z.any()]).transform((d: any) => {
     const list = Array.isArray(d) ? d : (Array.isArray(d?.sizes) ? d.sizes : []);
-    return list.map((item) => ({ ...item, id: item.id ?? item.size_id ?? Math.floor(Math.random() * 10000) }));
+    return list.map((item: any) => ({ ...item, id: item.id ?? item.size_id ?? Math.floor(Math.random() * 10000) }));
   })
 );
 
 const ColorListResp = ApiEnvelope(
   z.union([z.array(z.any()), z.any()]).transform((d: any) => {
     const list = Array.isArray(d) ? d : (Array.isArray(d?.colors) ? d.colors : []);
-    return list.map((item) => ({ ...item, id: item.id ?? item.color_id ?? Math.floor(Math.random() * 10000) }));
+    return list.map((item: any) => ({ ...item, id: item.id ?? item.color_id ?? Math.floor(Math.random() * 10000) }));
   })
 );
 

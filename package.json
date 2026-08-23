@@ -9,6 +9,7 @@
     "lint": "npm --prefix outfit-shop run lint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.102.2",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "lucide-react": "^1.33.0",
@@ -16,6 +17,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "recharts": "^3.10.1",
+    "sonner": "^2.0.8",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {

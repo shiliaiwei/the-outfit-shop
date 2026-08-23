@@ -1,4 +1,4 @@
-name: OutFIT Haute Atelier CI/CD & Deploy Pipeline
+name: OUTFIT Haute Atelier CI/CD & Deploy Pipeline
 
 on:
   push:
@@ -61,7 +61,7 @@ jobs:
       - name: 🚀 Edge Deployment Notification
         run: |
           echo "======================================================="
-          echo "✅ OutFIT Haute Atelier Validation Passed"
+          echo "✅ OUTFIT Haute Atelier Validation Passed"
           echo "🌐 Storefront Edge Domain: theoufit.kesararamwithdigital.tech"
           echo "🔒 Cloudflare TLS 1.3 Certified"
           echo "📦 Multi-Brand Verified Catalog (177 Products)"

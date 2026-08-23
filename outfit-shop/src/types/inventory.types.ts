@@ -12,6 +12,7 @@ export interface Product {
   description?: string;
   status: ProductStatus;
   material_fabric?: string;
+  image_url?: string;
   created_at: string;
   updated_at: string;
 }

@@ -218,5 +218,17 @@ To prevent Next.js React hydration mismatches between Server-Side Rendering and 
 * **Permanent Prohibition:** The word `"Atelier"` (in all casing variants: `Atelier`, `atelier`, `ATELIER`) is strictly banned across all components, filenames, mock data, API routes, modal titles, and marketing copy.
 * **Approved Replacements:** Use `Studio`, `Storefront`, `Boutique`, `Tailoring`, `VIP Privileges`, or `Haute Store`.
 
+---
+
+## 11 · Universal Brand Select & Option Popup Architecture (Zero Native `<select>` Policy)
+
+* **Permanent Ban on Native HTML `<select>` & `<option>`:** Native browser dropdowns render unstyled, OS-dependent dark-gray dialog windows that disrupt brand visual continuity. They are **strictly forbidden** in all forms, settings, filters, and admin panels.
+* **Mandatory Custom `<BrandSelect />` Implementation:**
+  1. **Trigger Element**: Custom rounded container (`bg-surface` or `bg-[#F8F7F4]`, `border border-border hover:border-[#C84428]`), smooth chevron rotation (`ChevronDown` rotating `180deg`), and dynamic active focus ring.
+  2. **Floating Options Popup**: Elevated glass container (`position: absolute; z-index: 50; bg-white shadow-2xl border border-[#E5E0D8] rounded-card overflow-hidden animate-in fade-in-0 zoom-in-95`).
+  3. **Option List Rows**: High-density typography (`text-xs font-semibold text-[#1E2631]`), active selection indicator (`Check` icon in Terracotta `#C84428`), and smooth hover transition (`hover:bg-[#F8F7F4] hover:text-[#C84428]`).
+  4. **Click-Outside & Accessibility**: Strict click-outside event listeners, keyboard focus handling, and zero document reflow.
+
+
 
 

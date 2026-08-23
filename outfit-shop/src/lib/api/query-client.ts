@@ -10,7 +10,7 @@ export function makeQueryClient() {
         gcTime:             5 * 60_000,
         refetchOnWindowFocus: process.env.NODE_ENV === "production",
         refetchOnReconnect: true,
-        retry(failureCount, error: any) {
+        retry(failureCount: number, error: any) {
           const code = (error as AppError)?.code;
           if (["FORBIDDEN","UNAUTHENTICATED","VALIDATION","NOT_FOUND"].includes(String(code))) return false;
           return failureCount < 2;
