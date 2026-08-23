@@ -74,18 +74,19 @@ export function AdminDashboardView() {
 
         <div className="liquid-glass p-4 flex flex-col justify-between gap-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#5A6678]">Domain Edge Security</span>
+            <span className="text-xs font-bold text-[#5A6678]">System Status</span>
             <span className="badge-2px px-1.5 py-0.5 bg-emerald-50 text-emerald-700 font-mono text-[10px] font-bold">
-              TLS 1.3
+              Operational
             </span>
           </div>
           <div>
             <div className="font-mono font-bold text-base text-[#1E2631] truncate">
-              theoufit...tech
+              99.98% Uptime
             </div>
-            <p className="text-[11px] text-[#5A6678] mt-0.5">Cloudflare proxy &bull; 0 DDoS events</p>
+            <p className="text-[11px] text-[#5A6678] mt-0.5">PostgreSQL Master Sync &bull; POS Online</p>
           </div>
         </div>
+
 
       </div>
 

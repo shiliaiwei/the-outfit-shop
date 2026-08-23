@@ -73,32 +73,66 @@ export function HeroSection({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Draw diverse clothes across the catalog (Deterministic to prevent SSR Hydration Mismatch)
+  // Diverse cross-brand multi-source randomized interleaving algorithm
   const marqueeItems = useMemo(() => {
     const available = products.filter(
       (p) => Boolean(p.imageUrl) && !p.imageUrl.includes('bleu-SNPCodeLab') && !p.imageUrl.endsWith('null')
     );
     const pool = available.length > 0 ? available : (INSTANT_MARQUEE_PIECES as ShopProduct[]);
 
-    if (pool.length <= 16) return pool;
-    // Deterministic prime stride ensures identical SSR/Client render across multi-brands
-    const step = 7;
-    const selected: ShopProduct[] = [];
-    const seen = new Set<string>();
-
-    for (let i = 0; selected.length < 16 && i < pool.length * 2; i++) {
-      const idx = (i * step) % pool.length;
-      const item = pool[idx];
-      if (item && !seen.has(String(item.id))) {
-        seen.add(String(item.id));
-        selected.push(item);
+    // Group items by brand for true cross-brand diversity
+    const brandBuckets: Record<string, ShopProduct[]> = {};
+    for (const p of pool) {
+      const b = p.brand?.trim() || 'OutFIT Atelier';
+      if (!brandBuckets[b]) {
+        brandBuckets[b] = [];
       }
+      brandBuckets[b].push(p);
     }
-    return selected.length > 0 ? selected : pool.slice(0, 16);
+
+    const brandNames = Object.keys(brandBuckets);
+    if (brandNames.length === 0) return pool.slice(0, 20);
+
+    // Deterministically shuffle brand order using prime dispersion
+    const shuffledBrands = [...brandNames].sort((a, b) => {
+      const hashA = a.split('').reduce((acc, char) => acc + char.charCodeAt(0) * 17, 0);
+      const hashB = b.split('').reduce((acc, char) => acc + char.charCodeAt(0) * 17, 0);
+      return (hashA % 31) - (hashB % 31);
+    });
+
+    const selected: ShopProduct[] = [];
+    const seenIds = new Set<string>();
+    const maxItems = Math.min(24, pool.length);
+
+    // Multi-pass round robin: Pick 1 item from each brand sequentially
+    let pass = 0;
+    while (selected.length < maxItems && pass < 10) {
+      let addedInThisPass = 0;
+      for (const brand of shuffledBrands) {
+        const bucket = brandBuckets[brand];
+        if (!bucket || bucket.length === 0) continue;
+
+        // Pick item using prime stride per pass
+        const itemIdx = (pass * 3 + 1) % bucket.length;
+        const candidate = bucket[itemIdx];
+
+        if (candidate && !seenIds.has(String(candidate.id))) {
+          seenIds.add(String(candidate.id));
+          selected.push(candidate);
+          addedInThisPass++;
+          if (selected.length >= maxItems) break;
+        }
+      }
+      if (addedInThisPass === 0) break;
+      pass++;
+    }
+
+    return selected.length >= 8 ? selected : pool.slice(0, 20);
   }, [products]);
 
   // Duplicate items for infinite seamless looping track
   const loopItems = [...marqueeItems, ...marqueeItems];
+
 
   // ═══════════════════════════════════════════════════════════════════
   // DUAL-SPLIT LOGO PARALLAX BLUR CALCULATIONS:

@@ -182,8 +182,9 @@ export function AtelierGuideModal({ topic, onClose, onSelectCategory }: AtelierG
       sections: [
         {
           heading: 'Exclusivity & Provenance',
-          body: 'Produced in limited runs of 50-100 numbered pieces. Backed by Cloudflare TLS 1.3 cryptographic verification on the edge.'
+          body: 'Produced in limited numbered editions of 50–100 pieces. Once archived, designs are never re-released to maintain authentic rarity.'
         }
+
       ]
     }
   };

@@ -96,8 +96,9 @@ export function AuthLoginModal({ onLoginSuccess, currentRole }: AuthLoginModalPr
 
           <div className="badge-2px bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 text-[11px] font-mono font-bold flex items-center gap-1">
             <CheckCircle2 className="w-3 h-3" />
-            <span>TLS 1.3 Certified</span>
+            <span>Secure Portal</span>
           </div>
+
         </div>
 
         {/* 1-Click Role Quick Picker */}

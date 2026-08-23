@@ -26,23 +26,6 @@ interface ShopHeaderProps {
   totalProductsCount: number;
 }
 
-const ANNOUNCEMENT_PHRASES = [
-  {
-    gold: "DEVELOPER កំពុងសម្រាក — ប៉ុន្តែខួរក្បាលមិនដែលឈប់ទេ",
-    text: "ប្រព័ន្ធច្នៃប្រឌិតស្វ័យប្រវត្តិកំពុងដំណើរការយ៉ាងស្ងៀមស្ងាត់ ដោយគ្មានពាក្យបញ្ជា។",
-    isKhmer: true,
-  },
-  {
-    gold: "កូដដ៏ល្អឥតខ្ចោះមិនកើតចេញពីភាពតានតឹងឡើយ",
-    text: "វាកើតឡើងត្រង់ចំណុចដែលអ្នកបោះបង់ការស្វែងរក ហើយទុកឱ្យគំនិតដើររកផ្លូវរបស់វាដោយខ្លួនឯង។",
-    isKhmer: true,
-  },
-  {
-    gold: "TO BE EDUCATED IS TO BE CHANGED.",
-    text: "NOT EVERY GREAT IDEA STARTS AT A DESK.",
-    isKhmer: false,
-  }
-];
 
 export function ShopHeader({
   cartCount,
@@ -56,24 +39,7 @@ export function ShopHeader({
 }: ShopHeaderProps) {
   const [searchFocused, setSearchFocused] = useState(false);
   const [currencyMenuOpen, setCurrencyMenuOpen] = useState(false);
-  const [flipIndex, setFlipIndex] = useState(0);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const currencyRef = useRef<HTMLDivElement>(null);
-
-  // Realistic 3D mechanical flip ticker (8.5s reading time + 280ms pure flip)
-  useEffect(() => {
-    if (isPaused) return;
-    const timer = setInterval(() => {
-      setIsFlipping(true);
-      setTimeout(() => {
-        setFlipIndex((prev) => (prev + 1) % ANNOUNCEMENT_PHRASES.length);
-        setIsFlipping(false);
-      }, 280);
-    }, 8500);
-
-    return () => clearInterval(timer);
-  }, [isPaused]);
 
   // Click outside to close currency dropdown
   useEffect(() => {
@@ -99,69 +65,37 @@ export function ShopHeader({
   }, []);
 
   return (
-    <>
-      {/* 1. Ultra-Compact Gold Premium 3D Mechanical Flip Ticker (Fixed rigid height, zero layout shift) */}
-      <div 
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        className="bg-[#12171E] text-[#F8F7F4] h-10 sm:h-11 px-4 overflow-hidden border-b border-[#D4AF37]/30 select-none relative flex items-center justify-center cursor-default flip-card-3d-wrapper shrink-0"
-      >
-        <div 
-          lang={ANNOUNCEMENT_PHRASES[flipIndex].isKhmer ? "km" : "en"}
-          className={`flex items-center justify-center gap-2.5 text-center px-2 w-full max-w-6xl mx-auto truncate ${
-            ANNOUNCEMENT_PHRASES[flipIndex].isKhmer 
-              ? 'font-khmer text-[13px] sm:text-[13.5px] leading-snug font-semibold' 
-              : 'font-mono text-[11px] sm:text-[12px] font-semibold'
-          } ${
-            isFlipping ? 'flip-3d-flipping' : 'flip-3d-active'
-          }`}
-        >
-          <span className="gold-gradient-text font-bold tracking-wide shrink-0">
-            {ANNOUNCEMENT_PHRASES[flipIndex].gold}
-          </span>
-          <span className="text-[#D4AF37]/60 font-mono hidden md:inline shrink-0">—</span>
-          <span className="text-[#F8F7F4] tracking-normal hidden md:inline truncate">
-            {ANNOUNCEMENT_PHRASES[flipIndex].text}
-          </span>
-        </div>
-      </div>
-
-      {/* 2. Liquid Glass Main Header (Sticky top navigation) */}
-      <header className="sticky top-0 z-40 w-full">
-        <nav className="liquid-glass backdrop-blur-xl bg-white/95 border-b border-[#5A6678]/15 px-3 sm:px-6 py-2.5">
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 sm:gap-6">
-          
-          {/* Brand Logo and Submark */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="w-8 h-8 rounded-[2px] bg-white border border-[#5A6678]/20 flex items-center justify-center p-1 shadow-xs">
-              <img
-                src="/OutFIT/OutFIT.svg"
-                alt="OutFIT Logo"
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <div className="flex flex-col">
-              <BrandWordmark size="md" />
-              <span className="text-[9px] uppercase tracking-widest text-[#5A6678] font-bold font-mono -mt-0.5">
-                Haute Atelier
-              </span>
-            </div>
+    <header className="sticky top-0 z-40 w-full">
+      <nav className="liquid-glass backdrop-blur-xl bg-white/95 border-b border-[#5A6678]/15 px-3 sm:px-6 py-2.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 sm:gap-6">
+        
+        {/* Brand Logo (Clean & Pure) */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <div className="w-8 h-8 rounded-[2px] bg-white border border-[#5A6678]/20 flex items-center justify-center p-1 shadow-xs">
+            <img
+              src="/OutFIT/OutFIT.svg"
+              alt="OutFIT Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
+          <BrandWordmark size="md" />
+        </div>
 
-          {/* Search Bar - Responsive Compact */}
-          <div className="flex-1 max-w-md hidden md:block">
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8E9AA8]" />
-              <input
-                id="header-search-input"
-                type="text"
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-                placeholder="Search collection, fabric, SKU-GUC-0182..."
-                className="w-full pl-9 pr-8 py-1.5 bg-[#F8F7F4] border border-[#5A6678]/20 rounded-[2px] text-xs text-[#1E2631] placeholder-[#8E9AA8] focus:outline-none focus:border-[#C84428] focus:bg-white transition-all font-sans"
-              />
+        {/* Search Bar - Responsive Compact */}
+        <div className="flex-1 max-w-md hidden md:block">
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8E9AA8]" />
+            <input
+              id="header-search-input"
+              type="text"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              placeholder="Search collection, fabric, SKU..."
+              className="w-full pl-9 pr-8 py-1.5 bg-[#F8F7F4] border border-[#5A6678]/20 rounded-[2px] text-xs text-[#1E2631] placeholder-[#8E9AA8] focus:outline-none focus:border-[#C84428] focus:bg-white transition-all font-sans"
+            />
+
               {searchQuery ? (
                 <button 
                   onClick={() => onSearchChange('')}
@@ -272,6 +206,7 @@ export function ShopHeader({
         </div>
       </nav>
     </header>
-    </>
   );
 }
+
+

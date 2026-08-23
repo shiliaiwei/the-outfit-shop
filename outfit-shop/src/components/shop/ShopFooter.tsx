@@ -47,7 +47,7 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
             </div>
 
             <p className="text-xs text-[#8E9AA8] max-w-sm leading-relaxed">
-              Quiet luxury tailoring, Normandy flax overshirts, and high-fashion ready-to-wear essentials. Certified on the Cloudflare Edge network.
+              Curated contemporary tailoring, traceable Normandy linen, and premium archival streetwear essentials.
             </p>
 
             {/* Newsletter Input Form */}
@@ -105,10 +105,10 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
             </button>
           </div>
 
-          {/* Atelier Services (2 cols) */}
+          {/* Customer Services (2 cols) */}
           <div className="md:col-span-2 flex flex-col gap-2.5 text-xs font-mono">
             <span className="font-bold text-white uppercase tracking-wider text-[11px] mb-1">
-              Atelier
+              Services
             </span>
             <button 
               onClick={() => onOpenTopic?.('normandy-linen')}
@@ -142,28 +142,140 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
             </button>
           </div>
 
-          {/* Edge Infrastructure (3 cols) */}
+          {/* Social Channels & Communities (3 cols) */}
           <div className="md:col-span-3 flex flex-col gap-3 text-xs font-mono">
             <span className="font-bold text-white uppercase tracking-wider text-[11px]">
-              Edge Domain
+              Social &amp; Channels
             </span>
-            
-            <button
-              onClick={copyDomain}
-              className="btn-liquid btn-liquid-glass p-2.5 bg-white/10 border-white/20 hover:border-[#C84428] rounded-[2px] text-left flex items-center justify-between text-[11px] text-white group w-full cursor-pointer"
-            >
-              <div className="flex items-center gap-2 truncate">
-                <Globe className="w-3.5 h-3.5 text-[#C84428]" />
-                <span className="truncate">theoufit.kesararam...</span>
-              </div>
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-[#8E9AA8] group-hover:text-white" />}
-            </button>
 
-            <div className="flex items-center gap-2 text-[10px] text-[#8E9AA8]">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Certified Haute Atelier • Verified Archive Pieces</span>
+            {/* Icon-Only Platform Grid */}
+            <div className="flex flex-wrap gap-2">
+              {/* TikTok */}
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                title="TikTok"
+                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.41a6.33 6.33 0 0 0-.85-.06 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.48c1.33.95 2.95 1.52 4.7 1.57v-3.36h-.93z"/>
+                </svg>
+              </a>
+
+              {/* Instagram */}
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                title="Instagram"
+                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 fill-none stroke-current stroke-2 text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                </svg>
+              </a>
+
+              {/* Facebook */}
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                title="Facebook"
+                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                </svg>
+              </a>
+
+              {/* YouTube */}
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                title="YouTube"
+                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                  <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
+                  <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#1E2631"/>
+                </svg>
+              </a>
+
+              {/* Amazon */}
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                title="Amazon"
+                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                  <path d="M13.9 14.5c-2.3 1.7-5.7 2.6-8.6 2.6-4.1 0-7.7-1.5-10.4-4-.2-.2 0-.5.2-.4 3 1.7 6.6 2.7 10.4 2.7 2.6 0 5.4-.6 7.9-2 .4-.2.8.2.5.5zm1.2-1.3c-.3-.4-1.9-.2-2.6-.1-.2 0-.3-.2-.1-.3 1.2-.8 3.1-.6 3.4-.2.3.4-.1 2.3-1.2 3.2-.2.1-.3 0-.3-.2.3-.7.9-2.1.8-2.4zM22.5 10c0-3.3-2.1-4.8-5.3-4.8-4.3 0-6.2 2.6-6.2 5.3 0 2.2 1.4 3.7 3.5 3.7 2.6 0 4.3-1.9 4.3-4.2v-.4c0-.7-.3-1.1-.9-1.1-.8 0-1.2.6-1.2 1.5v.4c0 1.2-.7 2.1-1.9 2.1-.9 0-1.5-.6-1.5-1.5 0-1.7 1.4-3.5 3.9-3.5 2.1 0 3.3 1 3.3 2.9v4.2c0 .6.1 1.2.2 1.8.1.3-.2.5-.4.4-.7-.5-.9-1.2-.9-1.7-.6.9-1.7 1.5-2.8 1.5-1.9 0-3.3-1.3-3.3-3.1 0-2.3 1.8-3.7 4.5-3.7h2.2V10h.3z"/>
+                </svg>
+              </a>
+
+              {/* Alibaba */}
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                title="Alibaba"
+                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+              >
+                <span className="font-display font-black text-xs text-[#C84428] group-hover:text-white transition-colors">
+                  aB
+                </span>
+              </a>
+
+              {/* AliExpress */}
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                title="AliExpress"
+                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+              >
+                <span className="font-mono font-black text-[10px] text-[#C84428] group-hover:text-white transition-colors">
+                  AE
+                </span>
+              </a>
+
+              {/* Shopify */}
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                title="Shopify"
+                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                  <path d="M19.5 4.5h-3.8A4.7 4.7 0 0 0 11 1.2a4.7 4.7 0 0 0-4.7 3.3H2.5L1 21.8a1 1 0 0 0 1 1.2h18a1 1 0 0 0 1-1.2L19.5 4.5zm-8.5-1.5a2.7 2.7 0 0 1 2.7 1.5H8.3a2.7 2.7 0 0 1 2.7-1.5z"/>
+                </svg>
+              </a>
+
+              {/* Telegram */}
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                title="Telegram"
+                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                  <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l-.313 4.674c.458 0 .66-.21.916-.458l2.199-2.138 4.573 3.378c.843.464 1.448.225 1.658-.783l2.997-14.133c.307-1.231-.469-1.787-1.506-1.507z"/>
+                </svg>
+              </a>
+
+              {/* X / Twitter */}
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                title="X (Twitter)"
+                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </a>
             </div>
           </div>
+
+
 
         </div>
 
@@ -178,19 +290,20 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
             </span>
           </div>
           <span className="text-[11px] sm:text-xs font-mono uppercase tracking-widest text-[#8E9AA8] mt-3">
-            Haute Quiet Luxury Atelier • Paris — Milan — Normandy
+            Contemporary Fashion &amp; Archival Collection
           </span>
         </div>
 
         {/* Bottom Legal Copyright */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-[#8E9AA8] gap-4">
-          <p>© {new Date().getFullYear()} OutFIT Haute Atelier. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} OutFIT. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <button onClick={() => onOpenTopic?.('care-guide')} className="hover:text-white cursor-pointer transition-colors">Privacy Policy</button>
             <button onClick={() => onOpenTopic?.('returns-exchange')} className="hover:text-white cursor-pointer transition-colors">Terms of Service</button>
             <button onClick={() => onOpenTopic?.('shipping-duties')} className="hover:text-white cursor-pointer transition-colors">Security Audit</button>
           </div>
         </div>
+
 
       </div>
     </footer>

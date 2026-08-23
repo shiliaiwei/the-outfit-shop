@@ -13,6 +13,7 @@ import { AtelierCraftStory } from '@/components/shop/AtelierCraftStory';
 import { ShopFooter } from '@/components/shop/ShopFooter';
 import { AtelierGuideModal, AtelierGuideTopic } from '@/components/shop/AtelierGuideModal';
 import { CatalogPagination } from '@/components/shop/CatalogPagination';
+import { FilterDrawer } from '@/components/shop/FilterDrawer';
 import { 
   SlidersHorizontal, 
   ArrowUpDown, 
@@ -22,7 +23,9 @@ import {
   PackageX,
   RefreshCw,
   Search,
-  Filter
+  Filter,
+  X,
+  RotateCcw
 } from 'lucide-react';
 
 const INITIAL_PAGINATION: ApiPagination = {
@@ -55,6 +58,7 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedSearch, setDebouncedSearch] = useState<string>('');
   const [activeSort, setActiveSort] = useState<'featured' | 'price-asc' | 'price-desc' | 'stock' | 'name'>('featured');
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState<boolean>(false);
 
   // 3. Live Metadata (Categories & Brands fetched from backend)
   const [categoriesList, setCategoriesList] = useState<ApiCategory[]>([]);
@@ -78,22 +82,25 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Fetch Categories & Brands on Mount
+  // Fetch Categories, Brands & Dedicated Cross-Brand Hero Marquee Pool on Mount
   useEffect(() => {
     async function loadMeta() {
       try {
-        const [cats, brs] = await Promise.all([
+        const [cats, brs, marqueePool] = await Promise.all([
           CatalogService.getCategories(),
-          CatalogService.getBrands()
+          CatalogService.getBrands(),
+          CatalogService.getMarqueeShowcaseProducts()
         ]);
         if (cats && cats.length > 0) setCategoriesList(cats);
         if (brs && brs.length > 0) setBrandsList(brs);
+        if (marqueePool && marqueePool.length > 0) setHeroProducts(marqueePool);
       } catch {
         // Fallback
       }
     }
     loadMeta();
   }, []);
+
 
   // Map activeCategory name to category_id
   const selectedCategoryId = useMemo(() => {
@@ -168,6 +175,12 @@ export default function HomePage() {
     fetchProducts(1, newPerPage, false);
   };
 
+  const handleResetAllFilters = () => {
+    setActiveCategory('All');
+    setSelectedBrand('All');
+    setSearchQuery('');
+  };
+
   // Client-side sorting for current page pieces
   const sortedProducts = useMemo(() => {
     const list = [...products];
@@ -186,31 +199,7 @@ export default function HomePage() {
     }
   }, [products, activeSort]);
 
-  // Curated category filter pills
-  const categories = useMemo(() => {
-    const list: string[] = ['All'];
-    if (categoriesList.length > 0) {
-      categoriesList.forEach((c) => {
-        if (!list.includes(c.category_name)) list.push(c.category_name);
-      });
-    } else {
-      list.push('T-Shirts & Tops', 'Hoodies & Sweatshirts', 'Jackets & Outerwear', 'Pants & Shorts', 'Footwear & Sneakers');
-    }
-    return list.slice(0, 7);
-  }, [categoriesList]);
-
-  // Curated brand filter pills
-  const brandPills = useMemo(() => {
-    const list: string[] = ['All'];
-    if (brandsList.length > 0) {
-      brandsList.slice(0, 6).forEach((b) => {
-        if (!list.includes(b.brand_name)) list.push(b.brand_name);
-      });
-    } else {
-      list.push('Louis Vuitton', 'Stussy', 'Nike', 'Tesla', 'xAI Grok');
-    }
-    return list;
-  }, [brandsList]);
+  const activeFiltersCount = (activeCategory !== 'All' ? 1 : 0) + (selectedBrand !== 'All' ? 1 : 0) + (debouncedSearch ? 1 : 0);
 
   // Cart operations
   const handleAddToCart = (product: ShopProduct, size: string, qty: number = 1) => {
@@ -289,111 +278,139 @@ export default function HomePage() {
       {/* 3. Main Catalog Section with Live REST API Dynamic Pagination */}
       <main ref={catalogRef} className="w-full max-w-7xl mx-auto px-3 sm:px-6 py-6 flex-1">
         
-        {/* Streamlined Minimalist Luxury Toolbar */}
-        <div className="liquid-glass bg-white/95 border border-[#5A6678]/15 rounded-[2px] p-2 sm:p-2.5 mb-6 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
+        {/* Streamlined Minimalist Luxury Toolbar (Pop Menu Left Side + 1-Tap Sort Right Side) */}
+        <div className="liquid-glass bg-white/95 border border-[#5A6678]/15 rounded-[2px] p-2.5 sm:p-3 mb-6 shadow-xs flex flex-wrap items-center justify-between gap-3">
           
-          {/* Left: Essential Curated Categories (Live dynamic filters) */}
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto scrollbar-none">
-            {categories.map((cat) => {
-              const isSelected = activeCategory === cat;
-              return (
+          {/* Left: Prominent Filter Pop Button + Active Filter Badges */}
+          <div className="flex flex-wrap items-center gap-2">
+            
+            {/* Pop-Out Filter Trigger Button (Opens Left-Side Menu) */}
+            <button
+              type="button"
+              onClick={() => setIsFilterDrawerOpen(true)}
+              className="btn-liquid btn-liquid-charcoal px-3.5 py-1.5 rounded-[2px] text-xs font-mono font-bold text-white flex items-center gap-2 cursor-pointer shadow-xs hover:border-[#C84428] transition-all"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 text-white" />
+              <span>Filters</span>
+              {activeFiltersCount > 0 && (
+                <span className="bg-[#C84428] text-white text-[10px] font-black px-1.5 py-0.2 rounded-[2px]">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
+
+            {/* Active Filter Tags */}
+            {activeCategory !== 'All' && (
+              <span className="btn-liquid btn-liquid-glass pl-2.5 pr-1.5 py-1 text-[11px] font-mono rounded-[2px] text-[#1E2631] flex items-center gap-1.5 bg-white border border-[#5A6678]/20">
+                <span className="text-[#8E9AA8]">Category:</span>
+                <strong>{activeCategory}</strong>
                 <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`btn-liquid px-3 py-1.5 rounded-[2px] text-xs font-mono font-bold whitespace-nowrap cursor-pointer transition-all ${
-                    isSelected
-                      ? 'btn-liquid-active bg-[#1E2631] text-white'
-                      : 'btn-liquid-glass text-[#5A6678] hover:text-[#1E2631]'
-                  }`}
+                  type="button"
+                  onClick={() => setActiveCategory('All')}
+                  className="hover:text-[#C84428] p-0.5"
                 >
-                  {cat}
+                  <X className="w-3 h-3" />
                 </button>
-              );
-            })}
+              </span>
+            )}
+
+            {selectedBrand !== 'All' && (
+              <span className="btn-liquid btn-liquid-glass pl-2.5 pr-1.5 py-1 text-[11px] font-mono rounded-[2px] text-[#1E2631] flex items-center gap-1.5 bg-white border border-[#5A6678]/20">
+                <span className="text-[#8E9AA8]">Brand:</span>
+                <strong>{selectedBrand}</strong>
+                <button
+                  type="button"
+                  onClick={() => setSelectedBrand('All')}
+                  className="hover:text-[#C84428] p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
+
+            {debouncedSearch && (
+              <span className="btn-liquid btn-liquid-glass pl-2.5 pr-1.5 py-1 text-[11px] font-mono rounded-[2px] text-[#1E2631] flex items-center gap-1.5 bg-white border border-[#5A6678]/20">
+                <span className="text-[#8E9AA8]">Search:</span>
+                <strong>"{debouncedSearch}"</strong>
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="hover:text-[#C84428] p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
+
+            {activeFiltersCount > 0 && (
+              <button
+                type="button"
+                onClick={handleResetAllFilters}
+                className="text-[11px] font-mono text-[#8E9AA8] hover:text-[#C84428] underline ml-1 cursor-pointer"
+              >
+                Clear all
+              </button>
+            )}
+
           </div>
 
-          {/* Right: Curated Brand Selector + Live Count + 1-Tap Sort */}
-          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-between md:justify-end text-xs font-mono">
+          {/* Right: 1-Tap Sort Selector + Live Counts */}
+          <div className="flex items-center gap-2 ml-auto text-xs font-mono">
+            <span className="text-[#8E9AA8] text-[10px] font-bold uppercase tracking-wider hidden sm:inline mr-1">
+              Sort:
+            </span>
             
-            {/* Quick Brand Pills */}
-            <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
-              {brandPills.map((b) => (
-                <button
-                  key={b}
-                  onClick={() => setSelectedBrand(b)}
-                  className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer whitespace-nowrap ${
-                    selectedBrand === b
-                      ? 'btn-liquid-terracotta'
-                      : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
-                  }`}
-                >
-                  {b === 'All' ? 'All Brands' : b}
-                </button>
-              ))}
-            </div>
+            <button
+              type="button"
+              onClick={() => setActiveSort('featured')}
+              className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+                activeSort === 'featured'
+                  ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
+                  : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
+              }`}
+            >
+              Featured
+            </button>
 
-            {/* 1-Tap Instant Sort Switcher */}
-            <div className="flex items-center gap-1 pl-2 border-l border-[#5A6678]/15 ml-auto md:ml-0">
-              <span className="text-[#8E9AA8] text-[10px] font-bold uppercase tracking-wider hidden lg:inline mr-1">
-                Sort:
-              </span>
-              
-              <button
-                type="button"
-                onClick={() => setActiveSort('featured')}
-                className={`btn-liquid px-2 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
-                  activeSort === 'featured'
-                    ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
-                    : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
-                }`}
-                title="Sort by Featured Atelier Pieces"
-              >
-                Featured
-              </button>
+            <button
+              type="button"
+              onClick={() => setActiveSort('price-asc')}
+              className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+                activeSort === 'price-asc'
+                  ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
+                  : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
+              }`}
+            >
+              Price ↑
+            </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveSort('price-asc')}
-                className={`btn-liquid px-2 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
-                  activeSort === 'price-asc'
-                    ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
-                    : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
-                }`}
-                title="Sort Price: Low to High"
-              >
-                Price ↑
-              </button>
+            <button
+              type="button"
+              onClick={() => setActiveSort('price-desc')}
+              className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+                activeSort === 'price-desc'
+                  ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
+                  : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
+              }`}
+            >
+              Price ↓
+            </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveSort('price-desc')}
-                className={`btn-liquid px-2 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
-                  activeSort === 'price-desc'
-                    ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
-                    : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
-                }`}
-                title="Sort Price: High to Low"
-              >
-                Price ↓
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveSort('stock')}
-                className={`btn-liquid px-2 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
-                  activeSort === 'stock'
-                    ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
-                    : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
-                }`}
-                title="Sort by Stock Quantity"
-              >
-                Stock
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setActiveSort('stock')}
+              className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+                activeSort === 'stock'
+                  ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
+                  : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
+              }`}
+            >
+              Stock
+            </button>
 
             {/* Dynamic Total Items Indicator */}
-            <div className="flex items-center gap-1.5 pl-2 border-l border-[#5A6678]/15 text-[#8E9AA8] text-[11px] whitespace-nowrap hidden xl:flex">
-              Page <strong className="text-[#1E2631]">{pagination.current_page}</strong> of <strong className="text-[#1E2631]">{pagination.total_pages}</strong>
+            <div className="flex items-center gap-1.5 pl-2 border-l border-[#5A6678]/15 text-[#8E9AA8] text-[11px] whitespace-nowrap hidden lg:flex">
+              <strong>{pagination.total_items.toLocaleString()}</strong> pieces
             </div>
 
           </div>
@@ -427,11 +444,7 @@ export default function HomePage() {
               {debouncedSearch ? `No results found for "${debouncedSearch}"` : 'Try adjusting your category or brand filters'}
             </p>
             <button
-              onClick={() => {
-                setActiveCategory('All');
-                setSelectedBrand('All');
-                setSearchQuery('');
-              }}
+              onClick={handleResetAllFilters}
               className="btn-liquid btn-liquid-charcoal px-5 py-2.5 text-xs font-mono font-bold uppercase rounded-[2px] cursor-pointer"
             >
               Reset All Filters
@@ -458,7 +471,7 @@ export default function HomePage() {
               })}
             </div>
 
-            {/* Dynamic Catalog Pagination Component (All states driven by response.meta.pagination) */}
+            {/* Dynamic Easy Catalog Pagination Component */}
             <CatalogPagination
               pagination={pagination}
               onPageChange={handlePageChange}
@@ -470,8 +483,34 @@ export default function HomePage() {
 
       </main>
 
-      {/* 4. Atelier Craft & Standards Editorial */}
+      {/* 4. Left-Side Pop Filter Drawer */}
+      <FilterDrawer
+        isOpen={isFilterDrawerOpen}
+        onClose={() => setIsFilterDrawerOpen(false)}
+        categories={categoriesList}
+        brands={brandsList}
+        activeCategory={activeCategory}
+        onSelectCategory={(cat) => {
+          setActiveCategory(cat);
+          setIsFilterDrawerOpen(false);
+        }}
+        selectedBrand={selectedBrand}
+        onSelectBrand={(br) => {
+          setSelectedBrand(br);
+          setIsFilterDrawerOpen(false);
+        }}
+        activeSort={activeSort}
+        onSelectSort={(s) => {
+          setActiveSort(s);
+          setIsFilterDrawerOpen(false);
+        }}
+        totalItems={pagination.total_items}
+        onResetFilters={handleResetAllFilters}
+      />
+
+      {/* 5. Atelier Craft & Standards Editorial */}
       <AtelierCraftStory />
+
 
       {/* 5. Minimal Editorial Footer with Interactive Topics */}
       <ShopFooter onOpenTopic={(t) => setActiveGuideTopic(t)} />

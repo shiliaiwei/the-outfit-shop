@@ -350,6 +350,20 @@ export const CatalogService = {
     return [];
   },
 
+  // Fetch diverse random products across multiple brands specifically for Hero Marquee
+  async getMarqueeShowcaseProducts(): Promise<ShopProduct[]> {
+    try {
+      // Fetch 100 products from page 1 to get a broad cross-brand sample
+      const broadRes = await this.getLiveProducts({ page: 1, per_page: 100 });
+      if (broadRes.products && broadRes.products.length >= 10) {
+        return broadRes.products;
+      }
+    } catch {
+      // Fallback
+    }
+    return VERIFIED_FALLBACK_PRODUCTS;
+  },
+
   // Currency formatting helper
   formatPrice(amountUSD: number, currency: CurrencyCode): string {
     switch (currency) {
@@ -363,4 +377,5 @@ export const CatalogService = {
     }
   }
 };
+
 

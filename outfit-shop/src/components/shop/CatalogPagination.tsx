@@ -5,10 +5,8 @@ import { ApiPagination } from '@/types';
 import { 
   ChevronLeft, 
   ChevronRight, 
-  ChevronsLeft, 
-  ChevronsRight, 
   ArrowRight,
-  SlidersHorizontal 
+  Sparkles
 } from 'lucide-react';
 
 interface CatalogPaginationProps {
@@ -24,7 +22,7 @@ export function CatalogPagination({
   onPerPageChange,
   isLoading = false,
 }: CatalogPaginationProps) {
-  const [jumpPageInput, setJumpPageInput] = useState<string>('');
+  const [jumpInput, setJumpInput] = useState<string>('');
 
   const {
     current_page,
@@ -37,29 +35,27 @@ export function CatalogPagination({
     to
   } = pagination;
 
-  // Generate pagination window array (e.g., [1, '...', 4, 5, 6, '...', 77])
+  // Windowed page numbers generator
   const getPageNumbers = () => {
-    if (total_pages <= 7) {
+    if (total_pages <= 5) {
       return Array.from({ length: total_pages }, (_, i) => i + 1);
     }
 
     const pages: (number | string)[] = [];
-    const delta = 2; // Number of pages to show around current page
-
-    const left = Math.max(2, current_page - delta);
-    const right = Math.min(total_pages - 1, current_page + delta);
-
     pages.push(1);
 
-    if (left > 2) {
+    if (current_page > 3) {
       pages.push('...');
     }
 
-    for (let i = left; i <= right; i++) {
+    const start = Math.max(2, current_page - 1);
+    const end = Math.min(total_pages - 1, current_page + 1);
+
+    for (let i = start; i <= end; i++) {
       pages.push(i);
     }
 
-    if (right < total_pages - 1) {
+    if (current_page < total_pages - 2) {
       pages.push('...');
     }
 
@@ -70,192 +66,142 @@ export function CatalogPagination({
 
   const handleJumpSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const targetPage = parseInt(jumpPageInput, 10);
-    if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= total_pages) {
-      onPageChange(targetPage);
-      setJumpPageInput('');
+    const target = parseInt(jumpInput, 10);
+    if (!isNaN(target) && target >= 1 && target <= total_pages) {
+      onPageChange(target);
+      setJumpInput('');
     }
   };
 
   if (total_items === 0) return null;
 
   return (
-    <div className="mt-10 mb-8 w-full flex flex-col gap-4">
+    <nav aria-label="Catalog Pagination" className="mt-12 mb-8 flex flex-col items-center gap-4">
       
-      {/* 1. Progress Bar & Real-Time Dynamic Counts */}
-      <div className="flex flex-col items-center gap-2 w-full max-w-md mx-auto text-center">
-        <div className="flex items-center justify-between w-full text-xs font-mono text-[#5A6678]">
-          <span>
-            Showing <strong className="text-[#1E2631] font-bold">{from ?? (total_items > 0 ? 1 : 0)}</strong> – <strong className="text-[#1E2631] font-bold">{to ?? total_items}</strong>
-          </span>
-          <span>
-            Total <strong className="text-[#C84428] font-bold">{total_items.toLocaleString()}</strong> Pieces
-          </span>
-        </div>
-
-        {/* Dynamic Progress Bar */}
-        <div className="w-full bg-slate-200 h-1.5 rounded-[2px] overflow-hidden">
-          <div
-            className="h-full bg-[#1E2631] transition-all duration-300 ease-out"
-            style={{
-              width: `${Math.min(100, Math.max(1, Math.round(((to ?? 1) / (total_items || 1)) * 100)))}%`
-            }}
-          />
-        </div>
-      </div>
-
-      {/* 2. Interactive Luxury Liquid Glass Pagination Toolbar */}
-      <div className="liquid-glass bg-white/95 border border-[#5A6678]/15 rounded-[2px] p-2.5 sm:p-3 shadow-xs flex flex-col lg:flex-row items-center justify-between gap-4">
+      {/* 1. Ultra-Clean & Easy Central Pagination Bar */}
+      <div className="liquid-glass bg-white/95 border border-[#5A6678]/15 rounded-[2px] px-3 sm:px-4 py-2 shadow-xs flex flex-wrap items-center justify-center gap-2 sm:gap-3">
         
-        {/* Left: Per-Page Limit Selector */}
-        <div className="flex items-center gap-2 text-xs font-mono text-[#5A6678] w-full lg:w-auto justify-between lg:justify-start">
-          <div className="flex items-center gap-1.5">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-[#8E9AA8]" />
-            <span className="font-bold text-[11px] uppercase tracking-wider text-[#8E9AA8]">Per Page:</span>
-          </div>
-          <div className="flex items-center gap-1">
-            {[12, 24, 48].map((size) => {
-              const isActive = per_page === size;
+        {/* Previous Page Button */}
+        <button
+          type="button"
+          disabled={!has_previous || current_page <= 1 || isLoading}
+          onClick={() => onPageChange(current_page - 1)}
+          className="btn-liquid btn-liquid-glass px-3 py-1.5 rounded-[2px] text-xs font-mono font-bold text-[#1E2631] hover:border-[#C84428] flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all"
+          aria-label="Previous Page"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+          <span>Previous</span>
+        </button>
+
+        {/* Numbered Page Buttons */}
+        <div className="flex items-center gap-1">
+          {getPageNumbers().map((page, idx) => {
+            if (page === '...') {
               return (
-                <button
-                  key={size}
-                  type="button"
-                  disabled={isLoading}
-                  onClick={() => onPerPageChange(size)}
-                  className={`btn-liquid px-2.5 py-1 text-xs font-mono font-bold rounded-[2px] cursor-pointer transition-all ${
-                    isActive
-                      ? 'btn-liquid-active bg-[#1E2631] text-white shadow-2xs'
-                      : 'btn-liquid-glass text-[#5A6678] hover:text-[#1E2631]'
-                  }`}
+                <span
+                  key={`ellipsis-${idx}`}
+                  className="px-1.5 py-1 text-xs font-mono text-[#8E9AA8] select-none"
                 >
-                  {size}
-                </button>
+                  …
+                </span>
               );
-            })}
-          </div>
+            }
+
+            const pageNum = Number(page);
+            const isActive = current_page === pageNum;
+
+            return (
+              <button
+                key={`page-${pageNum}`}
+                type="button"
+                disabled={isLoading}
+                onClick={() => onPageChange(pageNum)}
+                className={`btn-liquid min-w-[34px] h-[32px] px-2 rounded-[2px] text-xs font-mono font-bold flex items-center justify-center cursor-pointer transition-all ${
+                  isActive
+                    ? 'btn-liquid-terracotta text-white font-black shadow-xs'
+                    : 'btn-liquid-glass text-[#5A6678] hover:text-[#1E2631]'
+                }`}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Center: Interactive Page Buttons with Ellipsis */}
-        <div className="flex items-center gap-1 overflow-x-auto max-w-full pb-1 lg:pb-0 scrollbar-none justify-center">
-          
-          {/* First Page */}
-          <button
-            type="button"
-            disabled={!has_previous || current_page <= 1 || isLoading}
-            onClick={() => onPageChange(1)}
-            className="btn-liquid btn-liquid-glass p-1.5 rounded-[2px] text-xs font-mono text-[#5A6678] hover:text-[#1E2631] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all"
-            title="First Page"
-            aria-label="Go to first page"
-          >
-            <ChevronsLeft className="w-3.5 h-3.5" />
-          </button>
-
-          {/* Previous Page */}
-          <button
-            type="button"
-            disabled={!has_previous || current_page <= 1 || isLoading}
-            onClick={() => onPageChange(current_page - 1)}
-            className="btn-liquid btn-liquid-glass px-2.5 py-1.5 rounded-[2px] text-xs font-mono font-bold text-[#5A6678] hover:text-[#1E2631] flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all"
-            aria-label="Go to previous page"
-          >
-            <ChevronLeft className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Prev</span>
-          </button>
-
-          {/* Page Number Pills */}
-          <div className="flex items-center gap-1 mx-1">
-            {getPageNumbers().map((page, idx) => {
-              if (page === '...') {
-                return (
-                  <span
-                    key={`ellipsis-${idx}`}
-                    className="px-1.5 py-1 text-xs font-mono text-[#8E9AA8] select-none"
-                  >
-                    …
-                  </span>
-                );
-              }
-
-              const pageNum = Number(page);
-              const isActive = current_page === pageNum;
-
-              return (
-                <button
-                  key={`page-${pageNum}`}
-                  type="button"
-                  disabled={isLoading}
-                  onClick={() => onPageChange(pageNum)}
-                  className={`btn-liquid min-w-[32px] h-[30px] px-2 rounded-[2px] text-xs font-mono font-bold flex items-center justify-center cursor-pointer transition-all ${
-                    isActive
-                      ? 'btn-liquid-terracotta shadow-xs font-black'
-                      : 'btn-liquid-glass text-[#5A6678] hover:text-[#1E2631] hover:border-[#5A6678]/40'
-                  }`}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  {pageNum}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Next Page */}
-          <button
-            type="button"
-            disabled={!has_next || current_page >= total_pages || isLoading}
-            onClick={() => onPageChange(current_page + 1)}
-            className="btn-liquid btn-liquid-glass px-2.5 py-1.5 rounded-[2px] text-xs font-mono font-bold text-[#5A6678] hover:text-[#1E2631] flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all"
-            aria-label="Go to next page"
-          >
-            <span className="hidden sm:inline">Next</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-
-          {/* Last Page */}
-          <button
-            type="button"
-            disabled={!has_next || current_page >= total_pages || isLoading}
-            onClick={() => onPageChange(total_pages)}
-            className="btn-liquid btn-liquid-glass p-1.5 rounded-[2px] text-xs font-mono text-[#5A6678] hover:text-[#1E2631] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all"
-            title="Last Page"
-            aria-label="Go to last page"
-          >
-            <ChevronsRight className="w-3.5 h-3.5" />
-          </button>
-
-        </div>
-
-        {/* Right: Quick Page Jump Input */}
-        <div className="flex items-center gap-2 text-xs font-mono text-[#5A6678] w-full lg:w-auto justify-end">
-          <form onSubmit={handleJumpSubmit} className="flex items-center gap-1.5">
-            <span className="text-[11px] text-[#8E9AA8] font-bold uppercase tracking-wider hidden sm:inline">
-              Page:
-            </span>
-            <div className="flex items-center gap-1 bg-[#F8F7F4] border border-[#5A6678]/20 rounded-[2px] px-2 py-1 focus-within:border-[#C84428] transition-colors">
-              <input
-                type="number"
-                min={1}
-                max={total_pages}
-                placeholder={String(current_page)}
-                value={jumpPageInput}
-                onChange={(e) => setJumpPageInput(e.target.value)}
-                className="w-10 bg-transparent text-xs font-mono font-bold text-[#1E2631] text-center focus:outline-none placeholder:text-[#8E9AA8]"
-              />
-              <span className="text-[10px] text-[#8E9AA8]">/ {total_pages}</span>
-            </div>
-            <button
-              type="submit"
-              disabled={isLoading || !jumpPageInput}
-              className="btn-liquid btn-liquid-charcoal px-2 py-1 text-xs font-mono font-bold rounded-[2px] disabled:opacity-30 cursor-pointer flex items-center gap-1"
-              title="Jump to page"
-            >
-              <span>Go</span>
-              <ArrowRight className="w-3 h-3 text-white" />
-            </button>
-          </form>
-        </div>
+        {/* Next Page Button */}
+        <button
+          type="button"
+          disabled={!has_next || current_page >= total_pages || isLoading}
+          onClick={() => onPageChange(current_page + 1)}
+          className="btn-liquid btn-liquid-glass px-3 py-1.5 rounded-[2px] text-xs font-mono font-bold text-[#1E2631] hover:border-[#C84428] flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all"
+          aria-label="Next Page"
+        >
+          <span>Next</span>
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
 
       </div>
 
-    </div>
+      {/* 2. Secondary Easy Sub-Bar (Range Details + Per Page + Page Jump) */}
+      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-mono text-[#5A6678]">
+        
+        {/* Showing Range status */}
+        <div className="flex items-center gap-1">
+          <span>Showing</span>
+          <strong className="text-[#1E2631]">{from ?? 1}–{to ?? total_items}</strong>
+          <span>of</span>
+          <strong className="text-[#1E2631]">{total_items.toLocaleString()}</strong>
+          <span>pieces</span>
+        </div>
+
+        <span className="hidden sm:inline text-[#8E9AA8]">•</span>
+
+        {/* Per-Page Selector */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[#8E9AA8]">Per page:</span>
+          {[12, 24, 48].map((size) => (
+            <button
+              key={size}
+              type="button"
+              disabled={isLoading}
+              onClick={() => onPerPageChange(size)}
+              className={`px-2 py-0.5 rounded-[2px] text-[11px] font-mono cursor-pointer transition-all ${
+                per_page === size
+                  ? 'bg-[#1E2631] text-white font-bold'
+                  : 'hover:bg-slate-200 text-[#5A6678]'
+              }`}
+            >
+              {size}
+            </button>
+          ))}
+        </div>
+
+        <span className="hidden sm:inline text-[#8E9AA8]">•</span>
+
+        {/* Quick Page Jump */}
+        <form onSubmit={handleJumpSubmit} className="flex items-center gap-1.5">
+          <span className="text-[#8E9AA8]">Go to page:</span>
+          <input
+            type="number"
+            min={1}
+            max={total_pages}
+            placeholder={String(current_page)}
+            value={jumpInput}
+            onChange={(e) => setJumpInput(e.target.value)}
+            className="w-12 px-1.5 py-0.5 bg-white border border-[#5A6678]/20 rounded-[2px] text-xs font-mono text-center text-[#1E2631] focus:outline-none focus:border-[#C84428]"
+          />
+          <button
+            type="submit"
+            disabled={!jumpInput || isLoading}
+            className="btn-liquid btn-liquid-charcoal px-2 py-0.5 rounded-[2px] text-[11px] font-mono text-white disabled:opacity-30 cursor-pointer"
+          >
+            Go
+          </button>
+        </form>
+
+      </div>
+
+    </nav>
   );
 }
