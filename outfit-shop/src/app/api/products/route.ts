@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const res = await fetch(targetUrl, {
       headers: {
         'Accept': 'application/json',
-        'User-Agent': 'OutFIT-Haute-Atelier/1.0',
+        'User-Agent': 'OUTFIT-SHOP/1.0',
       },
       next: { revalidate: 30 }, // Cache for 30s
     });

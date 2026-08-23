@@ -5,7 +5,7 @@ export async function GET() {
     const res = await fetch('https://api.kesararamwithdigital.tech/api/v1/brands', {
       headers: {
         'Accept': 'application/json',
-        'User-Agent': 'OutFIT-Haute-Atelier/1.0',
+        'User-Agent': 'OUTFIT-SHOP/1.0',
       },
       next: { revalidate: 300 }, // Cache 5 min
     });

@@ -1,5 +1,33 @@
 @import "tailwindcss";
 
+.font-handwriting {
+  font-family: var(--font-handwriting), 'Caveat', 'Alex Brush', cursive, sans-serif !important;
+  font-weight: 700;
+}
+
+.font-runiga {
+  font-family: var(--font-runiga), 'Runiga', 'Bodoni Moda', 'Didot', 'Bodoni MT', Georgia, serif !important;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+/* LIQUID GLASS TYPOGRAPHY FORMULAS */
+.text-liquid-glass {
+  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.85) 44%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.95) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45)) drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
+}
+
+.text-liquid-glass-dark {
+  background: linear-gradient(180deg, #3A2F18 0%, #1A1408 44%, #5E4A1C 52%, #140E04 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.75)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));
+}
+
 @layer base {
   :root {
     /* STRICT 2PX BORDER RADIUS SCALE ACROSS ALL ELEMENTS */
@@ -82,6 +110,10 @@ modal {
 .panel-2px,
 .modal-2px {
   border-radius: 2px !important;
+}
+
+.vip-member-card {
+  border-radius: 10px !important;
 }
 
 /* LIQUID GLASS CONTAINERS (360-DEGREE GLASS REFLECTION) */

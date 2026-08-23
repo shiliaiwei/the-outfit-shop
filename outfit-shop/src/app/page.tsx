@@ -9,9 +9,9 @@ import { ProductCard } from '@/components/shop/ProductCard';
 import { ProductQuickViewModal } from '@/components/shop/ProductQuickViewModal';
 import { ShoppingBagDrawer } from '@/components/shop/ShoppingBagDrawer';
 import { CheckoutReceiptModal } from '@/components/shop/CheckoutReceiptModal';
-import { AtelierCraftStory } from '@/components/shop/AtelierCraftStory';
+import { VipMembershipStory } from '@/components/shop/VipMembershipStory';
 import { ShopFooter } from '@/components/shop/ShopFooter';
-import { AtelierGuideModal, AtelierGuideTopic } from '@/components/shop/AtelierGuideModal';
+import { CustomerGuideModal, CustomerGuideTopic } from '@/components/shop/CustomerGuideModal';
 import { CatalogPagination } from '@/components/shop/CatalogPagination';
 import { FilterDrawer } from '@/components/shop/FilterDrawer';
 import { 
@@ -48,6 +48,7 @@ export default function HomePage() {
   const [pagination, setPagination] = useState<ApiPagination>(INITIAL_PAGINATION);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isCatalogLoading, setIsCatalogLoading] = useState<boolean>(false);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [currency, setCurrency] = useState<CurrencyCode>('USD');
 
   // 2. Filter, Search, Pagination & Sort State
@@ -69,7 +70,7 @@ export default function HomePage() {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [quickViewProduct, setQuickViewProduct] = useState<ShopProduct | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
-  const [activeGuideTopic, setActiveGuideTopic] = useState<AtelierGuideTopic>(null);
+  const [activeGuideTopic, setActiveGuideTopic] = useState<CustomerGuideTopic>(null);
 
   const catalogRef = useRef<HTMLDivElement>(null);
   const isFirstMount = useRef<boolean>(true);
@@ -165,6 +166,31 @@ export default function HomePage() {
     if (catalogRef.current) {
       const topOffset = catalogRef.current.getBoundingClientRect().top + window.scrollY - 80;
       window.scrollTo({ top: Math.max(0, topOffset), behavior: 'smooth' });
+    }
+  };
+
+  // Seamless "See More" appender
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !pagination.has_next) return;
+    setIsLoadingMore(true);
+    const nextPage = currentPage + 1;
+
+    try {
+      const result = await CatalogService.getLiveProducts({
+        page: nextPage,
+        per_page: perPage,
+        brand: selectedBrand !== 'All' ? selectedBrand : undefined,
+        category_id: selectedCategoryId,
+        q: debouncedSearch.trim() || undefined
+      });
+
+      setProducts((prev) => [...prev, ...result.products]);
+      setPagination(result.pagination);
+      setCurrentPage(nextPage);
+    } catch {
+      // Fallback
+    } finally {
+      setIsLoadingMore(false);
     }
   };
 
@@ -279,10 +305,10 @@ export default function HomePage() {
       <main ref={catalogRef} className="w-full max-w-7xl mx-auto px-3 sm:px-6 py-6 flex-1">
         
         {/* Streamlined Minimalist Luxury Toolbar (Pop Menu Left Side + 1-Tap Sort Right Side) */}
-        <div className="liquid-glass bg-white/95 border border-[#5A6678]/15 rounded-[2px] p-2.5 sm:p-3 mb-6 shadow-xs flex flex-wrap items-center justify-between gap-3">
+        <div className="liquid-glass bg-white/95 border border-[#5A6678]/15 rounded-[2px] p-2.5 sm:p-3 mb-6 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           
           {/* Left: Prominent Filter Pop Button + Active Filter Badges */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
             
             {/* Pop-Out Filter Trigger Button (Opens Left-Side Menu) */}
             <button
@@ -354,8 +380,8 @@ export default function HomePage() {
 
           </div>
 
-          {/* Right: 1-Tap Sort Selector + Live Counts */}
-          <div className="flex items-center gap-2 ml-auto text-xs font-mono">
+          {/* Right: 1-Tap Sort Selector (Responsive Full-Width / Segmented on Mobile) */}
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-mono w-full md:w-auto overflow-x-auto no-scrollbar pt-1 md:pt-0 border-t md:border-t-0 border-[#5A6678]/10">
             <span className="text-[#8E9AA8] text-[10px] font-bold uppercase tracking-wider hidden sm:inline mr-1">
               Sort:
             </span>
@@ -363,7 +389,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => setActiveSort('featured')}
-              className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+              className={`btn-liquid flex-1 md:flex-none text-center justify-center px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
                 activeSort === 'featured'
                   ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
                   : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
@@ -375,7 +401,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => setActiveSort('price-asc')}
-              className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+              className={`btn-liquid flex-1 md:flex-none text-center justify-center px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
                 activeSort === 'price-asc'
                   ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
                   : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
@@ -387,7 +413,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => setActiveSort('price-desc')}
-              className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+              className={`btn-liquid flex-1 md:flex-none text-center justify-center px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
                 activeSort === 'price-desc'
                   ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
                   : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
@@ -399,7 +425,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => setActiveSort('stock')}
-              className={`btn-liquid px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
+              className={`btn-liquid flex-1 md:flex-none text-center justify-center px-2.5 py-1 rounded-[2px] text-[11px] font-semibold cursor-pointer transition-all ${
                 activeSort === 'stock'
                   ? 'btn-liquid-active bg-[#1E2631] text-white shadow-xs'
                   : 'btn-liquid-glass text-[#8E9AA8] hover:text-[#1E2631]'
@@ -407,11 +433,6 @@ export default function HomePage() {
             >
               Stock
             </button>
-
-            {/* Dynamic Total Items Indicator */}
-            <div className="flex items-center gap-1.5 pl-2 border-l border-[#5A6678]/15 text-[#8E9AA8] text-[11px] whitespace-nowrap hidden lg:flex">
-              <strong>{pagination.total_items.toLocaleString()}</strong> pieces
-            </div>
 
           </div>
 
@@ -471,12 +492,14 @@ export default function HomePage() {
               })}
             </div>
 
-            {/* Dynamic Easy Catalog Pagination Component */}
+            {/* Dynamic See More / Pagination Component */}
             <CatalogPagination
               pagination={pagination}
               onPageChange={handlePageChange}
               onPerPageChange={handlePerPageChange}
+              onLoadMore={handleLoadMore}
               isLoading={isCatalogLoading}
+              isLoadingMore={isLoadingMore}
             />
           </>
         )}
@@ -508,8 +531,8 @@ export default function HomePage() {
         onResetFilters={handleResetAllFilters}
       />
 
-      {/* 5. Atelier Craft & Standards Editorial */}
-      <AtelierCraftStory />
+      {/* 5. VIP Membership Section */}
+      <VipMembershipStory />
 
 
       {/* 5. Minimal Editorial Footer with Interactive Topics */}
@@ -544,7 +567,7 @@ export default function HomePage() {
         onSuccessOrder={handleOrderSuccess}
       />
 
-      <AtelierGuideModal
+      <CustomerGuideModal
         topic={activeGuideTopic}
         onClose={() => setActiveGuideTopic(null)}
         onSelectCategory={(cat) => {

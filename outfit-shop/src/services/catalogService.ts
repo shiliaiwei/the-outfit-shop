@@ -30,14 +30,14 @@ const VERIFIED_FALLBACK_PRODUCTS: ShopProduct[] = [
     name: 'Gucci Structured Oxford Shirt',
     brand: 'Gucci',
     category: 'Ready-to-Wear',
-    description: 'Tailored organic Egyptian cotton oxford shirt with mother-of-pearl buttons and relaxed atelier fit.',
+    description: 'Tailored organic Egyptian cotton oxford shirt with mother-of-pearl buttons and relaxed tailoring fit.',
     price: 125.00,
     originalPrice: 160.00,
     stock: 269,
     sku: 'SKU-GUC-0182',
     barcode: 'SKU-GUC-0182',
     material: '100% Egyptian Cotton • 180 GSM',
-    season: 'Core Atelier 2026',
+    season: 'Core Collection 2026',
     imageUrl: 'https://res.cloudinary.com/od8t271n/image/upload/v1787072813/Velvet_Jacquard_Short_Sleeved_T_Shirt_HUY36WCW4001_PM2_Front_View.webp',
     gallery: [
       'https://res.cloudinary.com/od8t271n/image/upload/v1787072813/Velvet_Jacquard_Short_Sleeved_T_Shirt_HUY36WCW4001_PM2_Front_View.webp',
@@ -49,7 +49,7 @@ const VERIFIED_FALLBACK_PRODUCTS: ShopProduct[] = [
   {
     id: '2',
     name: 'Tailored Normandy Linen Overshirt',
-    brand: 'OutFIT Atelier',
+    brand: 'OutFIT',
     category: 'Overshirts',
     description: 'Unstructured tailoring crafted from heavy 280 GSM Normandy linen. Garment dyed for subtle patina.',
     price: 89.00,
@@ -70,7 +70,7 @@ const VERIFIED_FALLBACK_PRODUCTS: ShopProduct[] = [
   {
     id: '3',
     name: 'Minimalist Supima Knit Polo',
-    brand: 'OutFIT Atelier',
+    brand: 'OutFIT',
     category: 'Knits',
     description: 'Ultra-fine gauge knit polo in California Supima cotton with a seamless French collar.',
     price: 65.00,
@@ -78,7 +78,7 @@ const VERIFIED_FALLBACK_PRODUCTS: ShopProduct[] = [
     sku: 'OUTFIT-KP-041',
     barcode: 'SKU-KP-041-L',
     material: '100% California Supima Cotton • 24 Gauge',
-    season: 'Core Atelier 2026',
+    season: 'Core Collection 2026',
     imageUrl: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=1200&q=85',
     gallery: ['https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=1200&q=85'],
     sizes: ['S', 'M', 'L', 'XL'],
@@ -86,8 +86,8 @@ const VERIFIED_FALLBACK_PRODUCTS: ShopProduct[] = [
   },
   {
     id: '4',
-    name: 'Pleated Relaxed Atelier Trouser',
-    brand: 'OutFIT Atelier',
+    name: 'Pleated Relaxed Tailored Trouser',
+    brand: 'OutFIT',
     category: 'Trousers',
     description: 'High-waisted double pleated trouser cut from high-twist tropical wool with natural stretch.',
     price: 95.00,
@@ -217,13 +217,13 @@ export const CatalogService = {
 
         const categoryName = p.category?.category_name || 'Ready-to-Wear';
         const categoryId = p.category?.category_id || p.category_id;
-        const brandName = p.brand || 'OutFIT Atelier';
+        const brandName = p.brand || 'OutFIT';
         const materialName = p.material_fabric || '100% Organic Tailored Cotton • 220 GSM';
-        const seasonName = p.season_collection || 'Core Atelier 2026';
+        const seasonName = p.season_collection || 'Core Collection 2026';
 
         return {
           id: String(p.product_id),
-          name: p.product_name || `Atelier Piece #${p.product_id}`,
+          name: p.product_name || `Luxury Piece #${p.product_id}`,
           brand: brandName,
           category: categoryName,
           categoryId: categoryId,

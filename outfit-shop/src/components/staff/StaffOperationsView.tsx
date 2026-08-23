@@ -29,7 +29,7 @@ export function StaffOperationsView() {
     name: 'Sophea Pich',
     email: 'sophea.p@example.com',
     points: 1240,
-    tier: 'Platinum Atelier VIP'
+    tier: 'Platinum VIP'
   });
 
   const handleApprove = (id: string) => {

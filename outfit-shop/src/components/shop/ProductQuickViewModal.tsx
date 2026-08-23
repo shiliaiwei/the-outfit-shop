@@ -191,7 +191,7 @@ export function ProductQuickViewModal({
 
               <div className="flex items-center justify-between text-[10px] font-mono text-[#8E9AA8] pt-1">
                 <span className="flex items-center gap-1">
-                  <Truck className="w-3 h-3 text-[#5A6678]" /> Free atelier shipping
+                  <Truck className="w-3 h-3 text-[#5A6678]" /> Free insured shipping
                 </span>
                 <span className="flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3 text-[#5A6678]" /> Verified SS-MIS Stock

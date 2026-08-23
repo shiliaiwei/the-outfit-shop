@@ -17,7 +17,7 @@ import { RegisterTelemetry } from '@/types';
 const REGISTERS: RegisterTelemetry[] = [
   { id: 'REG-01', name: 'Register #01 (Front Counter)', operator: 'Channara Lim', shiftSales: 2450.00, transactionCount: 28, status: 'online', lastActivity: '2 mins ago', drawerBalance: 1450.00 },
   { id: 'REG-02', name: 'Register #02 (Express POS)', operator: 'Sothea Kem', shiftSales: 2890.50, transactionCount: 34, status: 'online', lastActivity: 'Just now', drawerBalance: 1730.00 },
-  { id: 'REG-03', name: 'Register #03 (Atelier Fitting)', operator: 'Vannak Ouk', shiftSales: 1120.00, transactionCount: 12, status: 'idle', lastActivity: '18 mins ago', drawerBalance: 820.00 },
+  { id: 'REG-03', name: 'Register #03 (VIP Fitting)', operator: 'Vannak Ouk', shiftSales: 1120.00, transactionCount: 12, status: 'idle', lastActivity: '18 mins ago', drawerBalance: 820.00 },
 ];
 
 export function AdminDashboardView() {

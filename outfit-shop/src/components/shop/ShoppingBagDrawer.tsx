@@ -62,7 +62,7 @@ export function ShoppingBagDrawer({
                 <span className="font-bold text-[#1E2631]">
                   {progressPct >= 100 ? (
                     <span className="text-emerald-700 font-bold flex items-center gap-1">
-                      <Truck className="w-3.5 h-3.5" /> Free Atelier Delivery Unlocked
+                      <Truck className="w-3.5 h-3.5" /> Free Insured Delivery Unlocked
                     </span>
                   ) : (
                     <span>Add {CatalogService.formatPrice(remainingForFree, currency)} for free delivery</span>
@@ -85,7 +85,7 @@ export function ShoppingBagDrawer({
               <div className="flex flex-col items-center justify-center my-auto py-12 text-center text-[#8E9AA8]">
                 <ShoppingBag className="w-10 h-10 mb-3 opacity-30 text-[#1E2631]" />
                 <p className="text-xs font-mono font-bold uppercase text-[#5A6678]">Your bag is empty</p>
-                <p className="text-[11px] mt-1">Discover handcrafted atelier garments from the catalog</p>
+                <p className="text-[11px] mt-1">Discover handcrafted luxury garments from the catalog</p>
               </div>
             ) : (
               items.map((item) => (
@@ -100,7 +100,7 @@ export function ShoppingBagDrawer({
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-mono font-bold text-[#8E9AA8] uppercase truncate">{item.brand || 'OutFIT'}</span>
+                      <span className="text-[9px] font-mono font-bold text-[#8E9AA8] uppercase truncate">{item.brand || 'OUTFIT'}</span>
                       <span className="text-xs font-display font-black text-[#1E2631]">
                         {CatalogService.formatPrice(item.price * item.qty, currency)}
                       </span>

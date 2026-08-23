@@ -74,7 +74,7 @@ export function ShopHeader({
           <div className="w-8 h-8 rounded-[2px] bg-white border border-[#5A6678]/20 flex items-center justify-center p-1 shadow-xs">
             <img
               src="/OutFIT/OutFIT.svg"
-              alt="OutFIT Logo"
+              alt="OUTFIT Logo"
               className="w-full h-full object-contain"
             />
           </div>

@@ -86,7 +86,7 @@ export function AuthLoginModal({ onLoginSuccess, currentRole }: AuthLoginModalPr
         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-[9px] bg-[#F8F7F4] border border-[#5A6678]/15 flex items-center justify-center shadow-xs">
-              <img src="/OutFIT/OutFIT.svg" alt="OutFIT" className="w-6 h-6 object-contain" />
+              <img src="/OutFIT/OutFIT.svg" alt="OUTFIT" className="w-6 h-6 object-contain" />
             </div>
             <div>
               <BrandWordmark size="md" />

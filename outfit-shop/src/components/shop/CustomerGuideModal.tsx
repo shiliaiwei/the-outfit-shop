@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { BrandWordmark } from '@/components/brand/BrandWordmark';
 
-export type AtelierGuideTopic = 
+export type CustomerGuideTopic = 
   | 'normandy-linen'
   | 'fit-guide'
   | 'care-guide'
@@ -28,13 +28,13 @@ export type AtelierGuideTopic =
   | 'capsule-drops'
   | null;
 
-interface AtelierGuideModalProps {
-  topic: AtelierGuideTopic;
+interface CustomerGuideModalProps {
+  topic: CustomerGuideTopic;
   onClose: () => void;
   onSelectCategory?: (category: string) => void;
 }
 
-export function AtelierGuideModal({ topic, onClose, onSelectCategory }: AtelierGuideModalProps) {
+export function CustomerGuideModal({ topic, onClose, onSelectCategory }: CustomerGuideModalProps) {
   if (!topic) return null;
 
   const contentMap: Record<string, {
@@ -61,7 +61,7 @@ export function AtelierGuideModal({ topic, onClose, onSelectCategory }: AtelierG
       ]
     },
     'fit-guide': {
-      title: 'Atelier Tailoring & Fit Guide',
+      title: 'Bespoke Tailoring & Fit Guide',
       subtitle: 'Precise dimensional metrics for European & American sizing',
       icon: <Ruler className="w-5 h-5 text-[#C84428]" />,
       badge: 'Sizing Spec',
@@ -96,7 +96,7 @@ export function AtelierGuideModal({ topic, onClose, onSelectCategory }: AtelierG
     },
     'shipping-duties': {
       title: 'Insured Global Express & Duties',
-      subtitle: 'Direct from the atelier to your private door with zero hidden fees',
+      subtitle: 'Direct from our studio to your private door with zero hidden fees',
       icon: <Truck className="w-5 h-5 text-[#C84428]" />,
       badge: 'DDP Direct',
       sections: [
@@ -118,7 +118,7 @@ export function AtelierGuideModal({ topic, onClose, onSelectCategory }: AtelierG
       sections: [
         {
           heading: 'Return Policy Conditions',
-          body: 'You may return or exchange unworn pieces in original condition with all security tags and original atelier packaging intact within 14 calendar days of receipt.'
+          body: 'You may return or exchange unworn pieces in original condition with all security tags and original packaging intact within 14 calendar days of receipt.'
         },
         {
           heading: 'Instant Refund Process',
@@ -128,7 +128,7 @@ export function AtelierGuideModal({ topic, onClose, onSelectCategory }: AtelierG
     },
     'all-pieces': {
       title: 'Complete Haute Collection',
-      subtitle: 'Discover our verified luxury pieces currently in live atelier sync',
+      subtitle: 'Discover our verified luxury pieces currently in live catalog sync',
       icon: <Package className="w-5 h-5 text-[#C84428]" />,
       badge: 'Full Catalog',
       sections: [
@@ -205,7 +205,7 @@ export function AtelierGuideModal({ topic, onClose, onSelectCategory }: AtelierG
         <div className="flex items-center justify-between pb-3.5 border-b border-[#5A6678]/15 mb-4">
           <div className="flex items-center gap-2">
             <BrandWordmark size="sm" />
-            <span className="text-xs font-mono font-bold text-[#8E9AA8]">/ Atelier Standards</span>
+            <span className="text-xs font-mono font-bold text-[#8E9AA8]">/ Brand Standards</span>
           </div>
 
           <button

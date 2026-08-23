@@ -83,7 +83,7 @@ export function FilterDrawer({
                   </span>
                 )}
               </h3>
-              <p className="text-[10px] font-mono text-[#8E9AA8]">Refine by collection, atelier brand &amp; sorting</p>
+              <p className="text-[10px] font-mono text-[#8E9AA8]">Refine by collection, luxury brand &amp; sorting</p>
             </div>
           </div>
 
@@ -163,7 +163,7 @@ export function FilterDrawer({
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-[#1E2631] uppercase tracking-wider flex items-center gap-1.5">
                 <Tag className="w-3.5 h-3.5 text-[#C84428]" />
-                <span>Atelier Brands</span>
+                <span>Featured Brands</span>
               </span>
               <span className="text-[10px] font-mono text-[#8E9AA8]">
                 {brands.length} Brands

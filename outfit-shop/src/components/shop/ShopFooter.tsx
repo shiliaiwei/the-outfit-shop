@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import { BrandWordmark } from '@/components/brand/BrandWordmark';
 import { Globe, Copy, Check, ArrowRight, ShieldCheck, Mail, Sparkles, Feather, Ruler, Truck, RotateCcw, Package, Layers } from 'lucide-react';
-import { AtelierGuideTopic } from './AtelierGuideModal';
+import { CustomerGuideTopic } from './CustomerGuideModal';
 
 interface ShopFooterProps {
-  onOpenTopic?: (topic: AtelierGuideTopic) => void;
+  onOpenTopic?: (topic: CustomerGuideTopic) => void;
 }
 
 export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
@@ -41,7 +41,7 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
           <div className="md:col-span-5 flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-[2px] bg-white border border-white/20 flex items-center justify-center">
-                <img src="/OutFIT/OutFIT.svg" alt="OutFIT" className="w-5 h-5 object-contain" />
+                <img src="/OutFIT/OutFIT.svg" alt="OUTFIT" className="w-5 h-5 object-contain" />
               </div>
               <BrandWordmark size="md" invert={true} />
             </div>
@@ -201,42 +201,6 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
                 </svg>
               </a>
 
-              {/* Amazon */}
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                title="Amazon"
-                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
-              >
-                <svg className="w-3.5 h-3.5 fill-current text-[#C84428] group-hover:text-white transition-colors" viewBox="0 0 24 24">
-                  <path d="M13.9 14.5c-2.3 1.7-5.7 2.6-8.6 2.6-4.1 0-7.7-1.5-10.4-4-.2-.2 0-.5.2-.4 3 1.7 6.6 2.7 10.4 2.7 2.6 0 5.4-.6 7.9-2 .4-.2.8.2.5.5zm1.2-1.3c-.3-.4-1.9-.2-2.6-.1-.2 0-.3-.2-.1-.3 1.2-.8 3.1-.6 3.4-.2.3.4-.1 2.3-1.2 3.2-.2.1-.3 0-.3-.2.3-.7.9-2.1.8-2.4zM22.5 10c0-3.3-2.1-4.8-5.3-4.8-4.3 0-6.2 2.6-6.2 5.3 0 2.2 1.4 3.7 3.5 3.7 2.6 0 4.3-1.9 4.3-4.2v-.4c0-.7-.3-1.1-.9-1.1-.8 0-1.2.6-1.2 1.5v.4c0 1.2-.7 2.1-1.9 2.1-.9 0-1.5-.6-1.5-1.5 0-1.7 1.4-3.5 3.9-3.5 2.1 0 3.3 1 3.3 2.9v4.2c0 .6.1 1.2.2 1.8.1.3-.2.5-.4.4-.7-.5-.9-1.2-.9-1.7-.6.9-1.7 1.5-2.8 1.5-1.9 0-3.3-1.3-3.3-3.1 0-2.3 1.8-3.7 4.5-3.7h2.2V10h.3z"/>
-                </svg>
-              </a>
-
-              {/* Alibaba */}
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                title="Alibaba"
-                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
-              >
-                <span className="font-display font-black text-xs text-[#C84428] group-hover:text-white transition-colors">
-                  aB
-                </span>
-              </a>
-
-              {/* AliExpress */}
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                title="AliExpress"
-                className="w-8 h-8 rounded-[2px] bg-white/5 border border-white/10 hover:border-[#C84428] hover:bg-white/15 flex items-center justify-center text-[#8E9AA8] hover:text-white transition-all shadow-2xs group cursor-pointer"
-              >
-                <span className="font-mono font-black text-[10px] text-[#C84428] group-hover:text-white transition-colors">
-                  AE
-                </span>
-              </a>
-
               {/* Shopify */}
               <a
                 href="#"
@@ -296,7 +260,7 @@ export function ShopFooter({ onOpenTopic }: ShopFooterProps) {
 
         {/* Bottom Legal Copyright */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-[#8E9AA8] gap-4">
-          <p>© {new Date().getFullYear()} OutFIT. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} OUTFIT. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <button onClick={() => onOpenTopic?.('care-guide')} className="hover:text-white cursor-pointer transition-colors">Privacy Policy</button>
             <button onClick={() => onOpenTopic?.('returns-exchange')} className="hover:text-white cursor-pointer transition-colors">Terms of Service</button>

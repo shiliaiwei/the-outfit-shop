@@ -9,7 +9,7 @@ const MOCK_PRODUCTS: PosProduct[] = [
   { id: '3', sku: 'OX-118', barcode: 'SKU-OX-118-L', name: 'Structured Oxford Shirt', category: 'Shirts', price: 78.00, stock: 9, color: 'Ice Sky Blue', size: 'L' },
   { id: '4', sku: 'TR-304', barcode: 'SKU-TR-304-M', name: 'Pleated Relaxed Trouser', category: 'Trousers', price: 95.00, stock: 18, color: 'Slate Gray', size: 'M' },
   { id: '5', sku: 'TW-502', barcode: 'SKU-TW-502-L', name: 'Heavyweight Supima Tee', category: 'Tees', price: 45.00, stock: 35, color: 'Canvas Ecru', size: 'L' },
-  { id: '6', sku: 'JK-881', barcode: 'SKU-JK-881-XL', name: 'Structured Atelier Work Jacket', category: 'Overshirts', price: 140.00, stock: 8, color: 'Raw Navy', size: 'XL' },
+  { id: '6', sku: 'JK-881', barcode: 'SKU-JK-881-XL', name: 'Structured Work Jacket', category: 'Overshirts', price: 140.00, stock: 8, color: 'Raw Navy', size: 'XL' },
   { id: '7', sku: 'CR-104', barcode: 'SKU-CR-104-M', name: 'French Terry Crewneck', category: 'Knits', price: 72.00, stock: 16, color: 'Heather Oatmeal', size: 'M' },
   { id: '8', sku: 'ST-209', barcode: 'SKU-ST-209-L', name: 'Relaxed Silk Twill Short', category: 'Trousers', price: 68.00, stock: 12, color: 'Olive Earth', size: 'L' }
 ];
@@ -17,14 +17,14 @@ const MOCK_PRODUCTS: PosProduct[] = [
 const MOCK_REGISTERS: RegisterTelemetry[] = [
   { id: 'REG-01', name: 'Register #01 (Front Counter)', operator: 'Channara Lim', shiftSales: 2450.00, transactionCount: 28, status: 'online', lastActivity: '2 mins ago', drawerBalance: 1450.00 },
   { id: 'REG-02', name: 'Register #02 (Express POS)', operator: 'Sothea Kem', shiftSales: 2890.50, transactionCount: 34, status: 'online', lastActivity: 'Just now', drawerBalance: 1730.00 },
-  { id: 'REG-03', name: 'Register #03 (Atelier Fitting)', operator: 'Vannak Ouk', shiftSales: 1120.00, transactionCount: 12, status: 'idle', lastActivity: '18 mins ago', drawerBalance: 820.00 }
+  { id: 'REG-03', name: 'Register #03 (VIP Fitting)', operator: 'Vannak Ouk', shiftSales: 1120.00, transactionCount: 12, status: 'idle', lastActivity: '18 mins ago', drawerBalance: 820.00 }
 ];
 
 const MOCK_STOCK_MOVEMENTS: StockMovement[] = [
   { id: 'MOV-881', sku: 'LN-092', productName: 'Tailored Linen Overshirt', type: 'INBOUND', qty: 50, location: 'Bin A-14', timestamp: '10:15 AM', handler: 'Chenda Mom' },
   { id: 'MOV-880', sku: 'KP-041', productName: 'Minimalist Knit Polo', type: 'SALE', qty: -2, location: 'Floor POS', timestamp: '10:45 AM', handler: 'Sothea Kem' },
   { id: 'MOV-879', sku: 'OX-118', productName: 'Structured Oxford Shirt', type: 'TRANSFER', qty: 10, location: 'Storage B-02', timestamp: '09:30 AM', handler: 'Vannak Ouk' },
-  { id: 'MOV-878', sku: 'JK-881', productName: 'Structured Atelier Work Jacket', type: 'INBOUND', qty: 25, location: 'Bin C-01', timestamp: '08:45 AM', handler: 'Chenda Mom' }
+  { id: 'MOV-878', sku: 'JK-881', productName: 'Structured Work Jacket', type: 'INBOUND', qty: 25, location: 'Bin C-01', timestamp: '08:45 AM', handler: 'Chenda Mom' }
 ];
 
 export const ApiService = {

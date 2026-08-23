@@ -196,4 +196,27 @@ To prevent Next.js React hydration mismatches between Server-Side Rendering and 
 * All code edits, builds, typechecks, and local verifications must stay local.
 * Only execute `git push` when the user explicitly commands it (e.g. *"push"*, *"push it"*, *"push to github"*).
 
+---
+
+## 9 · Law of Brand Capitalization & Two-Tone Color Styling
+
+* **Universal All-Caps Enforcement:** The brand name must ALWAYS and WITHOUT EXCEPTION be written in **ALL CAPITAL LETTERS (`OUTFIT`)** everywhere across the codebase, UI copy, sentences, paragraphs, titles, metadata, alt text, receipts, logs, and data attributes.
+* **Prohibited Forms:** Lowercase (`outfit`), TitleCase (`Outfit`), CamelCase (`OutFIT`), or any non-all-caps variant is strictly prohibited in any user-facing or codebase representation.
+* **Two-Tone Color Signature in UI & Sentences:** Whenever displayed in visual UI, headers, cards, or featured sentences, the brand must be rendered with the signature two-tone split:
+  - **`OUT`**: Deep Charcoal (`#1E2631`) or high-contrast theme color.
+  - **`FIT`**: Signature Terracotta (`#C84428`).
+* **Standard Component:** Use `<BrandWordmark />` or inline JSX:
+  ```tsx
+  <span className="font-display font-black tracking-wider text-[#1E2631]">OUT</span>
+  <span className="font-display font-black tracking-wider text-[#C84428]">FIT</span>
+  ```
+
+---
+
+## 10 · Strict Ban on the Word "Atelier"
+
+* **Permanent Prohibition:** The word `"Atelier"` (in all casing variants: `Atelier`, `atelier`, `ATELIER`) is strictly banned across all components, filenames, mock data, API routes, modal titles, and marketing copy.
+* **Approved Replacements:** Use `Studio`, `Storefront`, `Boutique`, `Tailoring`, `VIP Privileges`, or `Haute Store`.
+
+
 

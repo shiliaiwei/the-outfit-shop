@@ -67,7 +67,7 @@ export function LouisVuittonMarquee({
         <div className="text-[10px] text-[#8E9AA8] hidden sm:flex items-center gap-1.5">
           <span>Psychological Anchor Pricing</span>
           <span>•</span>
-          <span className="text-emerald-600 font-semibold">Instant Atelier Credit Applied</span>
+          <span className="text-emerald-600 font-semibold">Instant VIP Credit Applied</span>
         </div>
       </div>
 
@@ -112,7 +112,7 @@ export function LouisVuittonMarquee({
                 <div className="relative w-full flex-1 flex items-center justify-center p-2 overflow-hidden">
                   <img
                     src={p.imageUrl}
-                    alt="Louis Vuitton Atelier Piece"
+                    alt="Louis Vuitton Piece"
                     className="max-h-36 w-auto object-contain transition-transform duration-500 group-hover:scale-115 drop-shadow-md"
                     loading="lazy"
                   />

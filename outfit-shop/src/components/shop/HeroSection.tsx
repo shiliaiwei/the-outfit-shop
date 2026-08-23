@@ -37,7 +37,7 @@ const INSTANT_MARQUEE_PIECES: Partial<ShopProduct>[] = [
   {
     id: 'pc-03',
     name: 'OutFIT Normandy Linen Jacket',
-    brand: 'OutFIT Atelier',
+    brand: 'OutFIT',
     price: 180.00,
     originalPrice: 240.00,
     imageUrl: 'https://res.cloudinary.com/od8t271n/image/upload/v1787073012/Monogram_Double_Face_Overshirt_HUB29WCO1859_PM2_Front_View.webp',
@@ -83,7 +83,7 @@ export function HeroSection({
     // Group items by brand for true cross-brand diversity
     const brandBuckets: Record<string, ShopProduct[]> = {};
     for (const p of pool) {
-      const b = p.brand?.trim() || 'OutFIT Atelier';
+      const b = p.brand?.trim() || 'OutFIT';
       if (!brandBuckets[b]) {
         brandBuckets[b] = [];
       }
@@ -231,7 +231,7 @@ export function HeroSection({
 
                     {/* Brand Pill */}
                     <span className="text-[9px] font-mono font-bold text-[#8E9AA8] bg-[#F8F7F4] px-1.5 py-0.5 rounded-[2px] border border-[#5A6678]/10 uppercase truncate max-w-[100px]">
-                      {p.brand ? p.brand : 'ATELIER'}
+                      {p.brand ? p.brand : 'LUXURY'}
                     </span>
                   </div>
 
@@ -239,7 +239,7 @@ export function HeroSection({
                   <div className="relative w-full flex-1 flex items-center justify-center p-2 overflow-hidden">
                     <img
                       src={p.imageUrl}
-                      alt={p.name || 'Atelier Garment'}
+                      alt={p.name || 'Luxury Piece'}
                       className="max-h-36 w-auto object-contain transition-transform duration-500 group-hover:scale-115 drop-shadow-md"
                       loading="lazy"
                     />

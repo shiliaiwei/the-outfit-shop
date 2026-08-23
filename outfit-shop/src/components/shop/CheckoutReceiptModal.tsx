@@ -57,7 +57,7 @@ export function CheckoutReceiptModal({
 
   const handleCopyReceipt = () => {
     if (!completedTxnId) return;
-    const txt = `OutFIT Atelier Receipt #${completedTxnId}\nTotal: ${CatalogService.formatPrice(total, currency)}\nItems: ${items.length}\nDate: ${new Date().toLocaleString()}`;
+    const txt = `OUTFIT SHOP Receipt #${completedTxnId}\nTotal: ${CatalogService.formatPrice(total, currency)}\nItems: ${items.length}\nDate: ${new Date().toLocaleString()}`;
     navigator.clipboard.writeText(txt);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -74,7 +74,7 @@ export function CheckoutReceiptModal({
         <div className="flex items-center justify-between pb-3 border-b border-[#5A6678]/15 mb-4">
           <div className="flex items-center gap-2">
             <BrandWordmark size="sm" />
-            <span className="text-xs font-mono font-bold text-[#8E9AA8]">/ Atelier Checkout</span>
+            <span className="text-xs font-mono font-bold text-[#8E9AA8]">/ Checkout</span>
           </div>
           
           <button
@@ -170,7 +170,7 @@ export function CheckoutReceiptModal({
                 <span className="text-emerald-700 font-semibold">{shipping === 0 ? 'FREE' : CatalogService.formatPrice(shipping, currency)}</span>
               </div>
               <div className="flex justify-between text-[#5A6678]">
-                <span>Atelier Tax (5%):</span>
+                <span>Store Tax (5%):</span>
                 <span>{CatalogService.formatPrice(tax, currency)}</span>
               </div>
               <div className="flex justify-between text-sm font-bold text-[#1E2631] pt-1.5 border-t border-[#5A6678]/15 mt-1 font-display">
@@ -214,7 +214,7 @@ export function CheckoutReceiptModal({
             {/* Thermal Slip View */}
             <div className="w-full max-w-sm bg-[#F8F7F4] border border-dashed border-[#5A6678]/30 rounded-[2px] p-4 text-left font-mono text-[11px] flex flex-col gap-2">
               <div className="text-center pb-2 border-b border-[#5A6678]/15 font-bold">
-                <div>OutFIT Atelier — Haute Storefront</div>
+                <div>OUTFIT SHOP</div>
                 <div className="text-[10px] font-normal text-[#5A6678]">theoufit.kesararamwithdigital.tech</div>
               </div>
 

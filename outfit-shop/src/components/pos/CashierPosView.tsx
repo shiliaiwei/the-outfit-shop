@@ -516,7 +516,7 @@ export function CashierPosView() {
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <div className="bg-white border border-[#5A6678]/20 rounded-[9px] max-w-sm w-full p-5 flex flex-col gap-3 shadow-2xl font-mono text-xs text-[#1E2631] animate-in zoom-in-95">
             <div className="text-center border-b border-dashed border-slate-300 pb-3">
-              <div className="font-display font-black text-base tracking-wider">OUTFIT ATELIER</div>
+              <div className="font-display font-black text-base tracking-wider">OUTFIT STORE</div>
               <div className="text-[10px] text-[#5A6678]">theoufit.kesararamwithdigital.tech</div>
               <div className="text-[10px] text-[#5A6678] mt-1">{activeReceipt.receiptNo} &bull; {activeReceipt.timestamp}</div>
             </div>
