@@ -36,8 +36,8 @@ const INSTANT_MARQUEE_PIECES: Partial<ShopProduct>[] = [
   },
   {
     id: 'pc-03',
-    name: 'OutFIT Normandy Linen Jacket',
-    brand: 'OutFIT',
+    name: 'OUTFIT Normandy Linen Jacket',
+    brand: 'OUTFIT',
     price: 180.00,
     originalPrice: 240.00,
     imageUrl: 'https://res.cloudinary.com/od8t271n/image/upload/v1787073012/Monogram_Double_Face_Overshirt_HUB29WCO1859_PM2_Front_View.webp',
@@ -83,7 +83,7 @@ export function HeroSection({
     // Group items by brand for true cross-brand diversity
     const brandBuckets: Record<string, ShopProduct[]> = {};
     for (const p of pool) {
-      const b = p.brand?.trim() || 'OutFIT';
+      const b = p.brand?.trim() || 'OUTFIT';
       if (!brandBuckets[b]) {
         brandBuckets[b] = [];
       }
@@ -205,7 +205,7 @@ export function HeroSection({
       <div className="relative z-20 w-full mt-1 sm:mt-2">
         
         {/* Marquee Track with CSS Mask-Image Transparent Edge Fade */}
-        <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_6%,black_94%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_6%,black_94%,transparent_100%)] py-1">
+        <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,#4A3F35_6%,#4A3F35_94%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,#4A3F35_6%,#4A3F35_94%,transparent_100%)] py-1">
 
           {/* Running Infinite Loop Track (Smooth & Slow 65s Luxury Pace) */}
           <div className="animate-marquee-loop flex items-center gap-3.5 py-1">

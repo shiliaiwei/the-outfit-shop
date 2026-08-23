@@ -23,8 +23,8 @@ interface AuthLoginModalProps {
 
 export function AuthLoginModal({ onLoginSuccess, currentRole }: AuthLoginModalProps) {
   const [selectedRole, setSelectedRole] = useState<UserRole>(currentRole);
-  const [email, setEmail] = useState<string>('cashier@outfit.tech');
-  const [password, setPassword] = useState<string>('••••••••');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const roleConfigs = [

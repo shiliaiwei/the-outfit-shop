@@ -49,7 +49,7 @@ const VERIFIED_FALLBACK_PRODUCTS: ShopProduct[] = [
   {
     id: '2',
     name: 'Tailored Normandy Linen Overshirt',
-    brand: 'OutFIT',
+    brand: 'OUTFIT',
     category: 'Overshirts',
     description: 'Unstructured tailoring crafted from heavy 280 GSM Normandy linen. Garment dyed for subtle patina.',
     price: 89.00,
@@ -70,7 +70,7 @@ const VERIFIED_FALLBACK_PRODUCTS: ShopProduct[] = [
   {
     id: '3',
     name: 'Minimalist Supima Knit Polo',
-    brand: 'OutFIT',
+    brand: 'OUTFIT',
     category: 'Knits',
     description: 'Ultra-fine gauge knit polo in California Supima cotton with a seamless French collar.',
     price: 65.00,
@@ -87,7 +87,7 @@ const VERIFIED_FALLBACK_PRODUCTS: ShopProduct[] = [
   {
     id: '4',
     name: 'Pleated Relaxed Tailored Trouser',
-    brand: 'OutFIT',
+    brand: 'OUTFIT',
     category: 'Trousers',
     description: 'High-waisted double pleated trouser cut from high-twist tropical wool with natural stretch.',
     price: 95.00,
@@ -217,7 +217,7 @@ export const CatalogService = {
 
         const categoryName = p.category?.category_name || 'Ready-to-Wear';
         const categoryId = p.category?.category_id || p.category_id;
-        const brandName = p.brand || 'OutFIT';
+        const brandName = p.brand || 'OUTFIT';
         const materialName = p.material_fabric || '100% Organic Tailored Cotton • 220 GSM';
         const seasonName = p.season_collection || 'Core Collection 2026';
 
