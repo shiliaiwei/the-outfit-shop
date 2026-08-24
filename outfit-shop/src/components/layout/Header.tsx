@@ -299,11 +299,11 @@ export function Header({ onToggleMobileNav }: HeaderProps) {
             aria-expanded={isUserMenuOpen}
           >
             <div className="text-right hidden sm:block">
-              <p className="text-xs font-bold text-text truncate max-w-[120px]">
-                {user?.employee_name || user?.username || "Admin"}
+              <p className="text-xs font-bold text-text truncate max-w-[140px]">
+                {user?.name || user?.employee_name || user?.username || "Authorized User"}
               </p>
               <span className="text-[10px] font-mono uppercase font-bold text-primary block leading-none">
-                {user?.role || "ADMIN"}
+                {user?.role || "OPERATOR"}
               </span>
             </div>
 
@@ -322,13 +322,13 @@ export function Header({ onToggleMobileNav }: HeaderProps) {
               {/* Account Header */}
               <div className="p-4 border-b border-border/40 bg-bg/30">
                 <p className="text-xs font-black uppercase text-text truncate">
-                  {user?.employee_name || user?.username || "Admin Patron"}
+                  {user?.name || user?.employee_name || user?.username || "Authorized Operator"}
                 </p>
                 <p className="text-[10px] font-mono text-text-muted truncate mt-0.5">
-                  {user?.email || "admin@outfit.luxury"}
+                  {user?.email || `${user?.username || "user"}@outfit.tech`}
                 </p>
                 <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[2px] bg-primary/10 text-primary border border-primary/20 text-[9px] font-mono font-bold uppercase tracking-wider">
-                  <span>Role: {user?.role || "ADMIN"}</span>
+                  <span>Role: {user?.role || "OPERATOR"}</span>
                 </div>
               </div>
 

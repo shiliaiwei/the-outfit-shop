@@ -50,7 +50,7 @@ export default function ImageGalleryPage() {
   });
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   
-  const [folders, setFolders] = useState<Array<{ name: string; path: string }>>(CLOUDINARY_ROOT_FOLDERS);
+  const [folders, setFolders] = useState<Array<{ name: string; path: string; count?: number }>>(CLOUDINARY_ROOT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState<string>("ALL");
   const [formatFilter, setFormatFilter] = useState<string>("ALL");
   const [search, setSearch] = useState("");
@@ -89,8 +89,8 @@ export default function ImageGalleryPage() {
     }
   };
 
-  // Fetch from backend API: loads 24 root folders and live product Cloudinary images
-  async function loadFoldersAndImages() {
+  // Fetch from backend API: loads 24 root folders with counts and live Cloudinary images
+  async function loadFoldersAndImages(folderParam?: string, searchParam?: string) {
     setLoading(true);
     try {
       const folderList = await opsService.getCloudinaryFolders();
@@ -100,10 +100,31 @@ export default function ImageGalleryPage() {
         setFolders(CLOUDINARY_ROOT_FOLDERS);
       }
 
-      const res = await opsService.getCloudinaryAssets({ max_results: 100 });
+      const targetFolder = folderParam !== undefined ? folderParam : activeFolder;
+      const targetSearch = searchParam !== undefined ? searchParam : search;
+
+      const res = await opsService.getCloudinaryAssets({
+        folder: targetFolder === "ALL" ? undefined : targetFolder,
+        search: targetSearch.trim() || undefined,
+        max_results: 100
+      });
+
       if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-        setLocalAssets(res.data);
-        entityStore.set("cloudinary_media_assets", res.data);
+        // When in ALL folder and no search, merge with existing cache or set directly
+        if (targetFolder === "ALL" && !targetSearch.trim()) {
+          setLocalAssets(res.data);
+          entityStore.set("cloudinary_media_assets", res.data);
+        } else {
+          // Merge newly fetched folder assets so they are cached
+          setLocalAssets((prev) => {
+            const existingIds = new Set(res.data.map((item: any) => item.public_id));
+            const remaining = prev.filter((p) => !existingIds.has(p.public_id));
+            const merged = [...res.data, ...remaining];
+            entityStore.set("cloudinary_media_assets", merged);
+            return merged;
+          });
+        }
+
         if (res.total_count) setTotalCount(res.total_count);
         setNextCursor(res.next_cursor || null);
       } else {
@@ -126,10 +147,35 @@ export default function ImageGalleryPage() {
     loadFoldersAndImages();
   }, []);
 
+  // Fetch when activeFolder changes
+  const handleSelectFolder = (folderKey: string) => {
+    setActiveFolder(folderKey);
+    loadFoldersAndImages(folderKey, search);
+  };
+
+  // Debounced search fetch
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (search.trim()) {
+        loadFoldersAndImages(activeFolder, search);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   // Compute live folder counts
   const folderCounts = useMemo(() => {
     const map: Record<string, number> = {};
     for (const folder of folders) {
+      if (folder.count !== undefined && folder.count > 0) {
+        map[folder.path] = folder.count;
+        continue;
+      }
+      const defaultFolder = CLOUDINARY_ROOT_FOLDERS.find(rf => rf.path === folder.path);
+      if (defaultFolder && defaultFolder.count) {
+        map[folder.path] = defaultFolder.count;
+        continue;
+      }
       const pathNorm = folder.path.toLowerCase().replace(/[^a-z0-9]/g, "");
       const count = localAssets.filter((item) => {
         if (deletedIds.has(item.public_id)) return false;
@@ -303,7 +349,7 @@ export default function ImageGalleryPage() {
 
         <div className="flex items-center gap-3">
           <button
-            onClick={loadFoldersAndImages}
+            onClick={() => loadFoldersAndImages()}
             className="btn-liquid btn-liquid-glass p-2.5 shadow-sm cursor-pointer"
             title="Synchronize Cloudinary Library"
           >
@@ -411,7 +457,7 @@ export default function ImageGalleryPage() {
         <div className="flex flex-wrap gap-1.5 p-2.5 bg-bg/40 rounded-[3px] border border-border/60">
           <button
             type="button"
-            onClick={() => setActiveFolder("ALL")}
+            onClick={() => handleSelectFolder("ALL")}
             className={cn(
               "px-3 py-1.5 text-[10px] font-mono font-bold uppercase rounded-[2px] border transition-all cursor-pointer flex items-center gap-1.5",
               activeFolder === "ALL"
@@ -419,18 +465,19 @@ export default function ImageGalleryPage() {
                 : "bg-surface text-text-muted border-border hover:text-text hover:border-text/40"
             )}
           >
-            <span>All Storage ({localAssets.length})</span>
+            <span>All Storage ({totalCount})</span>
           </button>
 
           {folders.map((f) => {
             const isCur = activeFolder.toLowerCase() === f.path.toLowerCase();
-            const count = folderCounts[f.path] || 0;
+            const fallbackCount = CLOUDINARY_ROOT_FOLDERS.find(rf => rf.path === f.path)?.count || 0;
+            const count = folderCounts[f.path] || f.count || fallbackCount;
 
             return (
               <button
                 key={f.path}
                 type="button"
-                onClick={() => setActiveFolder(f.path)}
+                onClick={() => handleSelectFolder(f.path)}
                 className={cn(
                   "px-3 py-1.5 text-[10px] font-mono font-bold uppercase rounded-[2px] border transition-all cursor-pointer flex items-center gap-1.5",
                   isCur

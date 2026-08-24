@@ -100,7 +100,7 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
   const [mode, setMode] = useState<"cloudinary" | "manual">("cloudinary");
   
   // Real 24 root folders from backend
-  const [folders, setFolders] = useState<Array<{ name: string; path: string }>>(CLOUDINARY_ROOT_FOLDERS);
+  const [folders, setFolders] = useState<Array<{ name: string; path: string; count?: number }>>(CLOUDINARY_ROOT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState<string>("ALL");
   
   // Live Assets state
@@ -180,6 +180,10 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
   const folderCounts = useMemo(() => {
     const map: Record<string, number> = {};
     for (const folder of folders) {
+      if (folder.count !== undefined && folder.count > 0) {
+        map[folder.path] = folder.count;
+        continue;
+      }
       const pathNorm = folder.path.toLowerCase().replace(/[^a-z0-9]/g, "");
       const count = assets.filter((item) => {
         const itemFolder = (item.folder || item.brand || "").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -314,7 +318,10 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
               <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1 bg-bg/40 rounded-[2px] border border-border/50">
                 <button
                   type="button"
-                  onClick={() => setActiveFolder("ALL")}
+                  onClick={() => {
+                    setActiveFolder("ALL");
+                    loadAssets(undefined, search);
+                  }}
                   className={cn(
                     "px-2.5 py-1 text-[9px] font-mono font-bold uppercase rounded-[2px] border transition-colors cursor-pointer flex items-center gap-1",
                     activeFolder === "ALL"
@@ -322,17 +329,23 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
                       : "bg-surface text-text-muted border-border hover:text-text hover:border-text/40"
                   )}
                 >
-                  <span>All Assets ({assets.length})</span>
+                  <span>All Assets ({totalCount})</span>
                 </button>
 
                 {folders.map((f) => {
                   const isCur = activeFolder === f.path || activeFolder === f.name;
-                  const count = folderCounts[f.path] || 0;
+                  const fallbackCount = CLOUDINARY_ROOT_FOLDERS.find(rf => rf.path === f.path)?.count || 0;
+                  const count = folderCounts[f.path] || f.count || fallbackCount;
+
                   return (
                     <button
                       key={f.path || f.name}
                       type="button"
-                      onClick={() => setActiveFolder(f.path || f.name)}
+                      onClick={() => {
+                        const target = f.path || f.name;
+                        setActiveFolder(target);
+                        loadAssets(target, search);
+                      }}
                       className={cn(
                         "px-2.5 py-1 text-[9px] font-mono font-bold uppercase rounded-[2px] border transition-colors cursor-pointer flex items-center gap-1",
                         isCur
@@ -342,11 +355,9 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
                     >
                       <FontAwesomeIcon icon={faFolder} className="text-[8px]" />
                       <span>{f.name}</span>
-                      {count > 0 && (
-                        <span className={cn("text-[8px] px-1 py-0.2 rounded font-mono", isCur ? "bg-white/20 text-white" : "bg-bg text-text-muted")}>
-                          {count}
-                        </span>
-                      )}
+                      <span className={cn("text-[8px] px-1 py-0.2 rounded font-mono", isCur ? "bg-white/20 text-white" : "bg-bg text-text-muted")}>
+                        {count}
+                      </span>
                     </button>
                   );
                 })}

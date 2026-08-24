@@ -3,6 +3,7 @@ export type Role = "ADMIN" | "MANAGER" | "CASHIER" | "STAFF" | "PUBLIC";
 export interface User {
   id: number;
   username: string;
+  name?: string;
   employee_name?: string;
   email: string;
   role: Role;
@@ -16,3 +17,4 @@ export interface LoginResponse {
   role: Role;
   user?: User;
 }
+

@@ -66,12 +66,12 @@ export const authService = {
       const username = String(credentials?.username || credentials?.email || "admin").toLowerCase();
       let role = "STAFF";
       let name = "Staff Operator";
-      if (username.includes("admin")) {
-        role = "ADMIN";
-        name = "Bora Heng (Super Admin)";
-      } else if (username.includes("manager")) {
+      if (username.includes("manager")) {
         role = "MANAGER";
         name = "Rithy Seng (Store Manager)";
+      } else if (username.includes("admin")) {
+        role = "ADMIN";
+        name = "Bora Heng (Super Admin)";
       } else if (username.includes("cashier")) {
         role = "CASHIER";
         name = "Sothea Kem (Cashier)";
@@ -79,7 +79,7 @@ export const authService = {
         role = "WAREHOUSE";
         name = "Chenda Mom (Logistics Lead)";
       } else {
-        role = "ADMIN";
+        role = "STAFF";
         name = "Authorized Operator";
       }
 
@@ -90,18 +90,20 @@ export const authService = {
         document.cookie = `outfit_token=${devToken}; expires=${expiry.toUTCString()}; path=/`;
       }
 
+      const fallbackUserData = {
+        id: role === "MANAGER" ? 2 : role === "ADMIN" ? 1 : 3,
+        name: name,
+        username: username.split("@")[0] || "operator",
+        email: `${username.split("@")[0] || "operator"}@outfit.tech`,
+        role: role as any,
+        permissions: ["*"]
+      };
+
       return {
         access_token: devToken,
         token_type: "Bearer",
         role: role,
-        user: {
-          id: 1,
-          name: name,
-          username: username.split("@")[0] || "admin",
-          email: `${username.split("@")[0]}@outfit.tech`,
-          role: role,
-          permissions: ["*"]
-        }
+        user: fallbackUserData
       };
     }
   },
@@ -111,15 +113,16 @@ export const authService = {
       const data = await api.get<any>("/auth/me");
       return UserProfileSchema.parse(data).data;
     } catch {
-      return {
-        id: 1,
-        username: "admin",
-        name: "Bora Heng (Super Admin)",
-        email: "admin@outfit.tech",
-        role: "ADMIN",
-        status: "ACTIVE",
-        permissions: ["*"]
-      };
+      // Check for existing user session from local storage to preserve current role
+      if (typeof window !== "undefined") {
+        try {
+          const cached = localStorage.getItem("outfit_user_session");
+          if (cached) {
+            return JSON.parse(cached);
+          }
+        } catch {}
+      }
+      return null;
     }
   },
 

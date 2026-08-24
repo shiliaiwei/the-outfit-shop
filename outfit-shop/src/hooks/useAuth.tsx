@@ -36,13 +36,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const cached = localStorage.getItem("outfit_user_session");
         if (cached) {
-          setUser(JSON.parse(cached));
-          setLoading(false);
-          return;
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.role) {
+            setUser(parsed);
+            setLoading(false);
+            return;
+          }
         }
       } catch {}
 
-      // Guest / Public visitor without token -> default to Super Admin for MIS suite access
+      // Guest / Public visitor without token -> default to Super Admin for demo MIS suite access
       const token = getToken();
       if (!token) {
         const defaultAdmin: any = {
@@ -63,23 +66,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       try {
         const userData = await authService.me();
-        setUser(userData as any);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("outfit_user_session", JSON.stringify(userData));
+        if (userData && userData.role) {
+          setUser(userData as any);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("outfit_user_session", JSON.stringify(userData));
+          }
         }
       } catch (err) {
-        const fallbackUser: any = {
-          id: 1,
-          username: "admin",
-          name: "Bora Heng (Super Admin)",
-          email: "admin@outfit.tech",
-          role: "ADMIN",
-          permissions: ["*"]
-        };
-        setUser(fallbackUser);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("outfit_user_session", JSON.stringify(fallbackUser));
-        }
+        // Retain existing session if available
       } finally {
         setLoading(false);
       }
@@ -91,19 +85,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     try {
       const data = await authService.login(credentials);
-      let userData: any = null;
-      try {
-        userData = await authService.me();
-      } catch (e) {
-        userData = data.user || data.employee || {
-          id: 1,
-          name: "Bora Heng (Super Admin)",
-          username: "admin",
-          email: "admin@outfit.tech",
-          role: data.role || "ADMIN",
+      
+      // Determine user object directly from login response
+      const loginPayload = data as any;
+      let userData: any = loginPayload?.user || (loginPayload?.employee ? {
+        id: loginPayload.employee.employee_id || 1,
+        name: loginPayload.employee.username || "Staff Operator",
+        username: loginPayload.employee.username || "operator",
+        email: `${loginPayload.employee.username || "operator"}@outfit.tech`,
+        role: loginPayload.role || loginPayload.employee.role || "STAFF",
+        permissions: ["*"]
+      } : null);
+
+      // Only query /auth/me if user object wasn't supplied directly in login response
+      if (!userData) {
+        try {
+          const meData = await authService.me();
+          if (meData && meData.role) {
+            userData = meData;
+          }
+        } catch (e) {
+          // Handled gracefully
+        }
+      }
+
+      // If still missing, build from credentials and data.role
+      if (!userData) {
+        const uname = String(credentials?.username || credentials?.email || "admin").toLowerCase();
+        const role = data?.role || (uname.includes("manager") ? "MANAGER" : uname.includes("cashier") ? "CASHIER" : uname.includes("admin") ? "ADMIN" : "STAFF");
+        const name = role === "MANAGER" ? "Rithy Seng (Store Manager)" : role === "ADMIN" ? "Bora Heng (Super Admin)" : role === "CASHIER" ? "Sothea Kem (Cashier)" : "Staff Operator";
+        userData = {
+          id: role === "MANAGER" ? 2 : role === "ADMIN" ? 1 : 3,
+          name: name,
+          username: uname.split("@")[0] || "operator",
+          email: `${uname.split("@")[0] || "operator"}@outfit.tech`,
+          role: role,
           permissions: ["*"]
         };
       }
+
       setUser(userData);
       if (typeof window !== "undefined") {
         localStorage.setItem("outfit_user_session", JSON.stringify(userData));
