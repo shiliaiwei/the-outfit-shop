@@ -17,12 +17,15 @@ import { toast } from "sonner";
 import { Clock, User as UserIcon, Monitor, Zap, ShoppingBag, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
+
 export default function PosPage() {
   const { user } = useAuth();
   const { items, updateQty, removeItem, clearCart, totals, addItem } = useCart();
   const { checkout, loading: checkoutLoading } = usePosMutations();
   const [showReceipt, setShowReceipt] = useState(false);
   const [lastOrder, setLastOrder] = useState<any>(null);
+  const [isWipeConfirmOpen, setIsWipeConfirmOpen] = useState(false);
   const receiptRef = useRef<HTMLDivElement>(null);
   const scannerRef = useRef<BarcodeScannerRef>(null);
 
@@ -55,7 +58,7 @@ export default function PosPage() {
 
   useKeyboardShortcuts([
     { key: "F2", action: () => scannerRef.current?.focus() },
-    { key: "F9", action: () => { if(confirm("ABORT TRANSACTION: WIPE CART?")) clearCart(); } },
+    { key: "F9", action: () => { if (items.length > 0) setIsWipeConfirmOpen(true); } },
     { key: "F12", action: () => handleCheckout("CASH") },
   ]);
 
@@ -185,6 +188,22 @@ export default function PosPage() {
                />
              )}
           </div>
+
+          {/* Compact Liquid Glass Cart Wipe Confirmation */}
+          <ConfirmModal
+            isOpen={isWipeConfirmOpen}
+            onClose={() => setIsWipeConfirmOpen(false)}
+            onConfirm={() => {
+              clearCart();
+              setIsWipeConfirmOpen(false);
+              toast.info("Cart cleared");
+            }}
+            title="Wipe POS Cart"
+            description="Are you sure you want to abort this transaction and clear all scanned items?"
+            confirmLabel="Wipe Cart"
+            cancelLabel="Keep Items"
+            variant="danger"
+          />
         </div>
       </ShiftGuard>
     </Guard>

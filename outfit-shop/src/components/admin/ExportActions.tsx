@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Download, FileSpreadsheet, FileText, File as FilePdf, Loader2 } from "lucide-react";
 import { reportService } from "@/services/reportService";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface ExportActionsProps {
@@ -18,9 +18,9 @@ export function ExportActions({ type, params, className }: ExportActionsProps) {
     setExporting(format);
     try {
       await reportService.exportReport(type, format, params);
-    } catch (err) {
-      console.error(err);
-      alert("Export failed");
+      toast.success(`${format.toUpperCase()} export generated`);
+    } catch (err: any) {
+      toast.error(err?.message || "Export failed");
     } finally {
       setExporting(null);
     }
@@ -31,28 +31,25 @@ export function ExportActions({ type, params, className }: ExportActionsProps) {
       <button
         onClick={() => handleExport('excel')}
         disabled={!!exporting}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-success/10 text-success border border-success/20 text-[10px] font-black uppercase tracking-widest hover:bg-success/20 transition-all disabled:opacity-50"
+        className="px-3 py-1.5 rounded-[2px] bg-success/10 text-success border border-success/20 text-[10px] font-mono font-black uppercase tracking-wider hover:bg-success/20 transition-all disabled:opacity-50 cursor-pointer"
       >
-        {exporting === 'excel' ? <Loader2 size={14} className="animate-spin" /> : <FileSpreadsheet size={14} />}
-        Excel
+        {exporting === 'excel' ? "Exporting..." : "Excel"}
       </button>
 
       <button
         onClick={() => handleExport('csv')}
         disabled={!!exporting}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-primary/10 text-primary border border-primary/20 text-[10px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all disabled:opacity-50"
+        className="px-3 py-1.5 rounded-[2px] bg-primary/10 text-primary border border-primary/20 text-[10px] font-mono font-black uppercase tracking-wider hover:bg-primary/20 transition-all disabled:opacity-50 cursor-pointer"
       >
-        {exporting === 'csv' ? <Loader2 size={14} className="animate-spin" /> : <FileText size={14} />}
-        CSV
+        {exporting === 'csv' ? "Exporting..." : "CSV"}
       </button>
 
       <button
         onClick={() => handleExport('pdf')}
         disabled={!!exporting}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-danger/10 text-danger border border-danger/20 text-[10px] font-black uppercase tracking-widest hover:bg-danger/20 transition-all disabled:opacity-50"
+        className="px-3 py-1.5 rounded-[2px] bg-danger/10 text-danger border border-danger/20 text-[10px] font-mono font-black uppercase tracking-wider hover:bg-danger/20 transition-all disabled:opacity-50 cursor-pointer"
       >
-        {exporting === 'pdf' ? <Loader2 size={14} className="animate-spin" /> : <FilePdf size={14} />}
-        PDF
+        {exporting === 'pdf' ? "Exporting..." : "PDF"}
       </button>
     </div>
   );

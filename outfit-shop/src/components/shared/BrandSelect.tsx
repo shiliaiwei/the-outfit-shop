@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { cn } from "@/lib/utils";
 
 export interface BrandSelectOption {
   value: string;
   label: string;
   badge?: string;
-  icon?: React.ComponentType<{ className?: string; size?: number }>;
+  icon?: any;
   disabled?: boolean;
 }
 
@@ -76,7 +77,7 @@ export function BrandSelect({
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-full flex items-center justify-between rounded-md border border-border bg-bg text-text text-left transition-all duration-150",
+          "w-full flex items-center justify-between rounded-[2px] border border-border bg-bg text-text text-left transition-all duration-150 cursor-pointer",
           "hover:border-[#C84428] focus:outline-none focus:ring-1 focus:ring-[#C84428]",
           isOpen && "border-[#C84428] ring-1 ring-[#C84428] shadow-sm",
           disabled && "opacity-50 cursor-not-allowed",
@@ -86,17 +87,17 @@ export function BrandSelect({
       >
         <span className="truncate font-medium flex items-center gap-2">
           {selectedOption?.icon && (
-            <selectedOption.icon className="w-3.5 h-3.5 text-[#C84428] shrink-0" />
+            <FontAwesomeIcon icon={selectedOption.icon} className="w-3.5 h-3.5 text-[#C84428] shrink-0" />
           )}
           <span className={!selectedOption ? "text-text-muted" : "text-[#1E2631]"}>
             {selectedOption ? selectedOption.label : placeholder}
           </span>
         </span>
 
-        <ChevronDown
-          size={14}
+        <FontAwesomeIcon
+          icon={faChevronDown}
           className={cn(
-            "text-text-muted transition-transform duration-200 shrink-0 ml-2",
+            "text-[#1E2631] text-[10px] h-3 w-3 transition-transform duration-200 shrink-0 ml-2",
             isOpen && "transform rotate-180 text-[#C84428]"
           )}
         />
@@ -106,11 +107,11 @@ export function BrandSelect({
       {isOpen && (
         <div
           className={cn(
-            "absolute left-0 right-0 top-full mt-1.5 z-50 overflow-hidden rounded-md border border-[#E5E0D8] bg-white shadow-xl shadow-black/10 animate-in fade-in-0 zoom-in-95 duration-100",
+            "absolute left-0 right-0 top-full mt-1.5 z-50 overflow-hidden rounded-[2px] border border-border bg-white shadow-xl shadow-black/10 animate-in fade-in-0 zoom-in-95 duration-100",
             popupClassName
           )}
         >
-          <div className="max-h-56 overflow-y-auto py-1 scrollbar-thin scrollbar-thumb-[#E5E0D8]">
+          <div className="max-h-56 overflow-y-auto py-1 scrollbar-thin scrollbar-thumb-border">
             {options.map((option) => {
               const isSelected = option.value === value;
               const OptionIcon = option.icon;
@@ -126,7 +127,7 @@ export function BrandSelect({
                     setIsOpen(false);
                   }}
                   className={cn(
-                    "w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-left transition-colors duration-100",
+                    "w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-left transition-colors duration-100 cursor-pointer",
                     isSelected
                       ? "bg-[#F8F7F4] text-[#C84428] font-semibold"
                       : "text-[#1E2631] hover:bg-[#F8F7F4] hover:text-[#C84428]",
@@ -135,7 +136,8 @@ export function BrandSelect({
                 >
                   <div className="flex items-center gap-2 truncate">
                     {OptionIcon && (
-                      <OptionIcon
+                      <FontAwesomeIcon
+                        icon={OptionIcon}
                         className={cn(
                           "w-3.5 h-3.5 shrink-0",
                           isSelected ? "text-[#C84428]" : "text-text-muted"
@@ -151,7 +153,7 @@ export function BrandSelect({
                   </div>
 
                   {isSelected && (
-                    <Check size={14} className="text-[#C84428] shrink-0 ml-2" />
+                    <FontAwesomeIcon icon={faCheck} className="text-[#C84428] text-xs h-3.5 w-3.5 shrink-0 ml-2" />
                   )}
                 </button>
               );

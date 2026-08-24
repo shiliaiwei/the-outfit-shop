@@ -37,22 +37,16 @@ export default function AttributesPage() {
 
   return (
     <div className="space-y-12 animate-in fade-in duration-1000">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-10">
-        <div className="space-y-3">
-          <div className="flex items-center gap-4">
-             <div className="p-3 bg-primary/10 rounded-[3px] border border-primary/20 text-primary shadow-2xl">
-                <Sliders size={32} />
-             </div>
-             <div>
-                <h1 className="text-5xl font-black text-text uppercase tracking-tighter leading-none">Attributes</h1>
-                <p className="text-[11px] font-mono text-text-muted uppercase tracking-[0.3em] mt-3">Master Dimension Registry • Chromatic Standards</p>
-             </div>
-          </div>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
+        <div>
+          <h1 className="text-3xl font-black text-text uppercase tracking-tight">Product Attributes</h1>
+          <p className="text-xs text-text-muted mt-1">
+            Sizes, colors, and dimension specifications
+          </p>
         </div>
-        <div className="flex gap-4">
-           <RealTimeBadge label="Registry Active" />
-           <button onClick={loadData} className="p-3 liquid-glass hover:text-primary transition-all">
-              <RefreshCw size={18} className={cn(loading && "animate-spin")} />
+        <div className="flex items-center gap-3">
+           <button onClick={loadData} className="btn-liquid btn-liquid-glass p-2.5 shadow-sm hover:border-border transition-all cursor-pointer" title="Refresh">
+              <RefreshCw size={16} className={cn(loading && "animate-spin")} />
            </button>
         </div>
       </div>

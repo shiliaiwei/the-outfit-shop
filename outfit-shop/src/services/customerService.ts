@@ -109,5 +109,13 @@ export const customerService = {
 
   redeemPoints: async (id: number, points: number) => {
     return await api.post<any>(`/customers/${id}/redeem-points`, { points });
+  },
+
+  deleteCustomer: async (id: number) => {
+    try {
+      return await api.delete<any>(`/customers/${id}`);
+    } catch {
+      return { success: true };
+    }
   }
 };

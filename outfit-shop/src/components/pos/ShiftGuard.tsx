@@ -5,6 +5,8 @@ import { usePosMutations } from "@/hooks/pos/usePosMutations";
 import { Shift } from "@/types/pos.types";
 import { DoorOpen, Loader2 } from "lucide-react";
 
+import { toast } from "sonner";
+
 interface ShiftGuardProps {
   children: React.ReactNode;
 }
@@ -28,8 +30,9 @@ export function ShiftGuard({ children }: ShiftGuardProps) {
     try {
       const res = await openShift(parseFloat(openingFloat), 0);
       setShift(res);
-    } catch (err) {
-      alert("Failed to open shift");
+      toast.success("POS Shift authenticated & initialized");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to open shift");
     }
   };
 

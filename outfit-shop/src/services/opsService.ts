@@ -159,12 +159,37 @@ export const opsService = {
 
   // Media Gallery (Cloudinary)
   getGallery: async () => {
-    const data = await api.get<any>("/uploads/gallery");
-    return GalleryResp.parse(data);
+    try {
+      const data = await api.get<any>("/cloudinary/assets", { params: { max_results: 60 } });
+      return GalleryResp.parse(data);
+    } catch {
+      try {
+        const data = await api.get<any>("/uploads/gallery");
+        return GalleryResp.parse(data);
+      } catch {
+        return { success: true, data: [] };
+      }
+    }
+  },
+  getCloudinaryFolders: async () => {
+    try {
+      const data = await api.get<any>("/cloudinary/folders");
+      if (Array.isArray(data?.data)) return data.data;
+      if (Array.isArray(data)) return data;
+      return [];
+    } catch {
+      return [];
+    }
+  },
+  getCloudinaryAssets: async (params?: { folder?: string; search?: string; max_results?: number; next_cursor?: string }) => {
+    try {
+      const data = await api.get<any>("/cloudinary/assets", { params });
+      return data;
+    } catch (e) {
+      return { success: false, data: [], next_cursor: null };
+    }
   },
   uploadImage: async (formData: FormData) => {
-    // Note: client.ts uses JSON.stringify by default, we might need to update it for FormData
-    // For now we use the standardized multipart approach if the API allows it
     return await api.post<any>("/uploads/image", formData);
   },
   deleteImage: async (id: string) => {

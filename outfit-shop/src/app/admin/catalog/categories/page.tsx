@@ -97,20 +97,14 @@ export default function CategoriesPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-10">
         <div className="space-y-3">
-          <div className="flex items-center gap-4">
-             <div className="p-3 bg-bg rounded-[3px] border border-border text-text shadow-sm">
-                <FolderTree size={28} className="text-text" />
-             </div>
-             <div>
-                <h1 className="text-5xl font-black text-text uppercase tracking-tighter leading-none">Taxonomy</h1>
-                <p className="text-[11px] font-mono text-text-muted uppercase tracking-[0.3em] mt-3">
-                  Collection Hierarchy • {categories.length} Categories Active
-                </p>
-             </div>
+          <div>
+             <h1 className="text-3xl font-black text-text uppercase tracking-tight">Categories</h1>
+             <p className="text-xs text-text-muted mt-1">
+               Product categories and catalog structure ({categories.length} total)
+             </p>
           </div>
         </div>
-        <div className="flex gap-4 items-center">
-           <RealTimeBadge label="Engine Connected" />
+        <div className="flex gap-3 items-center">
            <LiquidButton variant="terracotta" onClick={handleOpenAdd}>
               <Plus size={16} className="mr-2 text-white" /> Add Category
            </LiquidButton>

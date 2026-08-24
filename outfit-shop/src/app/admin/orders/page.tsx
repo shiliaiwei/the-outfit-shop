@@ -3,11 +3,27 @@
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api/client";
 import { OrderDetailsSheet } from "@/components/admin/OrderDetailsSheet";
-import { LiquidCard } from "@/components/ui/LiquidCard";
-import { LiquidButton } from "@/components/ui/LiquidButton";
-import { RealTimeBadge } from "@/components/ui/RealTimeBadge";
-import { Search, Filter, ShoppingBag, Eye, ShieldAlert, CreditCard, Banknote, Calendar, Receipt } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBagShopping,
+  faEye,
+  faRotate,
+  faUser,
+  faClock,
+  faReceipt,
+  faMagnifyingGlass,
+  faBan,
+  faCircleCheck
+} from "@fortawesome/free-solid-svg-icons";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { BrandSelect, BrandSelectOption } from "@/components/shared/BrandSelect";
+
+const STATUS_FILTER_OPTIONS: BrandSelectOption[] = [
+  { value: "ALL", label: "All Transactions" },
+  { value: "VERIFIED", label: "Verified & Paid" },
+  { value: "VOIDED", label: "Voided Transactions" }
+];
 
 const FALLBACK_ORDERS = [
   {
@@ -70,6 +86,8 @@ const FALLBACK_ORDERS = [
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -117,83 +135,148 @@ export default function OrdersPage() {
     setSheetOpen(true);
   };
 
+  const filteredOrders = orders.filter((o) => {
+    const matchSearch =
+      search === "" ||
+      String(o.id).includes(search) ||
+      (o.customer_name && o.customer_name.toLowerCase().includes(search.toLowerCase())) ||
+      (o.cashier_name && o.cashier_name.toLowerCase().includes(search.toLowerCase()));
+
+    const matchStatus =
+      statusFilter === "ALL" ||
+      (statusFilter === "VERIFIED" && !o.is_void) ||
+      (statusFilter === "VOIDED" && o.is_void);
+
+    return matchSearch && matchStatus;
+  });
+
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-             <div className="p-2 bg-primary/10 rounded-[3px] border border-primary/20 text-primary">
-                <Receipt size={24} />
-             </div>
-             <h1 className="text-4xl font-black text-text uppercase tracking-tighter">Order Hub</h1>
-          </div>
-          <p className="text-[10px] font-mono text-text-muted uppercase tracking-[0.3em] pl-1">
-             Real-time Transaction Audit Ledger • {orders.length} Verified Records
+    <div className="space-y-6 sm:space-y-10 animate-in fade-in duration-700">
+      {/* 1. HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6 border-b border-border pb-6 sm:pb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black text-text uppercase tracking-tight">Orders</h1>
+          <p className="text-xs text-text-muted mt-1">
+             Sales transactions and order fulfillment ({orders.length} total)
           </p>
         </div>
-        <div className="flex gap-3">
-          <RealTimeBadge label="POS API Connected" />
-          <LiquidButton onClick={() => load()}>
-             Sync Ledger
-          </LiquidButton>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => load()}
+            className="btn-liquid btn-liquid-glass px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm cursor-pointer"
+          >
+            <FontAwesomeIcon icon={faRotate} className={cn("text-xs text-[#1E2631]", loading && "animate-spin")} />
+            <span>Refresh Orders</span>
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      {/* 2. SEARCH & FILTER BAR */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="sm:col-span-2 liquid-glass p-1.5 shadow-md flex items-center">
+          <div className="relative w-full flex items-center">
+            <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute left-4 text-[#1E2631] text-xs h-3.5 w-3.5" />
+            <input
+              type="text"
+              placeholder="Search by order ID, customer name, or operator..."
+              className="w-full pl-11 pr-4 py-2.5 bg-transparent border-none focus:ring-0 text-xs font-mono text-text placeholder:text-text-muted focus:outline-none"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div>
+          <BrandSelect
+            options={STATUS_FILTER_OPTIONS}
+            value={statusFilter}
+            onChange={(val) => setStatusFilter(val)}
+            size="md"
+          />
+        </div>
+      </div>
+
+      {/* 3. ORDER LEDGER LIST (Responsive Cards) */}
+      <div className="grid grid-cols-1 gap-3 sm:gap-4">
         {loading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-20 animate-pulse liquid-glass bg-white/20" />
+            <div key={i} className="h-24 animate-pulse liquid-glass" />
           ))
-        ) : orders.map((o) => (
-          <div
-            key={o.id}
-            onClick={() => handleOpenOrder(o)}
-            className={cn(
-              "liquid-glass flex flex-col md:flex-row items-center gap-6 p-5 group cursor-pointer transition-all duration-500 hover:border-primary/30",
-              o.is_void && "bg-danger/[0.03] border-danger/20 opacity-80"
-            )}
-          >
-            <div className="flex-shrink-0 p-3 bg-bg border border-border/10 text-text-muted group-hover:text-primary transition-colors">
-              <ShoppingBag size={20} />
-            </div>
-
-            <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
-               <div className="space-y-1">
-                  <p className="text-[9px] font-mono text-primary font-black uppercase tracking-widest">OUTFIT-{o.id}</p>
-                  <div className="flex items-center gap-2 text-[10px] font-black text-text uppercase tracking-tight">
-                    {o.customer_name || "Guest Patron"}
-                  </div>
-               </div>
-
-               <div className="space-y-1">
-                  <p className="text-[8px] font-black text-text-muted uppercase tracking-tighter">Auth Signature</p>
-                  <p className="text-[10px] font-mono font-bold text-text uppercase">@{o.cashier_name || "System"}</p>
-               </div>
-
-               <div className="space-y-1">
-                  <p className="text-[8px] font-black text-text-muted uppercase tracking-tighter">Operational Cycle</p>
-                  <p className="text-[10px] font-mono font-bold text-text-muted uppercase truncate">
-                    {new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {new Date(o.created_at).toLocaleDateString()}
-                  </p>
-               </div>
-
-               <div className="text-right pr-4">
-                  <p className="text-[8px] font-black text-text-muted uppercase tracking-tighter mb-1">Transaction Value</p>
-                  <p className="text-xl font-black text-text font-mono tracking-tighter leading-none">${Number(o.total || 0).toFixed(2)}</p>
-               </div>
-            </div>
-
-            <div className="flex items-center gap-4 pl-6 border-l border-border/10">
-               <div className={cn(
-                 "px-3 py-1 rounded-[3px] text-[8px] font-black uppercase border tracking-widest",
-                 o.is_void ? "bg-danger text-white border-danger" : "bg-success/10 text-success border-success/20"
-               )}>
-                  {o.is_void ? "VOIDED" : "VERIFIED"}
-               </div>
-               <Eye size={18} className="text-text-muted group-hover:text-primary transition-all" />
-            </div>
+        ) : filteredOrders.length === 0 ? (
+          <div className="py-16 text-center liquid-glass">
+            <p className="text-xs font-mono text-text-muted">No orders match your filter criteria.</p>
           </div>
-        ))}
+        ) : (
+          filteredOrders.map((o) => (
+            <div
+              key={o.id}
+              onClick={() => handleOpenOrder(o)}
+              className={cn(
+                "liquid-glass p-4 sm:p-5 group cursor-pointer transition-all duration-300 hover:border-primary/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-md",
+                o.is_void && "bg-danger/[0.03] border-danger/20"
+              )}
+            >
+              {/* Order Header / Customer Info */}
+              <div className="flex items-center gap-3 w-full md:w-auto">
+                <FontAwesomeIcon icon={faReceipt} className="text-[#1E2631] text-lg shrink-0" />
+                <div className="space-y-0.5 min-w-0 flex-1">
+                  <p className="text-[10px] font-mono text-primary font-black uppercase tracking-wider">
+                    OUTFIT-{o.id}
+                  </p>
+                  <h3 className="text-sm font-black text-text uppercase tracking-tight truncate group-hover:text-primary transition-colors">
+                    {o.customer_name || "Guest Patron"}
+                  </h3>
+                </div>
+                {/* Status Pill on mobile */}
+                <div className="md:hidden">
+                  <span
+                    className={cn(
+                      "px-2 py-0.5 text-[8px] font-black uppercase rounded-[2px] border tracking-wider",
+                      o.is_void ? "bg-danger text-white border-danger" : "bg-success/10 text-success border-success/20"
+                    )}
+                  >
+                    {o.is_void ? "VOIDED" : "VERIFIED"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Middle Metrics: Cashier, Timestamp, Total */}
+              <div className="grid grid-cols-3 gap-3 w-full md:w-auto md:flex md:items-center md:gap-8 border-y md:border-y-0 border-border/20 py-2.5 md:py-0">
+                <div className="space-y-0.5">
+                  <p className="text-[8px] font-bold text-text-muted uppercase tracking-wider">Operator</p>
+                  <p className="text-[10px] font-mono font-bold text-text truncate">@{o.cashier_name || "System"}</p>
+                </div>
+
+                <div className="space-y-0.5">
+                  <p className="text-[8px] font-bold text-text-muted uppercase tracking-wider">Time</p>
+                  <p className="text-[10px] font-mono font-bold text-text-muted truncate">
+                    {new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+
+                <div className="space-y-0.5 text-right md:text-left">
+                  <p className="text-[8px] font-bold text-text-muted uppercase tracking-wider">Total</p>
+                  <p className="text-sm sm:text-base font-black text-text font-mono leading-none">
+                    ${Number(o.total || 0).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Actions & Status on Desktop */}
+              <div className="hidden md:flex items-center gap-4">
+                <span
+                  className={cn(
+                    "px-2.5 py-1 rounded-[2px] text-[9px] font-black uppercase border tracking-wider",
+                    o.is_void ? "bg-danger text-white border-danger" : "bg-success/10 text-success border-success/20"
+                  )}
+                >
+                  {o.is_void ? "VOIDED" : "VERIFIED"}
+                </span>
+                <FontAwesomeIcon icon={faEye} className="text-xs text-[#1E2631] group-hover:text-primary transition-colors" />
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       <OrderDetailsSheet

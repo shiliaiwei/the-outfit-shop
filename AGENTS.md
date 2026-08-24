@@ -21,4 +21,7 @@ Before executing any `git push` or `git merge` to any remote or branch:
    - [.agents/rules/brand-select-dropdowns.md](.agents/rules/brand-select-dropdowns.md)
    - [.agents/rules/authentication-ui-standards.md](.agents/rules/authentication-ui-standards.md)
    - [.agents/rules/icon-design-standards.md](.agents/rules/icon-design-standards.md)
+   - [.agents/rules/confirm-modal-and-alerts.md](.agents/rules/confirm-modal-and-alerts.md)
+   - [.agents/rules/product-asset-and-size-selectors.md](.agents/rules/product-asset-and-size-selectors.md)
    - [.agents/skills/liquid-glass-design-system/SKILL.md](.agents/skills/liquid-glass-design-system/SKILL.md)
+   - [.agents/skills/outfit-admin-interactive-patterns/SKILL.md](.agents/skills/outfit-admin-interactive-patterns/SKILL.md)

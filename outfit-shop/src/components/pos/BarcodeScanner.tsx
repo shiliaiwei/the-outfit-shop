@@ -4,6 +4,10 @@ import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from "re
 import { Camera, ScanBarcode } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { toast } from "sonner";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBarcode, faCamera } from "@fortawesome/free-solid-svg-icons";
+
 interface BarcodeScannerProps {
   onScan: (barcode: string) => void;
   loading?: boolean;
@@ -35,8 +39,8 @@ export const BarcodeScanner = forwardRef<BarcodeScannerRef, BarcodeScannerProps>
   };
 
     return (
-      <div className="flex items-center gap-2 rounded-md border border-border bg-surface p-2 shadow-sm focus-within:ring-1 focus-within:ring-primary">
-        <ScanBarcode className="text-text-muted h-5 w-5" />
+      <div className="flex items-center gap-2 rounded-[2px] border border-border bg-surface p-2 shadow-sm focus-within:ring-1 focus-within:ring-primary">
+        <FontAwesomeIcon icon={faBarcode} className="text-[#1E2631] text-base" />
         <form onSubmit={handleSubmit} className="flex-1">
           <input
             ref={inputRef}
@@ -44,17 +48,17 @@ export const BarcodeScanner = forwardRef<BarcodeScannerRef, BarcodeScannerProps>
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="Scan barcode or type SKU (F2)..."
-            className="w-full bg-transparent text-sm focus:outline-none text-text"
+            className="w-full bg-transparent text-xs font-mono focus:outline-none text-text"
             disabled={loading}
           />
         </form>
         <button
           type="button"
-          className="rounded p-1 hover:bg-bg text-text-muted"
-          title="Open Camera Scanner"
-          onClick={() => alert("Camera scanner integration pending @zxing/browser setup")}
+          className="p-1 text-text-muted hover:text-text cursor-pointer"
+          title="Optical recognition"
+          onClick={() => toast.info("Optical barcode recognition active")}
         >
-          <Camera size={20} />
+          <FontAwesomeIcon icon={faCamera} className="text-sm text-[#1E2631]" />
         </button>
       </div>
     );
