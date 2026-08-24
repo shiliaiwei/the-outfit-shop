@@ -5,6 +5,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false;
 import { AuthProvider } from "@/hooks/useAuth";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { Toaster } from "sonner";
 
 const outfitFont = Outfit({
@@ -86,12 +87,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-theme-bg="lights_out"
       className={`${outfitFont.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable} ${khmerFont.variable} ${caveatFont.variable} ${playfairDisplay.variable} ${bodoniModa.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans selection:bg-[#C84428] selection:text-white">
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+      <body className="min-h-full flex flex-col font-sans selection:bg-[#1D9BF0] selection:text-white transition-colors duration-200 bg-bg text-text">
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
         <Toaster
           richColors
           position="bottom-right"
@@ -100,7 +104,7 @@ export default function RootLayout({
           toastOptions={{
             className: "liquid-glass border border-border text-xs font-sans shadow-xl backdrop-blur-md",
             style: {
-              borderRadius: "4px",
+              borderRadius: "16px",
             }
           }}
         />

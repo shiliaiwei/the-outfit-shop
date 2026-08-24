@@ -18,23 +18,29 @@ export const BrandUpsertSchema = z.object({
 
 export const SizeUpsertSchema = z.object({
   size_name: z.string().min(1).max(20),
-  size_order: z.number().int().min(0),
+  size_order: z.number().int().min(0).optional(),
+  size_code: z.string().max(30).optional(),
 });
 
 export const ColorUpsertSchema = z.object({
   color_name: z.string().min(2).max(50),
   hex_code: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Must be a valid hex color"),
+  pantone: z.string().max(50).optional(),
 });
 
 // --- API Response Envelopes ---
 const CategoryListResp = ApiEnvelope(
   z.union([z.array(z.any()), z.any()]).transform((d: any) => {
     if (Array.isArray(d)) {
-      return d.map((item) => ({ ...item, id: item.id ?? item.category_id ?? Math.floor(Math.random() * 10000) }));
+      return d
+        .filter((item) => !item.deleted_at)
+        .map((item) => ({ ...item, id: item.id ?? item.category_id ?? Math.floor(Math.random() * 10000) }));
     }
     if (d && typeof d === "object") {
       const items = Array.isArray(d.categories) ? d.categories : Object.values(d).filter((v) => typeof v === "object" && v !== null && !Array.isArray(v));
-      return items.map((item: any) => ({ ...item, id: item.id ?? item.category_id ?? Math.floor(Math.random() * 10000) }));
+      return items
+        .filter((item: any) => !item.deleted_at)
+        .map((item: any) => ({ ...item, id: item.id ?? item.category_id ?? Math.floor(Math.random() * 10000) }));
     }
     return [];
   })
@@ -43,36 +49,50 @@ const CategoryListResp = ApiEnvelope(
 const BrandListResp = ApiEnvelope(
   z.union([z.array(z.any()), z.any()]).transform((d: any) => {
     const list = Array.isArray(d) ? d : (Array.isArray(d?.brands) ? d.brands : []);
-    return list.map((item: any) => ({ ...item, id: item.id ?? item.brand_id ?? Math.floor(Math.random() * 10000) }));
+    return list
+      .filter((item: any) => !item.deleted_at)
+      .map((item: any) => ({ ...item, id: item.id ?? item.brand_id ?? Math.floor(Math.random() * 10000) }));
   })
 );
 
 const SizeListResp = ApiEnvelope(
   z.union([z.array(z.any()), z.any()]).transform((d: any) => {
     const list = Array.isArray(d) ? d : (Array.isArray(d?.sizes) ? d.sizes : []);
-    return list.map((item: any) => ({ ...item, id: item.id ?? item.size_id ?? Math.floor(Math.random() * 10000) }));
+    return list
+      .filter((item: any) => !item.deleted_at)
+      .map((item: any) => ({
+        ...item,
+        id: item.id ?? item.size_id ?? Math.floor(Math.random() * 10000),
+        size_name: item.size_name ?? item.name ?? "M",
+        size_order: Number(item.size_order ?? item.order ?? 1),
+        size_code: item.size_code ?? item.code ?? "",
+        deleted_at: item.deleted_at ?? null,
+      }));
   })
 );
 
 const ColorListResp = ApiEnvelope(
   z.union([z.array(z.any()), z.any()]).transform((d: any) => {
     const list = Array.isArray(d) ? d : (Array.isArray(d?.colors) ? d.colors : (Array.isArray(d?.data) ? d.data : []));
-    return list.map((item: any) => {
-      let hex = item.hex_code ?? item.hex_color ?? item.hex ?? item.color_code ?? item.code ?? item.value ?? "";
-      if (hex && typeof hex === "string") {
-        hex = hex.trim();
-        if (!hex.startsWith("#") && /^[0-9A-Fa-f]{3,6}$/.test(hex)) {
-          hex = `#${hex}`;
+    return list
+      .filter((item: any) => !item.deleted_at)
+      .map((item: any) => {
+        let hex = item.hex_code ?? item.hex_color ?? item.hex ?? item.color_code ?? item.code ?? item.value ?? "";
+        if (hex && typeof hex === "string") {
+          hex = hex.trim();
+          if (!hex.startsWith("#") && /^[0-9A-Fa-f]{3,6}$/.test(hex)) {
+            hex = `#${hex}`;
+          }
         }
-      }
-      return {
-        ...item,
-        id: item.id ?? item.color_id ?? Math.floor(Math.random() * 10000),
-        color_name: item.color_name ?? item.name ?? item.title ?? "Bespoke Hue",
-        hex_code: hex || "#1E2631",
-        pantone: item.pantone ?? item.pantone_code ?? "PANTONE ARCHIVE"
-      };
-    });
+        return {
+          ...item,
+          id: item.id ?? item.color_id ?? Math.floor(Math.random() * 10000),
+          color_name: item.color_name ?? item.name ?? item.title ?? "Bespoke Hue",
+          hex_code: hex || "#1E2631",
+          pantone: item.pantone ?? item.pantone_code ?? "PANTONE ARCHIVE",
+          deleted_at: item.deleted_at ?? null,
+        };
+      });
   })
 );
 

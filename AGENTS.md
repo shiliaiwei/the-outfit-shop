@@ -25,5 +25,8 @@ Before executing any `git push` or `git merge` to any remote or branch:
    - [.agents/rules/product-asset-and-size-selectors.md](.agents/rules/product-asset-and-size-selectors.md)
    - [.agents/rules/api-error-triage-and-backend-prompts.md](.agents/rules/api-error-triage-and-backend-prompts.md)
    - [.agents/skills/liquid-glass-design-system/SKILL.md](.agents/skills/liquid-glass-design-system/SKILL.md)
+   - [.agents/skills/x-social-liquid-glass-design-system/SKILL.md](.agents/skills/x-social-liquid-glass-design-system/SKILL.md)
    - [.agents/skills/outfit-admin-interactive-patterns/SKILL.md](.agents/skills/outfit-admin-interactive-patterns/SKILL.md)
+   - [.agents/skills/outfit-pos-terminal-and-khqr-checkout/SKILL.md](.agents/skills/outfit-pos-terminal-and-khqr-checkout/SKILL.md)
+   - [.agents/skills/rbac-role-permission-matrix/SKILL.md](.agents/skills/rbac-role-permission-matrix/SKILL.md)
    - [.agents/skills/api-error-diagnosis-and-backend-handoff/SKILL.md](.agents/skills/api-error-diagnosis-and-backend-handoff/SKILL.md)

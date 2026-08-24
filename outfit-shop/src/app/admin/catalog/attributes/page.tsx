@@ -34,7 +34,7 @@ export default function AttributesPage() {
   // Color Modal
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
   const [editingColor, setEditingColor] = useState<any | null>(null);
-  const [colorForm, setColorForm] = useState({ color_name: "", hex_code: "#1E2631" });
+  const [colorForm, setColorForm] = useState({ color_name: "", hex_code: "#1E2631", pantone: "" });
 
   // Size Modal
   const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
@@ -67,13 +67,13 @@ export default function AttributesPage() {
   // --- COLOR HANDLERS ---
   const handleOpenAddColor = () => {
     setEditingColor(null);
-    setColorForm({ color_name: "", hex_code: "#1E2631" });
+    setColorForm({ color_name: "", hex_code: "#1E2631", pantone: "" });
     setIsColorModalOpen(true);
   };
 
   const handleOpenEditColor = (c: any) => {
     setEditingColor(c);
-    setColorForm({ color_name: c.color_name, hex_code: c.hex_code || "#1E2631" });
+    setColorForm({ color_name: c.color_name, hex_code: c.hex_code || "#1E2631", pantone: c.pantone || "" });
     setIsColorModalOpen(true);
   };
 
@@ -86,7 +86,8 @@ export default function AttributesPage() {
 
     const payload = {
       color_name: colorForm.color_name.trim(),
-      hex_code: colorForm.hex_code.trim()
+      hex_code: colorForm.hex_code.trim(),
+      pantone: colorForm.pantone.trim() || undefined
     };
 
     if (editingColor) {
@@ -382,22 +383,33 @@ export default function AttributesPage() {
                 </div>
               </div>
 
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-text-muted mb-1">Pantone Reference (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. PANTONE 19-4008 TCX"
+                  value={colorForm.pantone}
+                  onChange={(e) => setColorForm({ ...colorForm, pantone: e.target.value })}
+                  className="w-full bg-bg/50 border border-border px-3 py-2 text-text text-xs font-mono uppercase focus:outline-none focus:border-primary"
+                />
+              </div>
+
               {/* Color Presets */}
               <div>
                 <label className="block text-[9px] font-mono font-bold uppercase text-text-muted mb-2">Heritage Presets</label>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { name: "Charcoal", hex: "#1E2631" },
-                    { name: "Terracotta", hex: "#C84428" },
-                    { name: "Ecru", hex: "#EAE6DF" },
-                    { name: "Navy", hex: "#1B2A4A" },
-                    { name: "Flax Olive", hex: "#4B5320" },
-                    { name: "Sand", hex: "#D2B48C" }
+                    { name: "Charcoal", hex: "#1E2631", pantone: "PANTONE 19-4008 TCX" },
+                    { name: "Terracotta", hex: "#C84428", pantone: "PANTONE 18-1447 TCX" },
+                    { name: "Ecru", hex: "#EAE6DF", pantone: "PANTONE 12-0710 TCX" },
+                    { name: "Navy", hex: "#1B2A4A", pantone: "PANTONE 19-3928 TCX" },
+                    { name: "Flax Olive", hex: "#4B5320", pantone: "PANTONE 18-0527 TCX" },
+                    { name: "Sand", hex: "#D2B48C", pantone: "PANTONE 15-1225 TCX" }
                   ].map((preset) => (
                     <button
                       key={preset.hex}
                       type="button"
-                      onClick={() => setColorForm({ color_name: preset.name, hex_code: preset.hex })}
+                      onClick={() => setColorForm({ color_name: preset.name, hex_code: preset.hex, pantone: preset.pantone })}
                       className="px-2.5 py-1 rounded-[2px] border border-border text-[10px] font-mono font-bold uppercase flex items-center gap-1.5 hover:border-primary transition-all cursor-pointer"
                     >
                       <span className="h-2.5 w-2.5 rounded-full border border-black/20" style={{ backgroundColor: preset.hex }} />

@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWaveSquare, faSliders, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faWaveSquare, faSliders, faLock, faArrowTrendUp } from '@fortawesome/free-solid-svg-icons';
 import { RegisterTelemetry } from '@/types';
+import Link from 'next/link';
 
 const REGISTERS: RegisterTelemetry[] = [
   { id: 'REG-01', name: 'Register #01 (Front Counter)', operator: 'Channara Lim', shiftSales: 2450.00, transactionCount: 28, status: 'online', lastActivity: '2 mins ago', drawerBalance: 1450.00 },
@@ -13,84 +14,83 @@ const REGISTERS: RegisterTelemetry[] = [
 
 export function AdminDashboardView() {
   return (
-    <div className="flex flex-col gap-5 w-full">
+    <div className="flex flex-col gap-6 w-full max-w-7xl mx-auto">
       
       {/* 4 KPI METRIC CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <div className="liquid-glass p-4 flex flex-col justify-between gap-3">
+        <div className="liquid-glass p-5 rounded-2xl sm:rounded-3xl border border-border flex flex-col justify-between gap-3 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#5A6678]">Daily Consolidated Sales</span>
-            <span className="badge-2px px-1.5 py-0.5 bg-emerald-50 text-emerald-700 font-mono text-[10px] font-bold">
+            <span className="text-xs font-bold text-text-muted">Daily Consolidated Sales</span>
+            <span className="px-2 py-0.5 rounded-full bg-success/10 text-success border border-success/20 font-mono text-[10px] font-bold">
               +24.5%
             </span>
           </div>
           <div>
-            <div className="font-display font-black text-2xl text-[#1E2631]">
+            <div className="font-mono font-black text-2xl text-text">
               $6,460.50
             </div>
-            <p className="text-[11px] text-[#5A6678] mt-0.5">74 completed transactions today</p>
+            <p className="text-xs text-text-muted mt-0.5">74 completed transactions today</p>
           </div>
         </div>
 
-        <div className="liquid-glass p-4 flex flex-col justify-between gap-3">
+        <div className="liquid-glass p-5 rounded-2xl sm:rounded-3xl border border-border flex flex-col justify-between gap-3 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#5A6678]">Active Registers</span>
-            <span className="badge-2px px-1.5 py-0.5 bg-sky-50 text-sky-700 font-mono text-[10px] font-bold">
+            <span className="text-xs font-bold text-text-muted">Active Registers</span>
+            <span className="px-2 py-0.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20 font-mono text-[10px] font-bold">
               3 Online
             </span>
           </div>
           <div>
-            <div className="font-display font-black text-2xl text-[#1E2631]">
+            <div className="font-mono font-black text-2xl text-text">
               3 Terminals
             </div>
-            <p className="text-[11px] text-[#5A6678] mt-0.5">Zero sync latency &bull; SS-MIS PostgreSQL</p>
+            <p className="text-xs text-text-muted mt-0.5">Zero sync latency &bull; SS-MIS PostgreSQL</p>
           </div>
         </div>
 
-        <div className="liquid-glass p-4 flex flex-col justify-between gap-3">
+        <div className="liquid-glass p-5 rounded-2xl sm:rounded-3xl border border-border flex flex-col justify-between gap-3 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#5A6678]">Inventory Velocity</span>
-            <span className="badge-2px px-1.5 py-0.5 bg-amber-50 text-amber-700 font-mono text-[10px] font-bold">
+            <span className="text-xs font-bold text-text-muted">Inventory Velocity</span>
+            <span className="px-2 py-0.5 rounded-full bg-warning/10 text-warning border border-warning/20 font-mono text-[10px] font-bold">
               48 SKUs
             </span>
           </div>
           <div>
-            <div className="font-display font-black text-2xl text-[#1E2631]">
+            <div className="font-mono font-black text-2xl text-text">
               98.2% In Stock
             </div>
-            <p className="text-[11px] text-[#5A6678] mt-0.5">Top mover: Tailored Linen Overshirt</p>
+            <p className="text-xs text-text-muted mt-0.5">Top mover: Tailored Linen Overshirt</p>
           </div>
         </div>
 
-        <div className="liquid-glass p-4 flex flex-col justify-between gap-3">
+        <div className="liquid-glass p-5 rounded-2xl sm:rounded-3xl border border-border flex flex-col justify-between gap-3 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#5A6678]">System Status</span>
-            <span className="badge-2px px-1.5 py-0.5 bg-emerald-50 text-emerald-700 font-mono text-[10px] font-bold">
+            <span className="text-xs font-bold text-text-muted">System Status</span>
+            <span className="px-2 py-0.5 rounded-full bg-success/10 text-success border border-success/20 font-mono text-[10px] font-bold">
               Operational
             </span>
           </div>
           <div>
-            <div className="font-mono font-bold text-base text-[#1E2631] truncate">
+            <div className="font-mono font-bold text-lg text-text truncate">
               99.98% Uptime
             </div>
-            <p className="text-[11px] text-[#5A6678] mt-0.5">PostgreSQL Master Sync &bull; POS Online</p>
+            <p className="text-xs text-text-muted mt-0.5">PostgreSQL Master Sync &bull; POS Online</p>
           </div>
         </div>
-
 
       </div>
 
       {/* MULTI-REGISTER TELEMETRY TABLE */}
-      <div className="liquid-glass p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between border-b border-[#5A6678]/15 pb-3">
+      <div className="liquid-glass p-6 rounded-2xl sm:rounded-3xl border border-border shadow-xl flex flex-col gap-4">
+        <div className="flex items-center justify-between border-b border-border pb-3.5">
           <div className="flex items-center gap-2">
-            <FontAwesomeIcon icon={faWaveSquare} className="w-4 h-4 text-[#1E2631]" />
-            <h3 className="font-display font-black text-base text-[#1E2631]">
+            <FontAwesomeIcon icon={faWaveSquare} className="w-4 h-4 text-[var(--primary)]" />
+            <h3 className="font-bold text-base text-text">
               Live Register Telemetry &amp; Operator Stream
             </h3>
           </div>
-          <span className="badge-2px bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 text-[11px] font-bold">
+          <span className="px-2.5 py-0.5 rounded-full bg-success/10 text-success border border-success/20 text-xs font-bold">
             Live Edge Synced
           </span>
         </div>
@@ -98,34 +98,34 @@ export function AdminDashboardView() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-[#5A6678]/15 text-[#5A6678] font-bold uppercase text-[10px] tracking-wider">
-                <th className="pb-2">Terminal ID</th>
-                <th className="pb-2">Assigned Operator</th>
-                <th className="pb-2">Shift Volume</th>
-                <th className="pb-2">Orders</th>
-                <th className="pb-2">Status</th>
-                <th className="pb-2 text-right">Last Signal</th>
+              <tr className="border-b border-border text-text-muted font-bold text-[11px]">
+                <th className="pb-3">Terminal ID</th>
+                <th className="pb-3">Assigned Operator</th>
+                <th className="pb-3">Shift Volume</th>
+                <th className="pb-3">Orders</th>
+                <th className="pb-3">Status</th>
+                <th className="pb-3 text-right">Last Signal</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 font-medium">
+            <tbody className="divide-y divide-border/40 font-medium">
               {REGISTERS.map(reg => (
-                <tr key={reg.id} className="hover:bg-white/60 transition-colors">
-                  <td className="py-3 font-bold text-[#1E2631]">{reg.name}</td>
-                  <td className="py-3 text-[#5A6678]">{reg.operator}</td>
-                  <td className="py-3 font-mono font-bold text-[#1E2631]">
+                <tr key={reg.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                  <td className="py-3.5 font-bold text-text">{reg.name}</td>
+                  <td className="py-3.5 text-text-muted">{reg.operator}</td>
+                  <td className="py-3.5 font-mono font-bold text-text">
                     ${reg.shiftSales.toFixed(2)}
                   </td>
-                  <td className="py-3 text-[#5A6678]">{reg.transactionCount}</td>
-                  <td className="py-3">
-                    <span className={`badge-2px px-2 py-0.5 text-[10px] font-bold ${
+                  <td className="py-3.5 text-text-muted">{reg.transactionCount}</td>
+                  <td className="py-3.5">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                       reg.status === 'online' 
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                        : 'bg-amber-50 text-amber-700 border border-amber-200'
+                        ? 'bg-success/10 text-success border-success/20' 
+                        : 'bg-warning/10 text-warning border-warning/20'
                     }`}>
                       {reg.status.toUpperCase()}
                     </span>
                   </td>
-                  <td className="py-3 text-right font-mono text-[#8E9AA8]">{reg.lastActivity}</td>
+                  <td className="py-3.5 text-right font-mono text-text-muted text-[11px]">{reg.lastActivity}</td>
                 </tr>
               ))}
             </tbody>
@@ -136,35 +136,35 @@ export function AdminDashboardView() {
       {/* RBAC PERMISSION CONTROLS & SECURITY AUDIT */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         
-        <div className="liquid-glass p-4 flex flex-col gap-3">
-          <div className="flex items-center gap-2 text-sm font-bold text-[#1E2631]">
-            <FontAwesomeIcon icon={faSliders} className="w-4 h-4 text-[#1E2631]" />
+        <div className="liquid-glass p-5 rounded-2xl sm:rounded-3xl border border-border flex flex-col gap-3 shadow-xl">
+          <div className="flex items-center gap-2 text-sm font-bold text-text">
+            <FontAwesomeIcon icon={faSliders} className="w-4 h-4 text-[var(--primary)]" />
             <span>Store Level Policy &amp; Floor Overrides</span>
           </div>
-          <p className="text-xs text-[#5A6678] leading-relaxed">
+          <p className="text-xs text-text-muted leading-relaxed">
             Configure register transaction caps, manager authorization thresholds, and drawer reconciliation rules for shift closings.
           </p>
           <div className="flex gap-2 mt-auto pt-2">
-            <button className="btn-9px bg-white border border-[#5A6678]/15 hover:border-[#C84428] text-xs font-bold text-[#1E2631] px-3 py-2 flex-1 transition-all cursor-pointer">
-              Manage Role Permissions
-            </button>
-            <button className="btn-9px bg-[#C84428] text-white text-xs font-bold px-4 py-2 hover:bg-[#B33920] transition-all cursor-pointer">
-              Audit Shift Logs
-            </button>
+            <Link href="/admin/system/shifts" className="btn-liquid px-4 py-2.5 rounded-full text-xs font-bold text-text bg-[var(--surface-sub)] hover:bg-black/5 dark:hover:bg-white/10 border border-border flex-1 text-center transition-all">
+              Manage Roles
+            </Link>
+            <Link href="/admin/reports/audit" className="btn-liquid px-4 py-2.5 rounded-full text-xs font-bold text-white bg-[var(--primary)] hover:opacity-90 transition-all text-center">
+              Audit Logs
+            </Link>
           </div>
         </div>
 
-        <div className="liquid-glass p-4 flex flex-col gap-3">
-          <div className="flex items-center gap-2 text-sm font-bold text-[#1E2631]">
-            <FontAwesomeIcon icon={faLock} className="w-4 h-4 text-[#1E2631]" />
+        <div className="liquid-glass p-5 rounded-2xl sm:rounded-3xl border border-border flex flex-col gap-3 shadow-xl">
+          <div className="flex items-center gap-2 text-sm font-bold text-text">
+            <FontAwesomeIcon icon={faLock} className="w-4 h-4 text-[var(--primary)]" />
             <span>Cryptographic Keyrings &amp; API Gateways</span>
           </div>
-          <p className="text-xs text-[#5A6678] leading-relaxed">
+          <p className="text-xs text-text-muted leading-relaxed font-mono">
             API Endpoints synchronized with SS-MIS backend at <code>https://api.kesararamwithdigital.tech/api/v1</code>.
           </p>
-          <div className="flex items-center justify-between p-2.5 bg-white border border-[#5A6678]/15 rounded-[9px] text-xs font-mono mt-auto">
-            <span className="text-[#5A6678]">PostgreSQL Health</span>
-            <span className="text-emerald-700 font-bold">14ms latency &bull; Connected</span>
+          <div className="flex items-center justify-between p-3 bg-[var(--surface-sub)] border border-border rounded-2xl text-xs font-mono mt-auto">
+            <span className="text-text-muted">PostgreSQL Mesh</span>
+            <span className="text-success font-bold">12ms latency &bull; Optimal</span>
           </div>
         </div>
 

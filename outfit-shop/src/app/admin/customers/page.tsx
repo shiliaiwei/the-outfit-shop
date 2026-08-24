@@ -307,11 +307,11 @@ export default function CustomersPage() {
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
       {/* 1. HEADER */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-black text-text uppercase tracking-tight">Customers</h1>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-[2px] bg-[#1E2631]/5 text-text border border-border">
+            <h1 className="text-2xl sm:text-3xl font-black text-text tracking-tight">Customers</h1>
+            <span className="px-2.5 py-0.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20 text-[10px] font-bold uppercase tracking-wider">
               Role: {userRole}
             </span>
           </div>
@@ -322,7 +322,7 @@ export default function CustomersPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="btn-liquid btn-liquid-terracotta px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-md cursor-pointer"
+            className="btn-liquid bg-[var(--primary)] text-white px-5 py-2.5 text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-md hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer"
           >
             <FontAwesomeIcon icon={faPlus} className="text-xs" />
             <span>Add Customer</span>
@@ -330,60 +330,60 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      {/* 2. SEARCH BAR */}
-      <div className="liquid-glass p-2">
-        <div className="relative group">
-          <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute left-5 top-1/2 -translate-y-1/2 text-[#1E2631] text-sm h-4 w-4" />
-          <input
-            type="text"
-            placeholder="Search by name, phone, email, or loyalty ID..."
-            className="w-full pl-14 pr-6 py-4 bg-transparent border-none focus:ring-0 text-xs font-mono font-black text-text placeholder:text-text-muted focus:outline-none"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+      {/* 2. SEARCH BAR CAPSULE */}
+      <div className="relative group">
+        <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute left-5 top-1/2 -translate-y-1/2 text-text-muted text-sm h-4 w-4" />
+        <input
+          type="text"
+          placeholder="Search by name, phone, email, or loyalty ID..."
+          className="w-full pl-12 pr-6 py-3.5 bg-[var(--surface-sub)] border border-transparent rounded-full text-xs font-bold text-text placeholder:text-text-muted focus:border-[var(--primary)] focus:bg-surface focus:outline-none transition-all shadow-xs"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
       {/* 3. CUSTOMER GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5 sm:gap-6">
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-48 animate-pulse liquid-glass" />
+            <div key={i} className="h-48 animate-pulse liquid-glass rounded-2xl" />
           ))
         ) : filtered.length === 0 ? (
-          <div className="col-span-full py-16 text-center text-xs font-mono text-text-muted">
+          <div className="col-span-full py-16 text-center text-xs text-text-muted liquid-glass rounded-2xl p-8">
             No customers match &quot;{search}&quot;.
           </div>
         ) : (
           filtered.map((c) => (
-            <div key={c.id} className="liquid-glass p-6 space-y-6 group hover:border-border transition-all">
+            <div key={c.id} className="liquid-glass p-5 sm:p-6 rounded-2xl border border-border space-y-5 hover:border-[var(--primary)] transition-all shadow-lg">
               <div className="flex justify-between items-start">
-                <div className="flex items-center gap-4">
-                  <FontAwesomeIcon icon={faUser} className="text-[#1E2631] text-2xl h-6 w-6" />
+                <div className="flex items-center gap-3.5">
+                  <div className="h-10 w-10 rounded-full bg-[var(--surface-sub)] border border-border flex items-center justify-center font-bold text-sm text-text shrink-0">
+                    {(c.customer_name || "C").slice(0, 1).toUpperCase()}
+                  </div>
                   <div>
-                    <h3 className="text-lg font-black text-text uppercase tracking-tight leading-none mb-1 group-hover:text-primary transition-colors">
+                    <h3 className="text-base font-bold text-text tracking-tight leading-tight mb-0.5">
                       {c.customer_name}
                     </h3>
-                    <p className="text-[9px] font-mono text-text-muted font-bold tracking-widest uppercase">
-                      ID: CUST-{String(c.id).padStart(4, "0")} &bull; Since {c.created_at ? new Date(c.created_at).getFullYear() : "2024"}
+                    <p className="text-[10px] font-mono text-text-muted font-bold tracking-wider">
+                      CUST-{String(c.id).padStart(4, "0")} &bull; Since {c.created_at ? new Date(c.created_at).getFullYear() : "2024"}
                     </p>
                   </div>
                 </div>
                 <RealTimeBadge label={c.loyalty_tier || "Classic"} />
               </div>
 
-              <div className="grid grid-cols-2 gap-4 border-y border-border/20 py-4">
-                <div className="space-y-1">
-                  <p className="text-[8px] font-black text-text-muted uppercase tracking-tighter">Contact Mobile</p>
-                  <p className="text-[10px] font-mono font-black text-text uppercase">{c.phone}</p>
+              <div className="grid grid-cols-2 gap-4 border-y border-border/40 py-3.5">
+                <div className="space-y-0.5">
+                  <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Contact Mobile</p>
+                  <p className="text-xs font-mono font-bold text-text">{c.phone}</p>
                   {c.email && (
-                    <p className="text-[8px] font-mono text-text-muted truncate max-w-[140px]">{c.email}</p>
+                    <p className="text-[10px] text-text-muted truncate max-w-[140px] font-mono">{c.email}</p>
                   )}
                 </div>
-                <div className="space-y-1 border-l border-border/20 pl-4">
-                  <p className="text-[8px] font-black text-text-muted uppercase tracking-tighter">Point Balance</p>
-                  <p className="text-[10px] font-mono font-black text-primary uppercase">{c.loyalty_points || 0} PTS</p>
-                  <p className="text-[8px] font-mono text-text-muted">
+                <div className="space-y-0.5 border-l border-border/40 pl-4">
+                  <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Point Balance</p>
+                  <p className="text-xs font-mono font-black text-[var(--primary)]">{c.loyalty_points || 0} PTS</p>
+                  <p className="text-[10px] font-mono text-text-muted">
                     ≈ ${((c.loyalty_points || 0) * 0.1).toFixed(2)} Credit
                   </p>
                 </div>
@@ -392,24 +392,24 @@ export default function CustomersPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleOpenAudit(c)}
-                  className="btn-liquid btn-liquid-glass flex-1 py-2 text-[10px] font-mono font-bold uppercase tracking-wider cursor-pointer"
+                  className="btn-liquid bg-[var(--surface-sub)] hover:bg-black/5 dark:hover:bg-white/10 border border-border flex-1 py-2 rounded-full text-xs font-bold text-text transition-all cursor-pointer"
                 >
                   Audit History
                 </button>
                 <button
                   onClick={() => handleOpenEdit(c)}
-                  className="p-2 border border-border rounded-[2px] text-text hover:text-primary hover:border-primary transition-all cursor-pointer"
+                  className="h-8 w-8 rounded-full flex items-center justify-center border border-border text-text hover:text-[var(--primary)] hover:border-[var(--primary)] transition-all cursor-pointer"
                   title="Edit Customer"
                 >
-                  <FontAwesomeIcon icon={faPenToSquare} className="text-[#1E2631] text-xs h-3.5 w-3.5" />
+                  <FontAwesomeIcon icon={faPenToSquare} className="text-xs" />
                 </button>
                 {canDelete && (
                   <button
                     onClick={() => handleOpenDelete(c)}
-                    className="p-2 border border-border rounded-[2px] text-text hover:text-danger hover:border-danger transition-all cursor-pointer"
+                    className="h-8 w-8 rounded-full flex items-center justify-center border border-border text-text hover:text-danger hover:border-danger transition-all cursor-pointer"
                     title="Delete Customer (Admin/Manager)"
                   >
-                    <FontAwesomeIcon icon={faTrashCan} className="text-xs h-3.5 w-3.5" />
+                    <FontAwesomeIcon icon={faTrashCan} className="text-xs" />
                   </button>
                 )}
               </div>
@@ -421,25 +421,25 @@ export default function CustomersPage() {
       {/* 4. MODAL 1: ADD CUSTOMER */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="liquid-glass bg-surface p-8 max-w-md w-full shadow-2xl border border-border space-y-6 relative">
-            <div className="flex items-center justify-between border-b border-border/40 pb-4">
+          <div className="liquid-glass bg-surface p-6 sm:p-8 max-w-md w-full shadow-2xl border border-border rounded-2xl sm:rounded-3xl space-y-6 relative">
+            <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-2.5">
-                <FontAwesomeIcon icon={faUser} className="text-[#1E2631] text-base h-4 w-4" />
-                <h3 className="text-base font-black text-text uppercase tracking-widest">
+                <FontAwesomeIcon icon={faUser} className="text-text text-base h-4 w-4" />
+                <h3 className="text-base font-bold text-text">
                   Add New Customer
                 </h3>
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-text-muted hover:text-text cursor-pointer p-1"
+                className="h-8 w-8 rounded-full flex items-center justify-center text-text-muted hover:text-text hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
               >
                 <FontAwesomeIcon icon={faXmark} className="text-sm" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateCustomer} className="space-y-4 text-xs font-mono">
+            <form onSubmit={handleCreateCustomer} className="space-y-4 text-xs font-sans">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-text uppercase tracking-wider block">
+                <label className="text-[11px] font-bold text-text uppercase tracking-wider block">
                   Full Name *
                 </label>
                 <input
@@ -448,12 +448,12 @@ export default function CustomersPage() {
                   placeholder="e.g. Sothea Kem"
                   value={addFormData.customer_name}
                   onChange={(e) => setAddFormData({ ...addFormData, customer_name: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-bg border border-border rounded-[2px] text-text placeholder:text-text-muted focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-[var(--surface-sub)] border border-transparent rounded-full text-text placeholder:text-text-muted focus:border-[var(--primary)] focus:bg-surface focus:outline-none transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-text uppercase tracking-wider block">
+                <label className="text-[11px] font-bold text-text uppercase tracking-wider block">
                   Phone Number *
                 </label>
                 <input
@@ -462,12 +462,12 @@ export default function CustomersPage() {
                   placeholder="e.g. 012 888 999"
                   value={addFormData.phone}
                   onChange={(e) => setAddFormData({ ...addFormData, phone: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-bg border border-border rounded-[2px] text-text placeholder:text-text-muted focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-[var(--surface-sub)] border border-transparent rounded-full text-text placeholder:text-text-muted focus:border-[var(--primary)] focus:bg-surface focus:outline-none transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-text uppercase tracking-wider block">
+                <label className="text-[11px] font-bold text-text uppercase tracking-wider block">
                   Email Address (Optional)
                 </label>
                 <input
@@ -475,12 +475,12 @@ export default function CustomersPage() {
                   placeholder="e.g. customer@outfit.kh"
                   value={addFormData.email}
                   onChange={(e) => setAddFormData({ ...addFormData, email: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-bg border border-border rounded-[2px] text-text placeholder:text-text-muted focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-[var(--surface-sub)] border border-transparent rounded-full text-text placeholder:text-text-muted focus:border-[var(--primary)] focus:bg-surface focus:outline-none transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-text uppercase tracking-wider block">
+                <label className="text-[11px] font-bold text-text uppercase tracking-wider block">
                   Loyalty Tier
                 </label>
                 <BrandSelect
@@ -493,7 +493,7 @@ export default function CustomersPage() {
 
               {canOverridePoints && (
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-text uppercase tracking-wider block">
+                  <label className="text-[11px] font-bold text-text uppercase tracking-wider block">
                     Starting Points (Admin / Manager Override)
                   </label>
                   <input
@@ -502,23 +502,23 @@ export default function CustomersPage() {
                     placeholder="0"
                     value={addFormData.loyalty_points}
                     onChange={(e) => setAddFormData({ ...addFormData, loyalty_points: Number(e.target.value) })}
-                    className="w-full px-3 py-2.5 bg-bg border border-border rounded-[2px] text-text placeholder:text-text-muted focus:border-primary focus:outline-none"
+                    className="w-full px-4 py-3 bg-[var(--surface-sub)] border border-transparent rounded-full text-text placeholder:text-text-muted focus:border-[var(--primary)] focus:bg-surface focus:outline-none transition-all font-mono"
                   />
                 </div>
               )}
 
-              <div className="flex gap-3 pt-4 border-t border-border/40">
+              <div className="flex gap-3 pt-4 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="btn-liquid btn-liquid-glass flex-1 py-3 text-xs font-bold uppercase cursor-pointer"
+                  className="btn-liquid bg-[var(--surface-sub)] hover:bg-black/5 dark:hover:bg-white/10 border border-border flex-1 py-3 rounded-full text-xs font-bold text-text uppercase cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="btn-liquid btn-liquid-terracotta flex-1 py-3 text-xs font-bold uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+                  className="btn-liquid bg-[var(--primary)] text-white hover:opacity-90 flex-1 py-3 rounded-full text-xs font-bold uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
                 >
                   {submitting ? (
                     <>
@@ -538,11 +538,11 @@ export default function CustomersPage() {
       {/* 5. MODAL 2: EDIT CUSTOMER */}
       {isEditModalOpen && selectedCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="liquid-glass bg-surface p-8 max-w-md w-full shadow-2xl border border-border space-y-6 relative">
-            <div className="flex items-center justify-between border-b border-border/40 pb-4">
+          <div className="liquid-glass bg-surface p-6 sm:p-8 max-w-md w-full shadow-2xl border border-border rounded-2xl sm:rounded-3xl space-y-6 relative">
+            <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-2.5">
-                <FontAwesomeIcon icon={faPenToSquare} className="text-[#1E2631] text-base h-4 w-4" />
-                <h3 className="text-base font-black text-text uppercase tracking-widest">
+                <FontAwesomeIcon icon={faPenToSquare} className="text-text text-base h-4 w-4" />
+                <h3 className="text-base font-bold text-text">
                   Edit Customer Profile
                 </h3>
               </div>
@@ -551,15 +551,15 @@ export default function CustomersPage() {
                   setIsEditModalOpen(false);
                   setSelectedCustomer(null);
                 }}
-                className="text-text-muted hover:text-text cursor-pointer p-1"
+                className="h-8 w-8 rounded-full flex items-center justify-center text-text-muted hover:text-text hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
               >
                 <FontAwesomeIcon icon={faXmark} className="text-sm" />
               </button>
             </div>
 
-            <form onSubmit={handleUpdateCustomer} className="space-y-4 text-xs font-mono">
+            <form onSubmit={handleUpdateCustomer} className="space-y-4 text-xs font-sans">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-text uppercase tracking-wider block">
+                <label className="text-[11px] font-bold text-text uppercase tracking-wider block">
                   Full Name *
                 </label>
                 <input
@@ -567,12 +567,12 @@ export default function CustomersPage() {
                   required
                   value={editFormData.customer_name}
                   onChange={(e) => setEditFormData({ ...editFormData, customer_name: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-bg border border-border rounded-[2px] text-text placeholder:text-text-muted focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-[var(--surface-sub)] border border-transparent rounded-full text-text placeholder:text-text-muted focus:border-[var(--primary)] focus:bg-surface focus:outline-none transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-text uppercase tracking-wider block">
+                <label className="text-[11px] font-bold text-text uppercase tracking-wider block">
                   Phone Number *
                 </label>
                 <input
@@ -580,24 +580,24 @@ export default function CustomersPage() {
                   required
                   value={editFormData.phone}
                   onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-bg border border-border rounded-[2px] text-text placeholder:text-text-muted focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-[var(--surface-sub)] border border-transparent rounded-full text-text placeholder:text-text-muted focus:border-[var(--primary)] focus:bg-surface focus:outline-none transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-text uppercase tracking-wider block">
+                <label className="text-[11px] font-bold text-text uppercase tracking-wider block">
                   Email Address
                 </label>
                 <input
                   type="email"
                   value={editFormData.email}
                   onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-bg border border-border rounded-[2px] text-text placeholder:text-text-muted focus:border-primary focus:outline-none"
+                  className="w-full px-4 py-3 bg-[var(--surface-sub)] border border-transparent rounded-full text-text placeholder:text-text-muted focus:border-[var(--primary)] focus:bg-surface focus:outline-none transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-text uppercase tracking-wider block">
+                <label className="text-[11px] font-bold text-text uppercase tracking-wider block">
                   Loyalty Tier {canOverridePoints ? "" : "(View Only for Staff)"}
                 </label>
                 <BrandSelect
@@ -611,7 +611,7 @@ export default function CustomersPage() {
 
               {canOverridePoints && (
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-text uppercase tracking-wider block">
+                  <label className="text-[11px] font-bold text-text uppercase tracking-wider block">
                     Points Balance (Admin / Manager)
                   </label>
                   <input
@@ -619,26 +619,26 @@ export default function CustomersPage() {
                     min="0"
                     value={editFormData.loyalty_points}
                     onChange={(e) => setEditFormData({ ...editFormData, loyalty_points: Number(e.target.value) })}
-                    className="w-full px-3 py-2.5 bg-bg border border-border rounded-[2px] text-text focus:border-primary focus:outline-none"
+                    className="w-full px-4 py-3 bg-[var(--surface-sub)] border border-transparent rounded-full text-text focus:border-[var(--primary)] focus:bg-surface focus:outline-none transition-all font-mono"
                   />
                 </div>
               )}
 
-              <div className="flex gap-3 pt-4 border-t border-border/40">
+              <div className="flex gap-3 pt-4 border-t border-border">
                 <button
                   type="button"
                   onClick={() => {
                     setIsEditModalOpen(false);
                     setSelectedCustomer(null);
                   }}
-                  className="btn-liquid btn-liquid-glass flex-1 py-3 text-xs font-bold uppercase cursor-pointer"
+                  className="btn-liquid bg-[var(--surface-sub)] hover:bg-black/5 dark:hover:bg-white/10 border border-border flex-1 py-3 rounded-full text-xs font-bold text-text uppercase cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="btn-liquid btn-liquid-terracotta flex-1 py-3 text-xs font-bold uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+                  className="btn-liquid bg-[var(--primary)] text-white hover:opacity-90 flex-1 py-3 rounded-full text-xs font-bold uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
                 >
                   {submitting ? (
                     <>
@@ -658,15 +658,15 @@ export default function CustomersPage() {
       {/* 6. MODAL 3: AUDIT HISTORY & LOYALTY DETAILS */}
       {isAuditModalOpen && selectedCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="liquid-glass bg-surface p-8 max-w-lg w-full shadow-2xl border border-border space-y-6 relative">
-            <div className="flex items-center justify-between border-b border-border/40 pb-4">
+          <div className="liquid-glass bg-surface p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-border rounded-2xl sm:rounded-3xl space-y-6 relative">
+            <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-2.5">
-                <FontAwesomeIcon icon={faReceipt} className="text-[#1E2631] text-base h-4 w-4" />
+                <FontAwesomeIcon icon={faReceipt} className="text-text text-base h-4 w-4" />
                 <div>
-                  <h3 className="text-base font-black text-text uppercase tracking-widest">
+                  <h3 className="text-base font-bold text-text">
                     Customer Audit &amp; History
                   </h3>
-                  <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider">
+                  <p className="text-xs font-mono text-text-muted">
                     {selectedCustomer.customer_name} &bull; {selectedCustomer.phone}
                   </p>
                 </div>
@@ -676,7 +676,7 @@ export default function CustomersPage() {
                   setIsAuditModalOpen(false);
                   setSelectedCustomer(null);
                 }}
-                className="text-text-muted hover:text-text cursor-pointer p-1"
+                className="h-8 w-8 rounded-full flex items-center justify-center text-text-muted hover:text-text hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
               >
                 <FontAwesomeIcon icon={faXmark} className="text-sm" />
               </button>
@@ -684,40 +684,40 @@ export default function CustomersPage() {
 
             {/* Loyalty & Spend Summary */}
             <div className="grid grid-cols-3 gap-3">
-              <div className="liquid-glass p-3 text-center">
-                <p className="text-[8px] font-bold text-text-muted uppercase">Loyalty Tier</p>
+              <div className="liquid-glass p-3.5 text-center rounded-2xl border border-border">
+                <p className="text-[10px] font-bold text-text-muted uppercase">Loyalty Tier</p>
                 <p className="text-xs font-black text-text mt-1">{selectedCustomer.loyalty_tier || "Classic"}</p>
               </div>
-              <div className="liquid-glass p-3 text-center">
-                <p className="text-[8px] font-bold text-text-muted uppercase">Points Balance</p>
-                <p className="text-xs font-black text-primary mt-1">{selectedCustomer.loyalty_points || 0} PTS</p>
+              <div className="liquid-glass p-3.5 text-center rounded-2xl border border-border">
+                <p className="text-[10px] font-bold text-text-muted uppercase">Points Balance</p>
+                <p className="text-xs font-black text-[var(--primary)] mt-1 font-mono">{selectedCustomer.loyalty_points || 0} PTS</p>
               </div>
-              <div className="liquid-glass p-3 text-center">
-                <p className="text-[8px] font-bold text-text-muted uppercase">Store Credit</p>
-                <p className="text-xs font-black text-success mt-1">
+              <div className="liquid-glass p-3.5 text-center rounded-2xl border border-border">
+                <p className="text-[10px] font-bold text-text-muted uppercase">Store Credit</p>
+                <p className="text-xs font-black text-success mt-1 font-mono">
                   ${((selectedCustomer.loyalty_points || 0) * 0.1).toFixed(2)}
                 </p>
               </div>
             </div>
 
             {/* Quick Redeem Points Action */}
-            <div className="p-4 bg-bg border border-border rounded-[2px] space-y-2">
-              <p className="text-[10px] font-bold text-text uppercase tracking-wider flex items-center justify-between">
+            <div className="p-4 bg-[var(--surface-sub)] border border-border rounded-2xl space-y-2.5">
+              <p className="text-xs font-bold text-text flex items-center justify-between">
                 <span>Quick Loyalty Redemption</span>
-                <span className="text-text-muted font-normal text-[9px]">100 PTS = $10.00</span>
+                <span className="text-text-muted font-mono text-[10px]">100 PTS = $10.00</span>
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => handleQuickRedeem(50)}
                   disabled={(selectedCustomer.loyalty_points || 0) < 50}
-                  className="flex-1 py-1.5 text-[10px] font-bold uppercase rounded-[2px] border border-border bg-surface hover:border-primary hover:text-primary transition-all disabled:opacity-40 cursor-pointer"
+                  className="flex-1 py-2 text-xs font-bold rounded-full border border-border bg-surface hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all disabled:opacity-40 cursor-pointer"
                 >
                   Redeem 50 PTS ($5)
                 </button>
                 <button
                   onClick={() => handleQuickRedeem(100)}
                   disabled={(selectedCustomer.loyalty_points || 0) < 100}
-                  className="flex-1 py-1.5 text-[10px] font-bold uppercase rounded-[2px] border border-border bg-surface hover:border-primary hover:text-primary transition-all disabled:opacity-40 cursor-pointer"
+                  className="flex-1 py-2 text-xs font-bold rounded-full border border-border bg-surface hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all disabled:opacity-40 cursor-pointer"
                 >
                   Redeem 100 PTS ($10)
                 </button>
@@ -726,24 +726,24 @@ export default function CustomersPage() {
 
             {/* Purchase History Ledger */}
             <div className="space-y-2">
-              <h4 className="text-[10px] font-bold text-text uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-text">
                 Recent Purchase Ledger
               </h4>
-              <div className="max-h-48 overflow-y-auto divide-y divide-border/20 border border-border rounded-[2px] bg-bg">
+              <div className="max-h-48 overflow-y-auto divide-y divide-border/40 border border-border rounded-2xl bg-[var(--surface-sub)]/50">
                 {[
                   { id: "ORD-9421", date: "2024-08-20", items: "Structured Overshirt (Ecru / L)", total: 320.00, status: "PAID" },
                   { id: "ORD-8912", date: "2024-07-14", items: "Supima Cotton Knit (Charcoal / M)", total: 180.00, status: "PAID" },
                   { id: "ORD-7301", date: "2024-05-02", items: "Tailored Linen Trousers (Noir / 32)", total: 240.00, status: "PAID" },
                 ].map((item) => (
-                  <div key={item.id} className="p-3 text-xs flex items-center justify-between hover:bg-surface/50">
+                  <div key={item.id} className="p-3 text-xs flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5">
                     <div>
                       <p className="font-bold text-text font-mono">{item.id}</p>
-                      <p className="text-[10px] text-text-muted">{item.items}</p>
-                      <p className="text-[9px] font-mono text-text-muted">{item.date}</p>
+                      <p className="text-[11px] text-text-muted">{item.items}</p>
+                      <p className="text-[10px] font-mono text-text-muted">{item.date}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-black text-text font-mono">${item.total.toFixed(2)}</p>
-                      <span className="text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-[2px] bg-success/10 text-success border border-success/20">
+                      <span className="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full bg-success/10 text-success border border-success/20">
                         {item.status}
                       </span>
                     </div>
@@ -758,7 +758,7 @@ export default function CustomersPage() {
                   setIsAuditModalOpen(false);
                   setSelectedCustomer(null);
                 }}
-                className="w-full btn-liquid btn-liquid-glass py-2.5 text-xs font-bold uppercase cursor-pointer"
+                className="w-full btn-liquid bg-[var(--surface-sub)] hover:bg-black/5 dark:hover:bg-white/10 border border-border py-3 rounded-full text-xs font-bold text-text uppercase cursor-pointer"
               >
                 Close Audit View
               </button>
@@ -770,10 +770,10 @@ export default function CustomersPage() {
       {/* 7. MODAL 4: DELETE CONFIRMATION */}
       {isDeleteModalOpen && selectedCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="liquid-glass bg-surface p-8 max-w-sm w-full shadow-2xl border border-danger/40 space-y-5 relative">
+          <div className="liquid-glass bg-surface p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-danger/40 rounded-2xl sm:rounded-3xl space-y-5 relative">
             <div className="flex items-center gap-3 text-danger">
               <FontAwesomeIcon icon={faTrashCan} className="text-lg" />
-              <h3 className="text-base font-black text-text uppercase tracking-widest">
+              <h3 className="text-base font-bold text-text">
                 Delete Customer
               </h3>
             </div>
@@ -788,14 +788,14 @@ export default function CustomersPage() {
                   setIsDeleteModalOpen(false);
                   setSelectedCustomer(null);
                 }}
-                className="btn-liquid btn-liquid-glass flex-1 py-2.5 text-xs font-bold uppercase cursor-pointer"
+                className="btn-liquid bg-[var(--surface-sub)] hover:bg-black/5 dark:hover:bg-white/10 border border-border flex-1 py-2.5 rounded-full text-xs font-bold text-text uppercase cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmDelete}
                 disabled={submitting}
-                className="btn-liquid bg-danger text-white hover:bg-danger/90 flex-1 py-2.5 text-xs font-bold uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+                className="btn-liquid bg-danger text-white hover:bg-danger/90 flex-1 py-2.5 rounded-full text-xs font-bold uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
               >
                 {submitting ? (
                   <>

@@ -15,6 +15,7 @@ export interface Product {
   image_url?: string;
   created_at: string;
   updated_at: string;
+  deleted_at?: string | null;
 }
 
 export interface Variant {
@@ -96,14 +97,18 @@ export interface ClothingSize {
   id: number;
   size_name: string;
   size_order: number;
-  created_at: string;
+  size_code?: string;
+  created_at?: string;
+  deleted_at?: string | null;
 }
 
 export interface Color {
   id: number;
   color_name: string;
   hex_code: string;
-  created_at: string;
+  pantone?: string;
+  created_at?: string;
+  deleted_at?: string | null;
 }
 
 export interface Branch {
@@ -145,3 +150,13 @@ export interface GiftCard {
   status: "ACTIVE" | "EXPIRED" | "REDEEMED";
   created_at: string;
 }
+
+export interface BroadcastAlert {
+  id: number;
+  title: string;
+  message: string;
+  severity: "INFO" | "WARNING" | "CRITICAL";
+  created_at?: string;
+  updated_at?: string;
+}
+

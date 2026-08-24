@@ -22,6 +22,14 @@
   --font-heading: var(--font-poppins);
   --font-body: var(--font-lora);
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* X.COM PRIMARY ACCENT COLOR TOKENS */
+  --x-blue: #1D9BF0;
+  --x-yellow: #FFD400;
+  --x-pink: #F91880;
+  --x-purple: #7856FF;
+  --x-orange: #FF7A00;
+  --x-green: #00BA7C;
 }
 
 .font-handwriting {
@@ -54,73 +62,62 @@
 
 @layer base {
   :root {
-    /* STRICT 3PX RADIUS HIERARCHY */
-    --radius-badge: 3px;
-    --radius-tag: 3px;
-    --radius-card: 3px;
-    --radius-btn: 3px;
-    --radius-all: 3px;
+    /* X.COM SIGNATURE PILL & CARD GEOMETRY */
+    --radius-badge: 9999px;
+    --radius-tag: 9999px;
+    --radius-card: 16px;
+    --radius-btn: 9999px;
+    --radius-all: 9999px;
 
-    /* PRIMITIVE COLORS (Raw Material Ramps) */
-    --primitive-cream-50: #FAF8F4;
-    --primitive-cream-100: #F5F3EE;
-    --primitive-cream-200: #ECE8DF;
-    --primitive-beige-100: #F2E9D8;
-    --primitive-lavender-100: #E7E3EF;
+    /* X.COM ACCENT DEFAULT */
+    --primary: #1D9BF0;
+    --x-accent: #1D9BF0;
+    --accent: #1D9BF0;
+    --success: #00BA7C;
+    --warning: #FFD400;
+    --danger: #F91880;
 
-    --primitive-coral-50: #F8EAE3;
-    --primitive-coral-100: #F0DDD6;
-    --primitive-coral-200: #E6C8BC;
-
-    --primitive-sage-50: #EEF3EE;
-    --primitive-sage-100: #DDE5E0;
-    --primitive-sage-200: #C8D4CD;
-    --primitive-sky-100: #DCE8F1;
-
-    --primitive-slate-300: #B0AEA5;
-    --primitive-slate-500: #7A786E;
-    --primitive-espresso-700: #4A3F35; /* DARKEST PERMITTED VALUE */
-
-    --primitive-orange-500: #D97757;
-    --primitive-blue-500: #6A9BCC;
-    --primitive-green-500: #788C5D;
-    --primitive-amber-500: #D97706;
-    --primitive-red-500: #CF222E;
-
-    /* SEMANTIC TOKENS - DEFAULT (PUBLIC) */
-    --bg: var(--primitive-cream-100);
-    --surface: var(--primitive-cream-50);
-    --card-tint: var(--primitive-beige-100);
-    --border: rgba(74, 63, 53, 0.06);
-    --text: var(--primitive-espresso-700);
-    --text-muted: var(--primitive-slate-500);
-    --primary: var(--primitive-orange-500);
-    --accent: var(--primitive-blue-500);
-    --success: var(--primitive-green-500);
-    --warning: var(--primitive-amber-500);
-    --danger: var(--primitive-red-500);
+    /* LIGHTS OUT (DARK THEME - DEFAULT) */
+    --bg: #000000;
+    --surface: #000000;
+    --surface-card: #16181C;
+    --surface-sub: #202327;
+    --card-tint: rgba(255, 255, 255, 0.03);
+    --border: #2F3336;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --text: #E7E9EA;
+    --text-muted: #71767B;
+    --text-inactive: #536471;
   }
 
-  [data-role="staff"] {
-    --bg: var(--primitive-coral-50);
+  /* X.COM DEFAULT (LIGHT THEME) */
+  [data-theme-bg="default"],
+  [data-theme="light"] {
+    --bg: #FFFFFF;
     --surface: #FFFFFF;
-    --card-tint: var(--primitive-coral-100);
-    --border: rgba(217, 119, 87, 0.12);
-    --text: var(--primitive-espresso-700);
-    --text-muted: var(--primitive-slate-500);
-    --primary: var(--primitive-orange-500);
-    --accent: var(--primitive-green-500);
+    --surface-card: #F7F9F9;
+    --surface-sub: #EFF3F4;
+    --card-tint: rgba(0, 0, 0, 0.02);
+    --border: #EFF3F4;
+    --border-subtle: rgba(0, 0, 0, 0.06);
+    --text: #0F1419;
+    --text-muted: #536471;
+    --text-inactive: #8B98A5;
   }
 
-  [data-role="admin"] {
-    --bg: var(--primitive-sage-50);
-    --surface: #FFFFFF;
-    --card-tint: var(--primitive-sage-100);
-    --border: rgba(120, 140, 93, 0.12);
-    --text: var(--primitive-espresso-700);
-    --text-muted: var(--primitive-slate-500);
-    --primary: var(--primitive-blue-500);
-    --accent: var(--primitive-green-500);
+  /* X.COM LIGHTS OUT (PURE BLACK THEME) */
+  [data-theme-bg="lights_out"],
+  [data-theme="dark"] {
+    --bg: #000000;
+    --surface: #000000;
+    --surface-card: #16181C;
+    --surface-sub: #202327;
+    --card-tint: rgba(255, 255, 255, 0.03);
+    --border: #2F3336;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --text: #E7E9EA;
+    --text-muted: #71767B;
+    --text-inactive: #536471;
   }
 
   * {
@@ -135,91 +132,69 @@
     color: var(--text);
     font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     min-height: 100vh;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(200, 68, 40, 0.04) 0px, transparent 40%),
-      radial-gradient(at 100% 100%, rgba(106, 155, 204, 0.04) 0px, transparent 40%);
-    background-attachment: fixed;
   }
 }
 
-/* STRICT 3PX BORDER RADIUS ENFORCEMENT */
-*,
-button,
-input,
-select,
-textarea,
-div,
-span,
-img,
-article,
-aside,
-section,
-header,
-footer,
-modal {
-  border-radius: 3px !important;
-}
-
-.vip-member-card {
-  border-radius: 10px !important;
-}
-
-/* LIQUID GLASS CONTAINERS (360-DEGREE GLASS REFLECTION) */
+/* X.COM SPECULAR LIQUID GLASS CONTAINERS */
 .liquid-glass {
-  background: var(--surface);
+  background: var(--surface-card, #16181C);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border, #2F3336);
+  border-radius: 16px;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 4px 20px -2px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+
+[data-theme-bg="default"] .liquid-glass {
+  background: #FFFFFF;
+  border-color: #EFF3F4;
   box-shadow: 
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 1px 0 0 rgba(255, 255, 255, 0.50),
-    inset -1px 0 0 rgba(255, 255, 255, 0.30),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04),
-    0 10px 30px -5px rgba(0, 0, 0, 0.03);
-  position: relative;
+    0 4px 16px -2px rgba(0, 0, 0, 0.04);
 }
 
 .liquid-glass-elevated {
-  background: #FFFFFF;
+  background: var(--surface-sub, #202327);
   backdrop-filter: blur(32px) saturate(200%);
   -webkit-backdrop-filter: blur(32px) saturate(200%);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border, #2F3336);
+  border-radius: 20px;
   box-shadow: 
-    inset 0 1px 1px rgba(255, 255, 255, 1),
-    inset 1px 0 0 rgba(255, 255, 255, 0.60),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
-    0 20px 50px -10px rgba(0, 0, 0, 0.05);
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    0 12px 36px -6px rgba(0, 0, 0, 0.45);
   position: relative;
 }
 
+[data-theme-bg="default"] .liquid-glass-elevated {
+  background: #F7F9F9;
+  border-color: #EFF3F4;
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 1),
+    0 8px 24px -4px rgba(0, 0, 0, 0.06);
+}
+
 .liquid-glass-card {
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--surface-card, #16181C);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border, #2F3336);
+  border-radius: 16px;
   box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 1px 0 0 rgba(255, 255, 255, 0.40),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.05),
-    0 4px 12px -2px rgba(30, 38, 49, 0.04);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 4px 14px -2px rgba(0, 0, 0, 0.30);
   position: relative;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .liquid-glass-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(200, 68, 40, 0.35);
-  box-shadow: 
-    inset 0 1px 0 #FFFFFF,
-    inset 1px 0 0 rgba(255, 255, 255, 0.70),
-    inset -1px 0 0 rgba(255, 255, 255, 0.40),
-    inset 0 -1px 0 rgba(200, 68, 40, 0.15),
-    0 12px 28px -6px rgba(30, 38, 49, 0.08);
+  border-color: var(--primary, #1D9BF0);
 }
 
-/* ═══════════════════════════════════════════════════════════════════ */
-/* 360-DEGREE FULL-POSITION LIQUID GLASS BUTTON ENGINE (TOP/LEFT/RIGHT/BOTTOM) */
-/* ═══════════════════════════════════════════════════════════════════ */
+/* X.COM FULL PILL LIQUID GLASS BUTTONS */
 .btn-liquid {
   position: relative;
   backdrop-filter: blur(16px) saturate(180%);
@@ -230,15 +205,12 @@ modal {
   justify-content: center;
   cursor: pointer;
   user-select: none;
-  border-radius: var(--radius-btn, 2px);
+  border-radius: 9999px;
   overflow: hidden;
-  /* 4-Position Inset Specular Glass Bevel Lighting */
+  font-weight: 700;
   box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),  /* Top Specular Edge */
-    inset 1px 0 0 rgba(255, 255, 255, 0.45),  /* Left Specular Edge */
-    inset -1px 0 0 rgba(255, 255, 255, 0.25), /* Right Specular Edge */
-    inset 0 -1px 0 rgba(0, 0, 0, 0.18),       /* Bottom Refractive Depth */
-    0 1px 3px rgba(30, 38, 49, 0.06);        /* Ambient Drop Shadow */
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 /* Full 4-Sided Perimeter Specular Highlight (Top, Left, Right, Bottom) */
@@ -548,7 +520,7 @@ modal {
   background: #8E9AA8;
 }
 
-/* SOLID BLACK DASHBOARD & ADMIN ICON SYSTEM (Mandatory Standard) */
+/* HIGH-CONTRAST DASHBOARD & ADMIN ICON SYSTEM */
 [data-role="admin"] svg.lucide,
 [data-role="staff"] svg.lucide,
 aside svg.lucide,
@@ -559,12 +531,25 @@ main svg.lucide,
 aside svg.svg-inline--fa,
 header svg.svg-inline--fa,
 main svg.svg-inline--fa {
-  color: #1E2631;
+  color: inherit;
   fill: currentColor;
+}
+
+[data-theme-bg="lights_out"] aside svg.svg-inline--fa,
+[data-theme-bg="lights_out"] header svg.svg-inline--fa,
+[data-theme-bg="lights_out"] main svg.svg-inline--fa {
+  color: #E7E9EA;
+}
+
+[data-theme-bg="default"] aside svg.svg-inline--fa,
+[data-theme-bg="default"] header svg.svg-inline--fa,
+[data-theme-bg="default"] main svg.svg-inline--fa {
+  color: #0F1419;
 }
 
 /* Retain high-contrast white glyphs for active filled buttons */
 button.btn-liquid-terracotta svg,
+button.btn-liquid-charcoal svg,
 button.bg-primary svg,
 button.bg-danger svg,
 .bg-primary svg {
