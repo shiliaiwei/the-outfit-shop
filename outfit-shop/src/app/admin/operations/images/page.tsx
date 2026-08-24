@@ -373,38 +373,38 @@ export default function ImageGalleryPage() {
         </div>
       </div>
 
-      {/* 2. KPI METRICS CARDS */}
+      {/* 2. KPI METRICS CARDS (Minimal Typography-First Luxury Style) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <LiquidCard className="p-4 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-[3px] bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-            <FontAwesomeIcon icon={faFileImage} className="text-lg" />
-          </div>
-          <div>
+        <LiquidCard className="p-4 sm:p-5 flex flex-col justify-between shadow-xs border-border/80 group hover:border-primary/40 transition-all">
+          <div className="flex items-center justify-between">
             <p className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-wider">Cloud Capacity</p>
-            <p className="text-xl font-black text-text font-mono mt-0.5">{totalCount} Assets</p>
+            <span className="text-[9px] font-mono font-bold text-primary px-1.5 py-0.5 bg-primary/10 rounded-[2px]">CDN LIVE</span>
           </div>
+          <p className="text-2xl font-black text-text font-mono tracking-tight mt-2">
+            {totalCount.toLocaleString()} <span className="text-xs font-normal font-sans text-text-muted">Assets</span>
+          </p>
         </LiquidCard>
 
-        <LiquidCard className="p-4 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-[3px] bg-terracotta/10 text-terracotta flex items-center justify-center flex-shrink-0">
-            <FontAwesomeIcon icon={faFolderTree} className="text-lg" />
-          </div>
-          <div>
+        <LiquidCard className="p-4 sm:p-5 flex flex-col justify-between shadow-xs border-border/80 group hover:border-primary/40 transition-all">
+          <div className="flex items-center justify-between">
             <p className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-wider">Storage Hierarchy</p>
-            <p className="text-xl font-black text-text font-mono mt-0.5">{folders.length} Root Folders</p>
+            <span className="text-[9px] font-mono font-bold text-text-muted px-1.5 py-0.5 bg-bg rounded-[2px]">OD8T271N</span>
           </div>
+          <p className="text-2xl font-black text-text font-mono tracking-tight mt-2">
+            {folders.length} <span className="text-xs font-normal font-sans text-text-muted">Root Folders</span>
+          </p>
         </LiquidCard>
 
-        <LiquidCard className="p-4 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-[3px] bg-accent/10 text-accent flex items-center justify-center flex-shrink-0">
-            <FontAwesomeIcon icon={faLayerGroup} className="text-lg" />
+        <LiquidCard className="p-4 sm:p-5 flex flex-col justify-between shadow-xs border-border/80 group hover:border-primary/40 transition-all">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-wider">Active View</p>
+            <span className="text-[9px] font-mono font-bold text-text px-1.5 py-0.5 bg-bg rounded-[2px] uppercase truncate max-w-[120px]">
+              {activeFolder === "ALL" ? "All Storage" : activeFolder}
+            </span>
           </div>
-          <div>
-            <p className="text-[10px] font-mono font-bold text-text-muted uppercase tracking-wider">Active Folder View</p>
-            <p className="text-xl font-black text-text font-mono mt-0.5 uppercase">
-              {activeFolder === "ALL" ? "All Storage" : activeFolder} ({displayedImages.length})
-            </p>
-          </div>
+          <p className="text-2xl font-black text-text font-mono tracking-tight mt-2">
+            {displayedImages.length.toLocaleString()} <span className="text-xs font-normal font-sans text-text-muted">In View</span>
+          </p>
         </LiquidCard>
       </div>
 
@@ -445,9 +445,8 @@ export default function ImageGalleryPage() {
       {/* 4. 24 CLOUDINARY ROOT FOLDERS BAR */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted flex items-center gap-1.5">
-            <FontAwesomeIcon icon={faFolderTree} className="text-primary text-xs" />
-            <span>Cloudinary Root Folders ({folders.length} Folders &bull; od8t271n)</span>
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted">
+            Root Folders ({folders.length} &bull; od8t271n)
           </span>
           <span className="text-[10px] font-mono text-text-muted">
             Showing {displayedImages.length} active in view
@@ -459,13 +458,16 @@ export default function ImageGalleryPage() {
             type="button"
             onClick={() => handleSelectFolder("ALL")}
             className={cn(
-              "px-3 py-1.5 text-[10px] font-mono font-bold uppercase rounded-[2px] border transition-all cursor-pointer flex items-center gap-1.5",
+              "px-3 py-1.5 text-[10px] font-mono font-bold uppercase rounded-[2px] border transition-all cursor-pointer flex items-center gap-2",
               activeFolder === "ALL"
-                ? "bg-[#1E2631] text-white border-[#1E2631] shadow-sm scale-[1.02]"
+                ? "bg-[#1E2631] text-white border-[#1E2631] shadow-xs"
                 : "bg-surface text-text-muted border-border hover:text-text hover:border-text/40"
             )}
           >
-            <span>All Storage ({totalCount})</span>
+            <span>All Storage</span>
+            <span className={cn("text-[9px] px-1.5 py-0.2 rounded font-mono font-normal", activeFolder === "ALL" ? "bg-white/20 text-white" : "bg-bg text-text-muted")}>
+              {totalCount}
+            </span>
           </button>
 
           {folders.map((f) => {
@@ -479,15 +481,14 @@ export default function ImageGalleryPage() {
                 type="button"
                 onClick={() => handleSelectFolder(f.path)}
                 className={cn(
-                  "px-3 py-1.5 text-[10px] font-mono font-bold uppercase rounded-[2px] border transition-all cursor-pointer flex items-center gap-1.5",
+                  "px-3 py-1.5 text-[10px] font-mono font-bold uppercase rounded-[2px] border transition-all cursor-pointer flex items-center gap-2",
                   isCur
-                    ? "bg-[#1E2631] text-white border-[#1E2631] shadow-sm scale-[1.02]"
+                    ? "bg-[#1E2631] text-white border-[#1E2631] shadow-xs"
                     : "bg-surface text-text-muted border-border hover:text-text hover:border-text/40"
                 )}
               >
-                <FontAwesomeIcon icon={faFolder} className="text-[9px]" />
                 <span>{f.name}</span>
-                <span className={cn("text-[9px] px-1.5 py-0.2 rounded font-mono", isCur ? "bg-white/20 text-white" : "bg-bg text-text-muted")}>
+                <span className={cn("text-[9px] px-1.5 py-0.2 rounded font-mono font-normal", isCur ? "bg-white/20 text-white" : "bg-bg text-text-muted")}>
                   {count}
                 </span>
               </button>

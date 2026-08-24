@@ -347,15 +347,14 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
                         loadAssets(target, search);
                       }}
                       className={cn(
-                        "px-2.5 py-1 text-[9px] font-mono font-bold uppercase rounded-[2px] border transition-colors cursor-pointer flex items-center gap-1",
+                        "px-2.5 py-1 text-[9px] font-mono font-bold uppercase rounded-[2px] border transition-colors cursor-pointer flex items-center gap-1.5",
                         isCur
                           ? "bg-[#1E2631] text-white border-[#1E2631]"
                           : "bg-surface text-text-muted border-border hover:text-text hover:border-text/40"
                       )}
                     >
-                      <FontAwesomeIcon icon={faFolder} className="text-[8px]" />
                       <span>{f.name}</span>
-                      <span className={cn("text-[8px] px-1 py-0.2 rounded font-mono", isCur ? "bg-white/20 text-white" : "bg-bg text-text-muted")}>
+                      <span className={cn("text-[8px] px-1 py-0.2 rounded font-mono font-normal", isCur ? "bg-white/20 text-white" : "bg-bg text-text-muted")}>
                         {count}
                       </span>
                     </button>
