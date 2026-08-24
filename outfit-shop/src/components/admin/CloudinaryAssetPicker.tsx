@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { opsService } from "@/services/opsService";
+import { opsService, CLOUDINARY_ROOT_FOLDERS } from "@/services/opsService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMagnifyingGlass,
@@ -9,9 +9,7 @@ import {
   faCheck,
   faImage,
   faXmark,
-  faFolder,
-  faRotate,
-  faChevronRight
+  faFolder
 } from "@fortawesome/free-solid-svg-icons";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -21,73 +19,73 @@ const FALLBACK_CLOUDINARY_ASSETS = [
   {
     name: "FTY Jordan 23 Mesh Tank Jersey",
     public_id: "Velvet_Jacquard_Short_Sleeved_T_Shirt_HUY36WCW4001_PM2_Front_View",
-    folder: "jerseys",
+    folder: "Jordan",
     url: "https://res.cloudinary.com/od8t271n/image/upload/v1787072813/Velvet_Jacquard_Short_Sleeved_T_Shirt_HUY36WCW4001_PM2_Front_View.webp"
   },
   {
     name: "Youth 23 Monogram Graphic Shirt",
     public_id: "Monogram_Double_Face_Overshirt_HUB29WCO1859_PM2_Front_View",
-    folder: "overshirts",
+    folder: "Louis-Vuitton",
     url: "https://res.cloudinary.com/od8t271n/image/upload/v1787073012/Monogram_Double_Face_Overshirt_HUB29WCO1859_PM2_Front_View.webp"
   },
   {
     name: "Black Eagle & Star Track Jacket",
     public_id: "black_eagle_track_jacket",
-    folder: "jackets",
+    folder: "Fear-of-God",
     url: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80"
   },
   {
     name: "Heather Grey Quarter-Zip Wool Knit",
     public_id: "quarter_zip_knit_grey",
-    folder: "knits",
+    folder: "Maison-Margiela",
     url: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=800&q=80"
   },
   {
     name: "Pastel Pink Half-Zip Fleece Knit",
     public_id: "pink_fleece_halfzip",
-    folder: "knits",
+    folder: "Honour-The-Gift",
     url: "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?auto=format&fit=crop&w=800&q=80"
   },
   {
     name: "Camel Tan Corduroy Zip Blouson",
     public_id: "corduroy_blouson_tan",
-    folder: "jackets",
+    folder: "Reese-Cooper",
     url: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80"
   },
   {
     name: "Brown Suede Sherpa Collar Jacket",
     public_id: "suede_sherpa_jacket",
-    folder: "jackets",
+    folder: "Louis-Vuitton",
     url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
   },
   {
     name: "Baby Blue Knit Short-Sleeve Polo",
     public_id: "knit_polo_blue",
-    folder: "knits",
+    folder: "Market",
     url: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=800&q=80"
   },
   {
     name: "Off-White Structured Oxford Shirt",
     public_id: "oxford_shirt_ecru",
-    folder: "overshirts",
+    folder: "Born-x-Raised",
     url: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80"
   },
   {
     name: "Black Star Motif Relaxed Trousers",
     public_id: "star_pants_black",
-    folder: "pants",
+    folder: "Nike",
     url: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=800&q=80"
   },
   {
     name: "Technical Black Nylon Cargo Sweatpants",
     public_id: "cargo_sweatpants_black",
-    folder: "pants",
+    folder: "Adidas",
     url: "https://images.unsplash.com/photo-1542272604-780c96856592?auto=format&fit=crop&w=800&q=80"
   },
   {
     name: "Glitter Noir Knit Button Cardigan",
     public_id: "noir_cardigan_glitter",
-    folder: "knits",
+    folder: "Puma",
     url: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80"
   }
 ];
@@ -101,11 +99,11 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<"cloudinary" | "manual">("cloudinary");
   
-  // Real 24 folders from backend
-  const [folders, setFolders] = useState<Array<{ name: string; path: string }>>([]);
+  // Real 24 root folders from backend
+  const [folders, setFolders] = useState<Array<{ name: string; path: string }>>(CLOUDINARY_ROOT_FOLDERS);
   const [activeFolder, setActiveFolder] = useState<string>("ALL");
   
-  // Live 1,843 Assets state
+  // Live Assets state
   const [assets, setAssets] = useState<any[]>(FALLBACK_CLOUDINARY_ASSETS);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -116,24 +114,10 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
   useEffect(() => {
     async function loadFolders() {
       const folderList = await opsService.getCloudinaryFolders();
-      if (folderList && folderList.length > 0) {
+      if (folderList && Array.isArray(folderList) && folderList.length > 0) {
         setFolders(folderList);
       } else {
-        // Default 24 fashion folders structure
-        setFolders([
-          { name: "Jerseys", path: "jerseys" },
-          { name: "Jackets", path: "jackets" },
-          { name: "Overshirts", path: "overshirts" },
-          { name: "Knits", path: "knits" },
-          { name: "Tees", path: "tees" },
-          { name: "Pants", path: "pants" },
-          { name: "Hoodies", path: "hoodies" },
-          { name: "Sweaters", path: "sweaters" },
-          { name: "Outerwear", path: "outerwear" },
-          { name: "Accessories", path: "accessories" },
-          { name: "Footwear", path: "footwear" },
-          { name: "Bags", path: "bags" }
-        ]);
+        setFolders(CLOUDINARY_ROOT_FOLDERS);
       }
     }
 
@@ -191,6 +175,25 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
     }, 300);
     return () => clearTimeout(timer);
   }, [search]);
+
+  // Compute live folder counts
+  const folderCounts = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const folder of folders) {
+      const pathNorm = folder.path.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const count = assets.filter((item) => {
+        const itemFolder = (item.folder || item.brand || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const itemUrl = (item.url || "").toLowerCase();
+        return (
+          itemFolder === pathNorm ||
+          itemFolder.includes(pathNorm) ||
+          itemUrl.includes(folder.path.toLowerCase())
+        );
+      }).length;
+      map[folder.path] = count;
+    }
+    return map;
+  }, [folders, assets]);
 
   return (
     <div className="space-y-2">
@@ -308,7 +311,7 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
               <span className="text-[8px] font-mono font-bold uppercase text-text-muted block">
                 Cloudinary Folders ({folders.length}):
               </span>
-              <div className="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto p-1 bg-bg/40 rounded-[2px] border border-border/50">
+              <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1 bg-bg/40 rounded-[2px] border border-border/50">
                 <button
                   type="button"
                   onClick={() => setActiveFolder("ALL")}
@@ -319,11 +322,12 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
                       : "bg-surface text-text-muted border-border hover:text-text hover:border-text/40"
                   )}
                 >
-                  <span>All Assets</span>
+                  <span>All Assets ({assets.length})</span>
                 </button>
 
                 {folders.map((f) => {
                   const isCur = activeFolder === f.path || activeFolder === f.name;
+                  const count = folderCounts[f.path] || 0;
                   return (
                     <button
                       key={f.path || f.name}
@@ -338,6 +342,11 @@ export function CloudinaryAssetPicker({ value, onChange }: CloudinaryAssetPicker
                     >
                       <FontAwesomeIcon icon={faFolder} className="text-[8px]" />
                       <span>{f.name}</span>
+                      {count > 0 && (
+                        <span className={cn("text-[8px] px-1 py-0.2 rounded font-mono", isCur ? "bg-white/20 text-white" : "bg-bg text-text-muted")}>
+                          {count}
+                        </span>
+                      )}
                     </button>
                   );
                 })}

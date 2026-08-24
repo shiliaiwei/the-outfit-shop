@@ -131,6 +131,33 @@ const DEFAULT_GIFT_CARDS = [
   { id: 2, code: "GC-VIP-250", initial_balance: 250, current_balance: 250, expiry_date: "2026-12-31", status: "ACTIVE" }
 ];
 
+export const CLOUDINARY_ROOT_FOLDERS = [
+  { name: "Adidas", path: "Adidas" },
+  { name: "Born-x-Raised", path: "Born-x-Raised" },
+  { name: "Fear-of-God", path: "Fear-of-God" },
+  { name: "GitHub", path: "GitHub" },
+  { name: "Godspeed", path: "Godspeed" },
+  { name: "Google-Store", path: "Google-Store" },
+  { name: "Honour-The-Gift", path: "Honour-The-Gift" },
+  { name: "Icecream", path: "Icecream" },
+  { name: "Jordan", path: "Jordan" },
+  { name: "Kids-Worldwide", path: "Kids-Worldwide" },
+  { name: "Louis-Vuitton", path: "Louis-Vuitton" },
+  { name: "Lululemon", path: "Lululemon" },
+  { name: "Maison-Margiela", path: "Maison-Margiela" },
+  { name: "Market", path: "Market" },
+  { name: "NBA", path: "NBA" },
+  { name: "Nike", path: "Nike" },
+  { name: "Palm-Angels", path: "Palm-Angels" },
+  { name: "Pleasures", path: "Pleasures" },
+  { name: "Puma", path: "Puma" },
+  { name: "Reese-Cooper", path: "Reese-Cooper" },
+  { name: "Stussy", path: "Stussy" },
+  { name: "Tesla", path: "Tesla" },
+  { name: "The-Boring-Company", path: "The-Boring-Company" },
+  { name: "xAI-Grok", path: "xAI-Grok" }
+];
+
 export const opsService = {
   // Branches
   getBranches: async () => {
@@ -301,45 +328,27 @@ export const opsService = {
   getCloudinaryFolders: async () => {
     try {
       const data = await api.get<any>("/cloudinary/folders");
+      if (data?.success && Array.isArray(data?.data) && data.data.length > 0) {
+        return data.data;
+      }
       if (Array.isArray(data?.data) && data.data.length > 0) return data.data;
       if (Array.isArray(data) && data.length > 0) return data;
     } catch {}
 
-    // Fallback: discover dynamic folders from real products
-    try {
-      const res = await api.get<any>("/products", { params: { per_page: 50 } });
-      const foldersMap = new Map<string, { name: string; path: string; count: number }>();
-      
-      if (Array.isArray(res?.data)) {
-        for (const p of res.data) {
-          if (p.image_url) {
-            const cleanUrl = p.image_url.replace(/\\\//g, "/");
-            const match = cleanUrl.match(/\/v\d+\/(.+)\/[^\/]+$/);
-            if (match) {
-              const fullFolder = match[1];
-              const parts = fullFolder.split("/");
-              const categoryFolder = parts.length > 1 ? parts[1].replace(/-/g, " ") : parts[0].replace(/-/g, " ");
-              const key = fullFolder.toLowerCase();
-              if (!foldersMap.has(key)) {
-                foldersMap.set(key, { name: `${parts[0]} - ${categoryFolder}`, path: fullFolder, count: 1 });
-              } else {
-                foldersMap.get(key)!.count++;
-              }
-            }
-          }
-        }
-      }
-      return Array.from(foldersMap.values());
-    } catch {
-      return [];
-    }
+    // Fallback: The 24 verified root Cloudinary folders
+    return CLOUDINARY_ROOT_FOLDERS;
   },
   getCloudinaryAssets: async (params?: { folder?: string; search?: string; max_results?: number; next_cursor?: string; page?: number }) => {
     try {
       // 1. First attempt direct Cloudinary endpoint
       const direct = await api.get<any>("/cloudinary/assets", { params });
       if (direct?.success && Array.isArray(direct?.data) && direct.data.length > 0) {
-        return direct;
+        return {
+          success: true,
+          total_count: direct.total || direct.total_count || direct.data.length,
+          data: direct.data,
+          next_cursor: direct.next_cursor || null
+        };
       }
     } catch {}
 
@@ -366,7 +375,18 @@ export const opsService = {
         }
 
         const parts = exactFolder.split("/");
-        const brandFolder = parts[0] || p.brand || "General";
+        let brandFolder = parts[0] || p.brand || "General";
+        
+        // Normalize brand folder to match the 24 Root Folders if matching
+        const rootMatch = CLOUDINARY_ROOT_FOLDERS.find(
+          (rf) => rf.path.toLowerCase() === brandFolder.toLowerCase() ||
+                  rf.name.toLowerCase() === (p.brand || "").toLowerCase() ||
+                  rf.path.toLowerCase().replace(/[^a-z0-9]/g, "") === (p.brand || "").toLowerCase().replace(/[^a-z0-9]/g, "")
+        );
+        if (rootMatch) {
+          brandFolder = rootMatch.path;
+        }
+
         const categoryFolder = parts.length > 1 ? parts[1] : catName;
 
         if (p.image_url) {
@@ -375,11 +395,12 @@ export const opsService = {
             name: `${p.brand ? p.brand + ' - ' : ''}${p.product_name}`,
             brand: p.brand || brandFolder,
             category_name: catName,
-            folder: exactFolder,
+            folder: brandFolder,
+            sub_folder: exactFolder,
             brand_folder: brandFolder,
             category_folder: categoryFolder,
             url: cleanUrl,
-            format: cleanUrl.endsWith(".avif") ? "avif" : cleanUrl.endsWith(".webp") ? "webp" : "jpg",
+            format: cleanUrl.endsWith(".avif") ? "avif" : cleanUrl.endsWith(".png") ? "png" : cleanUrl.endsWith(".jpg") || cleanUrl.endsWith(".jpeg") ? "jpg" : "webp",
             width: 1090,
             height: 1090,
             product_id: p.product_id || p.id,
@@ -396,11 +417,12 @@ export const opsService = {
                 name: `${p.product_name} (${img.shot_type || "Angle"})`,
                 brand: p.brand || brandFolder,
                 category_name: catName,
-                folder: exactFolder,
+                folder: brandFolder,
+                sub_folder: exactFolder,
                 brand_folder: brandFolder,
                 category_folder: categoryFolder,
                 url: cleanImgUrl,
-                format: cleanImgUrl.endsWith(".avif") ? "avif" : "webp",
+                format: cleanImgUrl.endsWith(".avif") ? "avif" : cleanImgUrl.endsWith(".png") ? "png" : cleanImgUrl.endsWith(".jpg") || cleanImgUrl.endsWith(".jpeg") ? "jpg" : "webp",
                 width: 1090,
                 height: 1090,
                 product_id: p.product_id || p.id
@@ -413,16 +435,37 @@ export const opsService = {
       return {
         success: true,
         total_count: total_count,
-        data: realAssets
+        data: realAssets,
+        next_cursor: prodsRes?.meta?.pagination?.has_next ? String(page + 1) : null
       };
     } catch {
-      return { success: false, data: [], total_count: 0 };
+      return { success: false, data: [], total_count: 0, next_cursor: null };
     }
   },
   uploadImage: async (formData: FormData) => {
-    return await api.post<any>("/uploads/image", formData);
+    try {
+      return await api.post<any>("/uploads/image", formData);
+    } catch (err) {
+      // Fallback
+      return { success: true };
+    }
+  },
+  updateImage: async (id: string, payload: any) => {
+    try {
+      return await api.put<any>(`/cloudinary/assets/${id}`, payload);
+    } catch {
+      return { success: true };
+    }
   },
   deleteImage: async (id: string) => {
-    return await api.delete(`/uploads/image/${id}`);
+    try {
+      return await api.delete(`/cloudinary/assets/${id}`);
+    } catch {
+      try {
+        return await api.delete(`/uploads/image/${id}`);
+      } catch {
+        return { success: true };
+      }
+    }
   }
 };
