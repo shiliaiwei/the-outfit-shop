@@ -83,6 +83,8 @@ const FALLBACK_ORDERS = [
   }
 ];
 
+import { entityStore } from "@/lib/storage/entityStore";
+
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,12 +117,15 @@ export default function OrdersPage() {
             price: Number(item.price ?? item.unit_price ?? 0)
           }))
         }));
-        setOrders(normalized);
+        const synced = entityStore.sync("orders_list", normalized, FALLBACK_ORDERS);
+        setOrders(synced);
       } else {
-        setOrders(FALLBACK_ORDERS);
+        const local = entityStore.get("orders_list", FALLBACK_ORDERS);
+        setOrders(local);
       }
     } catch {
-      setOrders(FALLBACK_ORDERS);
+      const local = entityStore.get("orders_list", FALLBACK_ORDERS);
+      setOrders(local);
     } finally {
       setLoading(false);
     }

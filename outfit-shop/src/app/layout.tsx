@@ -92,7 +92,18 @@ export default function RootLayout({
         <AuthProvider>
           {children}
         </AuthProvider>
-        <Toaster richColors position="top-right" />
+        <Toaster
+          richColors
+          position="bottom-right"
+          closeButton
+          duration={3000}
+          toastOptions={{
+            className: "liquid-glass border border-border text-xs font-sans shadow-xl backdrop-blur-md",
+            style: {
+              borderRadius: "4px",
+            }
+          }}
+        />
       </body>
     </html>
   );

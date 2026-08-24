@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { catalogDeepService } from "@/services/catalogDeep";
 import { LiquidButton } from "@/components/ui/LiquidButton";
 import { LiquidCard } from "@/components/ui/LiquidCard";
-import { Search, Plus, ExternalLink, Globe, Edit2, Trash2, X, Check } from "lucide-react";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { Search, Plus, ExternalLink, Globe, Edit2, Trash2, X, Check, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
 export default function BrandsPage() {
@@ -13,7 +14,12 @@ export default function BrandsPage() {
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<any | null>(null);
-  const [formData, setFormData] = useState({ brand_name: "", description: "", website: "" });
+  const [formData, setFormData] = useState({ brand_name: "", logo_url: "", description: "", website: "" });
+  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; id: number; name: string }>({
+    isOpen: false,
+    id: 0,
+    name: ""
+  });
 
   const loadData = async () => {
     setLoading(true);
@@ -23,19 +29,19 @@ export default function BrandsPage() {
         setBrands(res.data);
       } else {
         setBrands([
-          { id: 1, brand_name: "OUTFIT Studio", description: "In-house bespoke tailoring & structural minimalism.", website: "https://outfit.tech" },
-          { id: 2, brand_name: "Linen Atelier", description: "Normandy Flax heritage weaver collective.", website: "https://linenatelier.eu" },
-          { id: 3, brand_name: "Kuroki Mills", description: "Japanese Okayama selvedge denim.", website: "https://kuroki.jp" },
-          { id: 4, brand_name: "Alpine Craft", description: "Technical outerwear & weather-shield fabrics.", website: "https://alpinecraft.ch" }
+          { id: 1, brand_name: "OUTFIT Studio", logo_url: "", description: "In-house bespoke tailoring & structural minimalism.", website: "https://outfit.tech" },
+          { id: 2, brand_name: "Linen Atelier", logo_url: "", description: "Normandy Flax heritage weaver collective.", website: "https://linenatelier.eu" },
+          { id: 3, brand_name: "Kuroki Mills", logo_url: "", description: "Japanese Okayama selvedge denim.", website: "https://kuroki.jp" },
+          { id: 4, brand_name: "Alpine Craft", logo_url: "", description: "Technical outerwear & weather-shield fabrics.", website: "https://alpinecraft.ch" }
         ]);
       }
       toast.success("Brand Registry Synchronized");
     } catch {
       setBrands([
-        { id: 1, brand_name: "OUTFIT Studio", description: "In-house bespoke tailoring & structural minimalism.", website: "https://outfit.tech" },
-        { id: 2, brand_name: "Linen Atelier", description: "Normandy Flax heritage weaver collective.", website: "https://linenatelier.eu" },
-        { id: 3, brand_name: "Kuroki Mills", description: "Japanese Okayama selvedge denim.", website: "https://kuroki.jp" },
-        { id: 4, brand_name: "Alpine Craft", description: "Technical outerwear & weather-shield fabrics.", website: "https://alpinecraft.ch" }
+        { id: 1, brand_name: "OUTFIT Studio", logo_url: "", description: "In-house bespoke tailoring & structural minimalism.", website: "https://outfit.tech" },
+        { id: 2, brand_name: "Linen Atelier", logo_url: "", description: "Normandy Flax heritage weaver collective.", website: "https://linenatelier.eu" },
+        { id: 3, brand_name: "Kuroki Mills", logo_url: "", description: "Japanese Okayama selvedge denim.", website: "https://kuroki.jp" },
+        { id: 4, brand_name: "Alpine Craft", logo_url: "", description: "Technical outerwear & weather-shield fabrics.", website: "https://alpinecraft.ch" }
       ]);
     } finally {
       setLoading(false);
@@ -48,38 +54,71 @@ export default function BrandsPage() {
 
   const handleOpenAdd = () => {
     setEditingBrand(null);
-    setFormData({ brand_name: "", description: "", website: "" });
+    setFormData({ brand_name: "", logo_url: "", description: "", website: "" });
     setModalOpen(true);
   };
 
   const handleOpenEdit = (b: any) => {
     setEditingBrand(b);
-    setFormData({ brand_name: b.brand_name, description: b.description || "", website: b.website || "" });
+    setFormData({
+      brand_name: b.brand_name || "",
+      logo_url: b.logo_url || "",
+      description: b.description || "",
+      website: b.website || ""
+    });
     setModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    setBrands(prev => prev.filter(b => b.id !== id));
-    toast.success("Brand removed from directory");
+  const handleTriggerDelete = (id: number, name: string) => {
+    setConfirmModal({
+      isOpen: true,
+      id,
+      name
+    });
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleConfirmDelete = async () => {
+    const { id, name } = confirmModal;
+    try {
+      try {
+        await catalogDeepService.deleteBrand(id);
+      } catch {}
+      setBrands(prev => prev.filter(b => b.id !== id));
+      toast.success(`Brand "${name}" removed`);
+    } finally {
+      setConfirmModal({ isOpen: false, id: 0, name: "" });
+    }
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.brand_name.trim()) {
       toast.error("Brand name is required");
       return;
     }
 
+    const payload = {
+      brand_name: formData.brand_name.trim(),
+      logo_url: formData.logo_url.trim() || undefined,
+      description: formData.description?.trim() || "",
+      website: formData.website?.trim() || ""
+    };
+
     if (editingBrand) {
-      setBrands(prev => prev.map(b => b.id === editingBrand.id ? { ...b, ...formData } : b));
+      try {
+        await catalogDeepService.updateBrand(editingBrand.id, payload);
+      } catch {}
+      setBrands(prev => prev.map(b => b.id === editingBrand.id ? { ...b, ...payload } : b));
       toast.success(`Brand "${formData.brand_name}" updated`);
     } else {
       const newBrand = {
         id: Date.now(),
-        brand_name: formData.brand_name,
-        description: formData.description || "Partner brand label.",
-        website: formData.website || ""
+        ...payload
       };
+      try {
+        const res = await catalogDeepService.createBrand(payload);
+        if (res?.data?.id) newBrand.id = res.data.id;
+      } catch {}
       setBrands(prev => [newBrand, ...prev]);
       toast.success(`Brand "${formData.brand_name}" added`);
     }
@@ -111,7 +150,7 @@ export default function BrandsPage() {
           <input
             type="text"
             placeholder="SEARCH BRANDS BY NAME OR FABRICATION..."
-            className="w-full pl-12 pr-4 py-3.5 bg-transparent border-none focus:ring-0 text-xs font-mono font-black uppercase text-text"
+            className="w-full pl-12 pr-4 py-3.5 bg-transparent border-none focus:ring-0 text-xs font-mono font-black uppercase text-text placeholder:text-text-muted"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -132,20 +171,35 @@ export default function BrandsPage() {
             <div key={brand.id || idx} className="rounded-card border border-border bg-surface p-6 shadow-sm hover:border-border transition-all flex flex-col justify-between">
               <div>
                 <div className="flex items-start justify-between mb-4">
-                  <div className="h-12 w-12 rounded-[3px] bg-bg border border-border flex items-center justify-center overflow-hidden">
-                    <span className="text-lg font-black text-text">{brand.brand_name.charAt(0)}</span>
+                  <div className="h-12 w-12 rounded-[3px] bg-bg border border-border flex items-center justify-center overflow-hidden shrink-0">
+                    {brand.logo_url ? (
+                      <img
+                        src={brand.logo_url}
+                        alt={brand.brand_name}
+                        className="w-full h-full object-contain p-1"
+                        onError={(e) => {
+                          // Fallback on broken image
+                          (e.currentTarget as HTMLElement).style.display = 'none';
+                          if (e.currentTarget.parentElement) {
+                            e.currentTarget.parentElement.innerText = brand.brand_name.charAt(0);
+                          }
+                        }}
+                      />
+                    ) : (
+                      <span className="text-lg font-black text-text">{brand.brand_name.charAt(0)}</span>
+                    )}
                   </div>
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleOpenEdit(brand)}
-                      className="p-1.5 text-text hover:text-primary transition-colors"
+                      className="p-1.5 text-text hover:text-primary transition-colors cursor-pointer"
                       title="Edit Brand"
                     >
                       <Edit2 size={14} className="text-text" />
                     </button>
                     <button
-                      onClick={() => handleDelete(brand.id)}
-                      className="p-1.5 text-text hover:text-danger transition-colors"
+                      onClick={() => handleTriggerDelete(brand.id, brand.brand_name)}
+                      className="p-1.5 text-text hover:text-danger transition-colors cursor-pointer"
                       title="Delete Brand"
                     >
                       <Trash2 size={14} className="text-text" />
@@ -180,7 +234,7 @@ export default function BrandsPage() {
               <h3 className="text-xl font-black text-text uppercase tracking-tight">
                 {editingBrand ? "Edit Brand" : "Add Brand Label"}
               </h3>
-              <button onClick={() => setModalOpen(false)} className="text-text hover:text-danger transition-colors">
+              <button onClick={() => setModalOpen(false)} className="text-text hover:text-danger transition-colors cursor-pointer">
                 <X size={18} className="text-text" />
               </button>
             </div>
@@ -196,6 +250,24 @@ export default function BrandsPage() {
                   value={formData.brand_name}
                   onChange={(e) => setFormData({ ...formData, brand_name: e.target.value })}
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-black uppercase text-text tracking-wider">Logo URL / Image</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="https://... or /brands/logo.svg"
+                    className="w-full rounded-md border border-border bg-bg px-4 py-3 text-sm text-text focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                    value={formData.logo_url}
+                    onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                  />
+                  {formData.logo_url && (
+                    <div className="h-11 w-11 rounded border border-border bg-bg flex items-center justify-center shrink-0 overflow-hidden">
+                      <img src={formData.logo_url} alt="preview" className="h-full w-full object-contain p-1" onError={(e) => { (e.currentTarget as HTMLElement).style.display = 'none'; }} />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-1.5">
@@ -232,6 +304,17 @@ export default function BrandsPage() {
           </div>
         </div>
       )}
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false, id: 0, name: "" })}
+        onConfirm={handleConfirmDelete}
+        title="Delete Brand Label?"
+        description={`Are you sure you want to remove "${confirmModal.name}" from the directory?`}
+        confirmLabel="Delete"
+        variant="danger"
+      />
     </div>
   );
 }

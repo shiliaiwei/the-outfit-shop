@@ -63,7 +63,7 @@ export default function InventoryReportPage() {
            <h3 className="text-xl font-black text-text uppercase tracking-[0.2em] mb-12">Asset Distribution</h3>
            <div className="flex-1 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
+                <PieChart className="outline-none focus:outline-none select-none">
                   <Pie
                     data={stockData}
                     cx="50%"
@@ -73,9 +73,17 @@ export default function InventoryReportPage() {
                     paddingAngle={8}
                     dataKey="value"
                     animationDuration={1500}
+                    className="outline-none focus:outline-none cursor-pointer"
                   >
                     {stockData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="var(--surface)" strokeWidth={4} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                        stroke="var(--surface)"
+                        strokeWidth={4}
+                        className="outline-none focus:outline-none"
+                        tabIndex={-1}
+                      />
                     ))}
                   </Pie>
                   <Tooltip contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '3px', fontWeight: 900, fontSize: '10px' }} />

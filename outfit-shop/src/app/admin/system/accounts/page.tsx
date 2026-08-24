@@ -9,39 +9,70 @@ import { faKey, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { cn } from "@/lib/utils";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
+import { entityStore } from "@/lib/storage/entityStore";
+
+const DEFAULT_USERS = [
+  { id: 1, username: "admin", email: "admin@outfit.luxury", role: "ADMIN", employee_name: "Master Admin", position: "System Architect" },
+  { id: 2, username: "manager", email: "manager@outfit.luxury", role: "MANAGER", employee_name: "Floor Director", position: "Operations Manager" },
+  { id: 3, username: "cashier1", email: "cashier1@outfit.luxury", role: "CASHIER", employee_name: "Register Lead", position: "Lead Cashier" }
+];
+
 export default function SystemAccountsPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [resetEmail, setResetEmail] = useState<string | null>(null);
   const [resetting, setResetting] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newUserForm, setNewUserForm] = useState({
+    username: "",
+    email: "",
+    role: "MANAGER",
+    employee_name: "",
+    position: ""
+  });
 
   useEffect(() => {
     async function fetchUsers() {
       try {
         const res = await api.get<any>("/users");
-        if (Array.isArray(res?.data)) {
-          setUsers(res.data);
-        } else if (Array.isArray(res)) {
-          setUsers(res);
+        const list = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+        if (list.length > 0) {
+          const synced = entityStore.sync("system_users", list, DEFAULT_USERS);
+          setUsers(synced);
         } else {
-          setUsers([
-            { id: 1, username: "admin", email: "admin@outfit.luxury", role: "ADMIN", employee_name: "Master Admin", position: "System Architect" },
-            { id: 2, username: "manager", email: "manager@outfit.luxury", role: "MANAGER", employee_name: "Floor Director", position: "Operations Manager" },
-            { id: 3, username: "cashier1", email: "cashier1@outfit.luxury", role: "CASHIER", employee_name: "Register Lead", position: "Lead Cashier" }
-          ]);
+          const local = entityStore.get("system_users", DEFAULT_USERS);
+          setUsers(local);
         }
       } catch {
-        setUsers([
-          { id: 1, username: "admin", email: "admin@outfit.luxury", role: "ADMIN", employee_name: "Master Admin", position: "System Architect" },
-          { id: 2, username: "manager", email: "manager@outfit.luxury", role: "MANAGER", employee_name: "Floor Director", position: "Operations Manager" },
-          { id: 3, username: "cashier1", email: "cashier1@outfit.luxury", role: "CASHIER", employee_name: "Register Lead", position: "Lead Cashier" }
-        ]);
+        const local = entityStore.get("system_users", DEFAULT_USERS);
+        setUsers(local);
       } finally {
         setLoading(false);
       }
     }
     fetchUsers();
   }, []);
+
+  const handleCreateUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newUserForm.username.trim() || !newUserForm.email.trim()) {
+      toast.error("Username and email are required");
+      return;
+    }
+    const newUser = {
+      id: Date.now(),
+      username: newUserForm.username.trim().toLowerCase().replace(/\s+/g, "_"),
+      email: newUserForm.email.trim(),
+      role: newUserForm.role,
+      employee_name: newUserForm.employee_name.trim() || "Staff Member",
+      position: newUserForm.position.trim() || "Sales Associate"
+    };
+    entityStore.add("system_users", newUser, DEFAULT_USERS);
+    setUsers((prev) => [newUser, ...prev.filter(u => u.id !== newUser.id)]);
+    toast.success(`User @${newUser.username} created successfully`);
+    setIsAddModalOpen(false);
+    setNewUserForm({ username: "", email: "", role: "MANAGER", employee_name: "", position: "" });
+  };
 
   const handleConfirmResetPassword = async () => {
     if (!resetEmail) return;
@@ -68,7 +99,7 @@ export default function SystemAccountsPage() {
             <p className="text-xs text-text-muted mt-1">Tier 4 Admin control for system credentials and role permissions</p>
           </div>
           <button
-            onClick={() => toast.info("New account creation modal ready")}
+            onClick={() => setIsAddModalOpen(true)}
             className="btn-liquid btn-liquid-terracotta px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 shadow-md cursor-pointer self-start sm:self-auto"
           >
             <FontAwesomeIcon icon={faPlus} className="text-xs" />
@@ -130,6 +161,88 @@ export default function SystemAccountsPage() {
             </table>
           </div>
         </div>
+
+        {/* Add Account Modal */}
+        {isAddModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="liquid-glass w-full max-w-md p-6 space-y-4 shadow-2xl border border-border">
+              <h2 className="text-base font-bold text-text uppercase tracking-tight">Add System Account</h2>
+              <form onSubmit={handleCreateUser} className="space-y-3 text-xs">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-text-muted mb-1">Username</label>
+                  <input
+                    type="text"
+                    required
+                    value={newUserForm.username}
+                    onChange={(e) => setNewUserForm({ ...newUserForm, username: e.target.value })}
+                    placeholder="e.g. sophia_kem"
+                    className="w-full bg-bg/50 border border-border px-3 py-2 text-text text-xs focus:outline-none focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-text-muted mb-1">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={newUserForm.email}
+                    onChange={(e) => setNewUserForm({ ...newUserForm, email: e.target.value })}
+                    placeholder="e.g. sophia@outfit.luxury"
+                    className="w-full bg-bg/50 border border-border px-3 py-2 text-text text-xs focus:outline-none focus:border-primary"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase text-text-muted mb-1">Role</label>
+                    <select
+                      value={newUserForm.role}
+                      onChange={(e) => setNewUserForm({ ...newUserForm, role: e.target.value })}
+                      className="w-full bg-bg/50 border border-border px-3 py-2 text-text text-xs focus:outline-none focus:border-primary"
+                    >
+                      <option value="ADMIN">ADMIN</option>
+                      <option value="MANAGER">MANAGER</option>
+                      <option value="CASHIER">CASHIER</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase text-text-muted mb-1">Position</label>
+                    <input
+                      type="text"
+                      value={newUserForm.position}
+                      onChange={(e) => setNewUserForm({ ...newUserForm, position: e.target.value })}
+                      placeholder="e.g. Floor Lead"
+                      className="w-full bg-bg/50 border border-border px-3 py-2 text-text text-xs focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-text-muted mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    value={newUserForm.employee_name}
+                    onChange={(e) => setNewUserForm({ ...newUserForm, employee_name: e.target.value })}
+                    placeholder="e.g. Sophia Kem"
+                    className="w-full bg-bg/50 border border-border px-3 py-2 text-text text-xs focus:outline-none focus:border-primary"
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-2 border-t border-border/40">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddModalOpen(false)}
+                    className="btn-liquid btn-liquid-glass px-4 py-2 text-xs font-mono font-bold uppercase"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn-liquid btn-liquid-terracotta px-4 py-2 text-xs font-mono font-bold uppercase"
+                  >
+                    Create Account
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Compact Confirm Modal for PWD Reset */}
         <ConfirmModal

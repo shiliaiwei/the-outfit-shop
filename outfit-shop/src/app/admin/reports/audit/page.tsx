@@ -73,7 +73,7 @@ export default function SecurityAuditReport() {
           <h3 className="text-sm font-black text-text uppercase tracking-widest mb-8">Access Event Breakdown</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart className="outline-none focus:outline-none select-none">
                 <Pie
                   data={eventBreakdown}
                   cx="50%"
@@ -82,9 +82,17 @@ export default function SecurityAuditReport() {
                   outerRadius={100}
                   paddingAngle={5}
                   dataKey="value"
+                  className="outline-none focus:outline-none cursor-pointer"
                 >
                   {eventBreakdown.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} stroke="var(--surface)" strokeWidth={2} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.color}
+                      stroke="var(--surface)"
+                      strokeWidth={2}
+                      className="outline-none focus:outline-none"
+                      tabIndex={-1}
+                    />
                   ))}
                 </Pie>
                 <Tooltip />

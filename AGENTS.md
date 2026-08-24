@@ -23,5 +23,7 @@ Before executing any `git push` or `git merge` to any remote or branch:
    - [.agents/rules/icon-design-standards.md](.agents/rules/icon-design-standards.md)
    - [.agents/rules/confirm-modal-and-alerts.md](.agents/rules/confirm-modal-and-alerts.md)
    - [.agents/rules/product-asset-and-size-selectors.md](.agents/rules/product-asset-and-size-selectors.md)
+   - [.agents/rules/api-error-triage-and-backend-prompts.md](.agents/rules/api-error-triage-and-backend-prompts.md)
    - [.agents/skills/liquid-glass-design-system/SKILL.md](.agents/skills/liquid-glass-design-system/SKILL.md)
    - [.agents/skills/outfit-admin-interactive-patterns/SKILL.md](.agents/skills/outfit-admin-interactive-patterns/SKILL.md)
+   - [.agents/skills/api-error-diagnosis-and-backend-handoff/SKILL.md](.agents/skills/api-error-diagnosis-and-backend-handoff/SKILL.md)

@@ -31,7 +31,6 @@ export default function CategoriesPage() {
           { id: 4, category_name: "Outerwear", description: "Technical weather-resistant windbreakers and trench coats." }
         ]);
       }
-      toast.success("Taxonomy Engine Synced");
     } catch {
       setCategories([
         { id: 1, category_name: "Overshirts", description: "Structured Normandy Flax linen and heavy cotton layering." },
@@ -60,28 +59,35 @@ export default function CategoriesPage() {
     setModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
+    await CatalogDeepService.deleteCategory(id);
     setCategories(prev => prev.filter(c => c.id !== id));
     toast.success("Category deleted successfully");
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.category_name.trim()) {
       toast.error("Category name is required");
       return;
     }
 
+    const payload = {
+      category_name: formData.category_name.trim(),
+      description: formData.description?.trim() || "Core collection segment."
+    };
+
     if (editingCategory) {
-      setCategories(prev => prev.map(c => c.id === editingCategory.id ? { ...c, ...formData } : c));
+      await CatalogDeepService.updateCategory(editingCategory.id, payload);
+      setCategories(prev => prev.map(c => c.id === editingCategory.id ? { ...c, ...payload } : c));
       toast.success(`Category "${formData.category_name}" updated`);
     } else {
-      const newCat = {
+      const res = await CatalogDeepService.createCategory(payload);
+      const newCat = (res as any)?.data || {
         id: Date.now(),
-        category_name: formData.category_name,
-        description: formData.description || "Core collection segment."
+        ...payload
       };
-      setCategories(prev => [newCat, ...prev]);
+      setCategories(prev => [newCat, ...prev.filter(c => c.id !== newCat.id)]);
       toast.success(`Category "${formData.category_name}" created`);
     }
     setModalOpen(false);

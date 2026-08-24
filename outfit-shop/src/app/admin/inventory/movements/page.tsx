@@ -127,11 +127,9 @@ export default function MovementsPage() {
     });
   }, [movements, search, typeFilter]);
 
-  const handleRecordMovement = (e: React.FormEvent) => {
+  const handleRecordMovement = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newId = Math.floor(600 + Math.random() * 900);
     const newMovement = {
-      id: newId,
       product_name: formData.product_name,
       sku: formData.sku,
       movement_type: formData.movement_type,
@@ -141,8 +139,10 @@ export default function MovementsPage() {
       note: formData.note
     };
 
-    setMovements([newMovement, ...movements]);
-    toast.success(`Movement record #${newId} added to stock ledger`);
+    const res = await inventoryDeepService.createMovement(newMovement);
+    const created = (res as any)?.data || { id: Date.now(), ...newMovement };
+    setMovements((prev) => [created, ...prev.filter(m => m.id !== created.id)]);
+    toast.success(`Movement record #${created.id} added to stock ledger`);
     setIsRecordModalOpen(false);
   };
 

@@ -29,6 +29,7 @@ import {
 import { BrandSelect, BrandSelectOption } from "@/components/shared/BrandSelect";
 import { CloudinaryAssetPicker } from "@/components/admin/CloudinaryAssetPicker";
 import { SizeSelector } from "@/components/admin/SizeSelector";
+import { entityStore } from "@/lib/storage/entityStore";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -120,10 +121,16 @@ export default function InventoryPage() {
         page: 1,
         per_page: 50
       });
-      setProducts(res.products);
+      const synced = entityStore.sync("inventory_products", res.products);
+      setProducts(synced);
       setPagination(res.pagination);
     } catch {
-      toast.error("Failed to sync inventory catalog");
+      const local = entityStore.get("inventory_products", []);
+      if (local.length > 0) {
+        setProducts(local);
+      } else {
+        toast.error("Failed to sync inventory catalog");
+      }
     } finally {
       setLoading(false);
     }
@@ -223,6 +230,7 @@ export default function InventoryPage() {
       colors: [{ name: "Neutral", hex: "#1E2631" }]
     };
 
+    entityStore.add("inventory_products", newProduct);
     setProducts((prev) => [newProduct, ...prev]);
     toast.success(`Product added: ${addFormData.name}`);
     setIsAddModalOpen(false);
@@ -249,22 +257,27 @@ export default function InventoryPage() {
     if (!selectedProduct) return;
 
     setSubmitting(true);
+    const updatedFields = {
+      name: editFormData.name.trim(),
+      brand: editFormData.brand,
+      category: editFormData.category,
+      sku: editFormData.sku.trim(),
+      barcode: editFormData.barcode.trim(),
+      price: Number(editFormData.price) || 0,
+      stock: Number(editFormData.stock) || 0,
+      imageUrl: editFormData.imageUrl.trim() || selectedProduct.imageUrl,
+      material: editFormData.material.trim(),
+      description: editFormData.description.trim(),
+      sizes: editFormData.sizes.split(",").map((s) => s.trim()).filter(Boolean)
+    };
+
+    entityStore.update("inventory_products", selectedProduct.id, updatedFields);
     setProducts((prev) =>
       prev.map((p) =>
         p.id === selectedProduct.id
           ? {
               ...p,
-              name: editFormData.name.trim(),
-              brand: editFormData.brand,
-              category: editFormData.category,
-              sku: editFormData.sku.trim(),
-              barcode: editFormData.barcode.trim(),
-              price: Number(editFormData.price) || 0,
-              stock: Number(editFormData.stock) || 0,
-              imageUrl: editFormData.imageUrl.trim() || p.imageUrl,
-              material: editFormData.material.trim(),
-              description: editFormData.description.trim(),
-              sizes: editFormData.sizes.split(",").map((s) => s.trim()).filter(Boolean)
+              ...updatedFields
             }
           : p
       )
@@ -280,6 +293,7 @@ export default function InventoryPage() {
   const handleConfirmDelete = () => {
     if (!selectedProduct) return;
     setSubmitting(true);
+    entityStore.delete("inventory_products", selectedProduct.id);
     setProducts((prev) => prev.filter((p) => p.id !== selectedProduct.id));
     toast.success(`Product decommissioned: ${selectedProduct.name}`);
     setIsDeleteModalOpen(false);

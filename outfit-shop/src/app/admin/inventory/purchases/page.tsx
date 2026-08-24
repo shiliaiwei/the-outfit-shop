@@ -35,6 +35,35 @@ const SUPPLIER_OPTIONS: BrandSelectOption[] = [
   { value: "Normandy Flax Cooperative", label: "Normandy Flax Cooperative" }
 ];
 
+import { entityStore } from "@/lib/storage/entityStore";
+
+const DEFAULT_PURCHASES = [
+  {
+    id: 1001,
+    supplier_id: 1,
+    supplier_name: "Phnom Penh Textile Mills",
+    total_cost: 4500.00,
+    status: "PENDING",
+    expected_date: new Date(Date.now() + 5 * 86400000).toISOString().split("T")[0],
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    items: [
+      { name: "Structured Normandy Linen Overshirt", quantity: 100, unit_cost: 45, total: 4500 }
+    ]
+  },
+  {
+    id: 1002,
+    supplier_id: 2,
+    supplier_name: "Angkor Silk & Fabrics",
+    total_cost: 3200.00,
+    status: "RECEIVED",
+    expected_date: new Date(Date.now() - 86400000).toISOString().split("T")[0],
+    created_at: new Date(Date.now() - 86400000 * 6).toISOString(),
+    items: [
+      { name: "Minimalist Supima Knit Polo", quantity: 80, unit_cost: 40, total: 3200 }
+    ]
+  }
+];
+
 export default function PurchasesPage() {
   const { user } = useAuth();
   const userRole = user?.role || "ADMIN";
@@ -65,9 +94,16 @@ export default function PurchasesPage() {
     setLoading(true);
     try {
       const res = await fulfillmentService.getPurchaseOrders();
-      setOrders(res.data || []);
+      if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+        const synced = entityStore.sync("purchase_orders", res.data, DEFAULT_PURCHASES);
+        setOrders(synced);
+      } else {
+        const local = entityStore.get("purchase_orders", DEFAULT_PURCHASES);
+        setOrders(local);
+      }
     } catch {
-      setOrders([]);
+      const local = entityStore.get("purchase_orders", DEFAULT_PURCHASES);
+      setOrders(local);
     } finally {
       setLoading(false);
     }
@@ -114,7 +150,8 @@ export default function PurchasesPage() {
       ]
     };
 
-    setOrders([newEntry, ...orders]);
+    entityStore.add("purchase_orders", newEntry, DEFAULT_PURCHASES);
+    setOrders((prev) => [newEntry, ...prev.filter(p => p.id !== newEntry.id)]);
     toast.success(`Purchase Order PO-${String(newId).padStart(5, "0")} created`);
     setIsNewModalOpen(false);
     setNewPOForm({
@@ -128,6 +165,7 @@ export default function PurchasesPage() {
   };
 
   const handleReceivePO = (id: number) => {
+    entityStore.update("purchase_orders", id, { status: "RECEIVED" }, DEFAULT_PURCHASES);
     setOrders((prev) =>
       prev.map((po) => (po.id === id ? { ...po, status: "RECEIVED" } : po))
     );
@@ -137,6 +175,7 @@ export default function PurchasesPage() {
 
   const handleCancelPO = () => {
     if (!cancelPOId) return;
+    entityStore.update("purchase_orders", cancelPOId, { status: "CANCELLED" }, DEFAULT_PURCHASES);
     setOrders((prev) =>
       prev.map((po) => (po.id === cancelPOId ? { ...po, status: "CANCELLED" } : po))
     );

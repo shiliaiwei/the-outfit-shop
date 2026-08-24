@@ -108,26 +108,26 @@ export default function TransfersPage() {
     });
   }, [transfers, search, statusFilter]);
 
-  const handleCreateTransfer = (e: React.FormEvent) => {
+  const handleCreateTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (dispatchForm.from_branch === dispatchForm.to_branch) {
       toast.error("Source and destination branches cannot be the same.");
       return;
     }
 
-    const newId = Math.floor(200 + Math.random() * 800);
     const newTransfer = {
-      id: newId,
       from_branch: dispatchForm.from_branch,
       to_branch: dispatchForm.to_branch,
-      status: "TRANSIT",
+      status: "IN_TRANSIT",
       items_count: Number(dispatchForm.items_count),
       notes: dispatchForm.notes,
       created_at: new Date().toISOString()
     };
 
-    setTransfers([newTransfer, ...transfers]);
-    toast.success(`Transfer #${newId} dispatched in TRANSIT`);
+    const res = await inventoryDeepService.createTransfer(newTransfer);
+    const created = (res as any)?.data || { id: Date.now(), ...newTransfer };
+    setTransfers((prev) => [created, ...prev.filter(t => t.id !== created.id)]);
+    toast.success(`Transfer #${created.id} dispatched in TRANSIT`);
     setIsDispatchModalOpen(false);
     setDispatchForm({
       from_branch: "Main Warehouse (Phnom Penh)",
@@ -137,15 +137,17 @@ export default function TransfersPage() {
     });
   };
 
-  const handleCompleteTransfer = (id: number) => {
+  const handleCompleteTransfer = async (id: number) => {
+    await inventoryDeepService.updateTransferStatus(id, "receive");
     setTransfers((prev) =>
       prev.map((t) => (t.id === id ? { ...t, status: "COMPLETED" } : t))
     );
     toast.success(`Transfer #${id} marked as COMPLETED. Stock intake recorded!`);
   };
 
-  const handleConfirmCancel = () => {
+  const handleConfirmCancel = async () => {
     if (!cancelTransferId) return;
+    await inventoryDeepService.updateTransferStatus(cancelTransferId, "cancel");
     setTransfers((prev) =>
       prev.map((t) => (t.id === cancelTransferId ? { ...t, status: "CANCELLED" } : t))
     );

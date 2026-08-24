@@ -571,3 +571,33 @@ button.bg-danger svg,
   color: #FFFFFF !important;
   fill: currentColor !important;
 }
+
+/* RECHARTS & SVG FOCUS OUTLINE SUPPRESSION */
+.recharts-wrapper,
+.recharts-surface,
+.recharts-sector,
+.recharts-pie-sector,
+.recharts-layer,
+.recharts-pie,
+.recharts-pie-sectors,
+.recharts-curve,
+.recharts-bar-rectangle,
+.recharts-dot,
+.recharts-active-dot,
+.recharts-default-tooltip,
+.recharts-legend-item,
+.recharts-wrapper *:focus,
+.recharts-surface *:focus,
+.recharts-sector:focus,
+.recharts-pie-sector:focus,
+.recharts-layer:focus,
+svg:focus,
+svg *:focus,
+path:focus,
+g:focus,
+circle:focus,
+rect:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}

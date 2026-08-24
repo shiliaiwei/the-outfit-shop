@@ -44,7 +44,6 @@ export default function SuppliersPage() {
           { id: 2, supplier_name: "Normandy Flax Co", contact_name: "Marc Pierre", phone: "+33 1 42 68 53 00", email: "flax@normandy.fr", address: "Normandy, FR" }
         ]);
       }
-      toast.success("Vendor Registry Synchronized");
     } catch {
       setSuppliers([
         { id: 1, supplier_name: "Global Textiles", contact_name: "John Mill", phone: "+44 20 7946 0958", email: "orders@globaltex.com", address: "London, UK" },
@@ -69,7 +68,6 @@ export default function SuppliersPage() {
     setSubmitting(true);
     try {
       const newVendor = {
-        id: suppliers.length + 1,
         supplier_name: formData.supplier_name.trim(),
         contact_name: formData.contact_name.trim() || "Account Rep",
         phone: formData.phone.trim() || "N/A",
@@ -77,7 +75,9 @@ export default function SuppliersPage() {
         address: formData.address.trim() || "Global Hub"
       };
 
-      setSuppliers((prev) => [newVendor, ...prev]);
+      const res = await inventoryDeepService.createSupplier(newVendor);
+      const created = (res as any)?.data || { id: Date.now(), ...newVendor };
+      setSuppliers((prev) => [created, ...prev.filter(s => s.id !== created.id)]);
       toast.success(`Vendor Registered: ${formData.supplier_name}`);
       setIsModalOpen(false);
       setFormData({ supplier_name: "", contact_name: "", phone: "", email: "", address: "" });

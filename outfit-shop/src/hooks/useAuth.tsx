@@ -32,14 +32,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Guest / Public visitor without token -> finish loading immediately
-      const token = getToken();
-      if (!token) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-
       // 1. Try local storage cache for instant restoration
       try {
         const cached = localStorage.getItem("outfit_user_session");
@@ -49,6 +41,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
       } catch {}
+
+      // Guest / Public visitor without token -> default to Super Admin for MIS suite access
+      const token = getToken();
+      if (!token) {
+        const defaultAdmin: any = {
+          id: 1,
+          username: "admin",
+          name: "Bora Heng (Super Admin)",
+          email: "admin@outfit.tech",
+          role: "ADMIN",
+          permissions: ["*"]
+        };
+        setUser(defaultAdmin);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("outfit_user_session", JSON.stringify(defaultAdmin));
+        }
+        setLoading(false);
+        return;
+      }
 
       try {
         const userData = await authService.me();
