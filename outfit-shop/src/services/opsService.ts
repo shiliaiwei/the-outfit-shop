@@ -304,7 +304,35 @@ export const opsService = {
       if (Array.isArray(data?.data) && data.data.length > 0) return data.data;
       if (Array.isArray(data) && data.length > 0) return data;
     } catch {}
-    return [];
+
+    // Fallback: discover dynamic folders from real products
+    try {
+      const res = await api.get<any>("/products", { params: { per_page: 50 } });
+      const foldersMap = new Map<string, { name: string; path: string; count: number }>();
+      
+      if (Array.isArray(res?.data)) {
+        for (const p of res.data) {
+          if (p.image_url) {
+            const cleanUrl = p.image_url.replace(/\\\//g, "/");
+            const match = cleanUrl.match(/\/v\d+\/(.+)\/[^\/]+$/);
+            if (match) {
+              const fullFolder = match[1];
+              const parts = fullFolder.split("/");
+              const categoryFolder = parts.length > 1 ? parts[1].replace(/-/g, " ") : parts[0].replace(/-/g, " ");
+              const key = fullFolder.toLowerCase();
+              if (!foldersMap.has(key)) {
+                foldersMap.set(key, { name: `${parts[0]} - ${categoryFolder}`, path: fullFolder, count: 1 });
+              } else {
+                foldersMap.get(key)!.count++;
+              }
+            }
+          }
+        }
+      }
+      return Array.from(foldersMap.values());
+    } catch {
+      return [];
+    }
   },
   getCloudinaryAssets: async (params?: { folder?: string; search?: string; max_results?: number; next_cursor?: string; page?: number }) => {
     try {
@@ -326,17 +354,32 @@ export const opsService = {
       const total_count = prodsRes?.meta?.pagination?.total_items || items.length || 1843;
 
       for (const p of items) {
-        const catName = p.category?.category_name || p.category?.slug || "";
-        const folder = mapProductToFolder(p.product_name, catName);
+        const catName = p.category?.category_name || p.category?.slug || "Apparel";
+        const cleanUrl = (p.image_url || "").replace(/\\\//g, "/");
+        
+        let exactFolder = "";
+        const match = cleanUrl.match(/\/v\d+\/(.+)\/[^\/]+$/);
+        if (match) {
+          exactFolder = match[1]; // e.g. "Louis-Vuitton/T-Shirts-and-Tops"
+        } else {
+          exactFolder = `${p.brand || "General"}/${catName.replace(/[^a-zA-Z0-9]/g, "-")}`;
+        }
+
+        const parts = exactFolder.split("/");
+        const brandFolder = parts[0] || p.brand || "General";
+        const categoryFolder = parts.length > 1 ? parts[1] : catName;
 
         if (p.image_url) {
           realAssets.push({
             public_id: `prod_${p.product_id || p.id}_primary`,
             name: `${p.brand ? p.brand + ' - ' : ''}${p.product_name}`,
-            brand: p.brand || "OUTFIT",
-            folder: folder,
-            url: p.image_url,
-            format: p.image_url.endsWith(".avif") ? "avif" : p.image_url.endsWith(".webp") ? "webp" : "jpg",
+            brand: p.brand || brandFolder,
+            category_name: catName,
+            folder: exactFolder,
+            brand_folder: brandFolder,
+            category_folder: categoryFolder,
+            url: cleanUrl,
+            format: cleanUrl.endsWith(".avif") ? "avif" : cleanUrl.endsWith(".webp") ? "webp" : "jpg",
             width: 1090,
             height: 1090,
             product_id: p.product_id || p.id,
@@ -347,13 +390,17 @@ export const opsService = {
         if (Array.isArray(p.images)) {
           for (const img of p.images) {
             if (img.image_url && img.image_url !== p.image_url) {
+              const cleanImgUrl = img.image_url.replace(/\\\//g, "/");
               realAssets.push({
                 public_id: `prod_${p.product_id || p.id}_img_${img.image_id || Math.random().toString(36).slice(2, 6)}`,
                 name: `${p.product_name} (${img.shot_type || "Angle"})`,
-                brand: p.brand || "OUTFIT",
-                folder: folder,
-                url: img.image_url,
-                format: img.image_url.endsWith(".avif") ? "avif" : "webp",
+                brand: p.brand || brandFolder,
+                category_name: catName,
+                folder: exactFolder,
+                brand_folder: brandFolder,
+                category_folder: categoryFolder,
+                url: cleanImgUrl,
+                format: cleanImgUrl.endsWith(".avif") ? "avif" : "webp",
                 width: 1090,
                 height: 1090,
                 product_id: p.product_id || p.id
@@ -379,29 +426,3 @@ export const opsService = {
     return await api.delete(`/uploads/image/${id}`);
   }
 };
-
-function mapProductToFolder(name?: string, cat?: string): string {
-  const n = (name || "").toLowerCase();
-  const c = (cat || "").toLowerCase();
-  if (n.includes("jersey")) return "jerseys";
-  if (n.includes("polo")) return "polos";
-  if (n.includes("hoodie") || n.includes("fleece")) return "hoodies";
-  if (n.includes("sweater") || n.includes("cardigan")) return "sweaters";
-  if (n.includes("knit") || c.includes("knit")) return "knits";
-  if (n.includes("jacket") || n.includes("track top") || n.includes("tracktop") || n.includes("blouson") || c.includes("jacket")) return "jackets";
-  if (n.includes("overshirt") || n.includes("shirt") || c.includes("shirt")) return "overshirts";
-  if (n.includes("tee") || n.includes("t-shirt") || n.includes("t shirt") || c.includes("t-shirt") || c.includes("tops")) return "tees";
-  if (n.includes("denim") || n.includes("jean")) return "denim";
-  if (n.includes("trouser") || c.includes("trouser")) return "trousers";
-  if (n.includes("pant") || n.includes("cargo") || c.includes("pant")) return "pants";
-  if (n.includes("short")) return "shorts";
-  if (n.includes("blazer") || n.includes("suit")) return "blazers";
-  if (n.includes("coat") || n.includes("parka") || n.includes("padded") || c.includes("outerwear")) return "outerwear";
-  if (n.includes("ring") || n.includes("necklace") || n.includes("bracelet") || n.includes("chain") || n.includes("jewelry") || c.includes("jewel")) return "jewelry";
-  if (n.includes("duffle") || n.includes("tote") || n.includes("bag") || c.includes("bag")) return "bags";
-  if (n.includes("shoe") || n.includes("sneaker") || n.includes("boot") || c.includes("footwear")) return "footwear";
-  if (n.includes("cap") || n.includes("hat") || n.includes("fedora") || c.includes("hat")) return "hats";
-  if (n.includes("belt") || c.includes("belt")) return "belts";
-  if (n.includes("scarf") || n.includes("silk") || c.includes("scarf")) return "scarves";
-  return "tees";
-}

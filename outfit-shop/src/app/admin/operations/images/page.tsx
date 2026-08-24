@@ -29,132 +29,75 @@ import { LiquidCard } from "@/components/ui/LiquidCard";
 import { cn } from "@/lib/utils";
 import { entityStore } from "@/lib/storage/entityStore";
 
-// 24 Real Folders Hierarchy
-const ALL_24_CLOUDINARY_FOLDERS = [
-  { name: "Jerseys", path: "jerseys" },
-  { name: "Jackets", path: "jackets" },
-  { name: "Overshirts", path: "overshirts" },
-  { name: "Knits", path: "knits" },
-  { name: "Tees", path: "tees" },
-  { name: "Pants", path: "pants" },
-  { name: "Hoodies", path: "hoodies" },
-  { name: "Sweaters", path: "sweaters" },
-  { name: "Polos", path: "polos" },
-  { name: "Denim", path: "denim" },
-  { name: "Blazers", path: "blazers" },
-  { name: "Trousers", path: "trousers" },
-  { name: "Shorts", path: "shorts" },
-  { name: "Outerwear", path: "outerwear" },
-  { name: "Accessories", path: "accessories" },
-  { name: "Footwear", path: "footwear" },
-  { name: "Bags", path: "bags" },
-  { name: "Jewelry", path: "jewelry" },
-  { name: "Hats", path: "hats" },
-  { name: "Belts", path: "belts" },
-  { name: "Scarves", path: "scarves" },
-  { name: "Archive", path: "archive" },
-  { name: "Campaign", path: "campaign" },
-  { name: "Lookbook", path: "lookbook" }
+// Real Cloudinary Brand & Category Folders in Cloud od8t271n
+const REAL_CLOUDINARY_FOLDERS = [
+  // 1. Categories in Cloudinary
+  { name: "T-Shirts & Tops", path: "T-Shirts-and-Tops", group: "Categories" },
+  { name: "Pants & Shorts", path: "Pants-and-Shorts", group: "Categories" },
+  { name: "Jackets & Outerwear", path: "Jackets-and-Outerwear", group: "Categories" },
+  { name: "Hoodies & Sweatshirts", path: "Hoodies-and-Sweatshirts", group: "Categories" },
+  { name: "Ready-to-Wear & Luxury", path: "Ready-to-Wear-and-Luxury-Goods", group: "Categories" },
+  { name: "Hats & Headwear", path: "Hats-and-Headwear", group: "Categories" },
+  { name: "Footwear & Sneakers", path: "Footwear-and-Sneakers", group: "Categories" },
+  { name: "Apparel & Merchandise", path: "Apparel-and-Merchandise", group: "Categories" },
+  { name: "Accessories & Lifestyle", path: "Accessories-and-Lifestyle", group: "Categories" },
+  { name: "Drinkware & Bottles", path: "Drinkware-and-Bottles", group: "Categories" },
+  { name: "Stickers & Decals", path: "Stickers-and-Decals", group: "Categories" },
+  
+  // 2. Brands in Cloudinary
+  { name: "Louis Vuitton", path: "Louis-Vuitton", group: "Brands" },
+  { name: "Fear of God", path: "Fear-of-God", group: "Brands" },
+  { name: "Maison Margiela", path: "Maison-Margiela", group: "Brands" },
+  { name: "Jordan", path: "Jordan", group: "Brands" },
+  { name: "Nike", path: "Nike", group: "Brands" },
+  { name: "Adidas", path: "Adidas", group: "Brands" },
+  { name: "Puma", path: "Puma", group: "Brands" },
+  { name: "Born x Raised", path: "Born-x-Raised", group: "Brands" },
+  { name: "The Boring Company", path: "The-Boring-Company", group: "Brands" },
+  { name: "xAI Grok", path: "xAI-Grok", group: "Brands" },
+  { name: "Tesla", path: "Tesla", group: "Brands" },
+  { name: "Reese Cooper", path: "Reese-Cooper", group: "Brands" },
+  { name: "Market", path: "Market", group: "Brands" },
+  { name: "Honour The Gift", path: "Honour-The-Gift", group: "Brands" },
+  { name: "NBA", path: "NBA", group: "Brands" },
+  { name: "Kids Worldwide", path: "Kids-Worldwide", group: "Brands" },
+  { name: "Godspeed", path: "Godspeed", group: "Brands" },
+  { name: "Google Store", path: "Google-Store", group: "Brands" },
+  { name: "Icecream", path: "Icecream", group: "Brands" }
 ];
 
 // Fallback high-definition fashion photography for broken CDN links
 const EDITORIAL_FALLBACKS: Record<string, string> = {
-  jerseys: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=800&q=80",
-  jackets: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80",
-  overshirts: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=800&q=80",
-  knits: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=800&q=80",
-  tees: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80",
-  pants: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=800&q=80",
-  hoodies: "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?auto=format&fit=crop&w=800&q=80",
-  sweaters: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80",
-  polos: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=800&q=80",
-  denim: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?auto=format&fit=crop&w=800&q=80",
-  blazers: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80",
-  trousers: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=800&q=80",
-  shorts: "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&w=800&q=80",
-  outerwear: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=800&q=80",
-  accessories: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80",
-  footwear: "https://images.unsplash.com/photo-1638247025967-b4e38f787b76?auto=format&fit=crop&w=800&q=80",
-  bags: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
-  jewelry: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=80",
-  hats: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=800&q=80",
-  belts: "https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=800&q=80",
-  scarves: "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?auto=format&fit=crop&w=800&q=80",
-  archive: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800&q=80",
-  campaign: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=800&q=80",
-  lookbook: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80"
+  "t-shirts-and-tops": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80",
+  "pants-and-shorts": "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=800&q=80",
+  "jackets-and-outerwear": "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80",
+  "hoodies-and-sweatshirts": "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?auto=format&fit=crop&w=800&q=80",
+  "ready-to-wear-and-luxury-goods": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80",
+  "hats-and-headwear": "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=800&q=80",
+  "footwear-and-sneakers": "https://images.unsplash.com/photo-1638247025967-b4e38f787b76?auto=format&fit=crop&w=800&q=80",
+  "apparel-and-merchandise": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=800&q=80",
+  "accessories-and-lifestyle": "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80",
+  "louis-vuitton": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80",
+  "nike": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=800&q=80",
+  "jordan": "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=800&q=80"
 };
-
-// Verified Cloudinary media asset collection covering ALL 24 folders
-const MASTER_CLOUDINARY_ASSETS = [
-  // 1. Jerseys
-  {
-    public_id: "Velvet_Jacquard_Short_Sleeved_T_Shirt_HUY36WCW4001_PM2_Front_View",
-    name: "FTY Jordan 23 Mesh Tank Jersey",
-    folder: "jerseys",
-    width: 1200,
-    height: 1600,
-    format: "webp",
-    url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    public_id: "basketball_retro_mesh_jersey",
-    name: "Retro Mesh Court Jersey (Vintage Black)",
-    folder: "jerseys",
-    width: 1200,
-    height: 1500,
-    format: "webp",
-    url: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=800&q=80"
-  },
-
-  // 2. Overshirts
-  {
-    public_id: "Monogram_Double_Face_Overshirt_HUB29WCO1859_PM2_Front_View",
-    name: "Youth 23 Monogram Graphic Camp Shirt",
-    folder: "overshirts",
-    width: 1200,
-    height: 1600,
-    format: "webp",
-    url: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    public_id: "heavy_twill_safari_overshirt",
-    name: "Heavy Twill Safari Overshirt (Sand)",
-    folder: "overshirts",
-    width: 1200,
-    height: 1500,
-    format: "webp",
-    url: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80"
-  },
-
-  // 24. Lookbook
-  {
-    public_id: "core_collection_lookbook_keylook",
-    name: "Core Collection Key Look Vol. 4",
-    folder: "lookbook",
-    width: 1200,
-    height: 1600,
-    format: "webp",
-    url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80"
-  }
-];
 
 export default function ImageGalleryPage() {
   // Master image list backed by entityStore
   const [localAssets, setLocalAssets] = useState<any[]>(() => {
     if (typeof window !== "undefined") {
-      return entityStore.get("cloudinary_media_assets", MASTER_CLOUDINARY_ASSETS);
+      return entityStore.get("cloudinary_media_assets", []);
     }
-    return MASTER_CLOUDINARY_ASSETS;
+    return [];
   });
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   
-  const [folders, setFolders] = useState<Array<{ name: string; path: string }>>(ALL_24_CLOUDINARY_FOLDERS);
+  const [folders, setFolders] = useState<Array<{ name: string; path: string; group?: string }>>(REAL_CLOUDINARY_FOLDERS);
   const [activeFolder, setActiveFolder] = useState<string>("ALL");
   const [formatFilter, setFormatFilter] = useState<string>("ALL");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [totalCount, setTotalCount] = useState<number>(1833);
+  const [totalCount, setTotalCount] = useState<number>(1843);
 
   // Modals state
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -263,12 +206,12 @@ export default function ImageGalleryPage() {
       created_at: new Date().toISOString()
     };
 
-    entityStore.add("cloudinary_media_assets", newAsset, MASTER_CLOUDINARY_ASSETS);
+    entityStore.add("cloudinary_media_assets", newAsset, []);
     setLocalAssets((prev) => [newAsset, ...prev]);
     setTotalCount((c) => c + 1);
     toast.success(`Asset "${newAsset.name}" uploaded to folder "${uploadForm.folder}"`);
     setIsUploadModalOpen(false);
-    setUploadForm({ name: "", folder: activeFolder === "ALL" ? "jewelry" : activeFolder, url: "", file: null });
+    setUploadForm({ name: "", folder: activeFolder === "ALL" ? "T-Shirts-and-Tops" : activeFolder, url: "", file: null });
   };
 
   // 2. UPDATE ASSET HANDLER
@@ -282,7 +225,7 @@ export default function ImageGalleryPage() {
       folder: editForm.folder
     };
 
-    entityStore.update("cloudinary_media_assets", selectedAsset.id || selectedAsset.public_id, updated, MASTER_CLOUDINARY_ASSETS);
+    entityStore.update("cloudinary_media_assets", selectedAsset.id || selectedAsset.public_id, updated, []);
     setLocalAssets((prev) =>
       prev.map((item) =>
         item.public_id === selectedAsset.public_id ? updated : item
@@ -299,7 +242,7 @@ export default function ImageGalleryPage() {
     if (!deletingPublicId) return;
 
     const idToDelete = deletingPublicId;
-    entityStore.delete("cloudinary_media_assets", idToDelete, MASTER_CLOUDINARY_ASSETS);
+    entityStore.delete("cloudinary_media_assets", idToDelete, []);
     setDeletedIds((prev) => new Set(prev).add(idToDelete));
     setLocalAssets((prev) => prev.filter((item) => item.public_id !== idToDelete));
     setTotalCount((c) => Math.max(0, c - 1));
@@ -437,56 +380,107 @@ export default function ImageGalleryPage() {
         </div>
       </div>
 
-      {/* 4. 24 CLOUDINARY FOLDERS NAVIGATION */}
-      <div className="space-y-2">
+      {/* 4. CLOUDINARY FOLDERS NAVIGATION (CATEGORIES & BRANDS) */}
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted flex items-center gap-1.5">
-            <FontAwesomeIcon icon={faFolder} className="text-primary text-xs" />
-            <span>Cloudinary Folder Hierarchy (24 Folders)</span>
+            <FontAwesomeIcon icon={faFolderTree} className="text-primary text-xs" />
+            <span>Cloudinary Folder Hierarchy (od8t271n)</span>
           </span>
           <span className="text-[10px] font-mono text-text-muted">
             Showing {displayedImages.length} active in view
           </span>
         </div>
 
-        <div className="flex flex-wrap gap-1.5 p-2.5 bg-bg/40 rounded-[3px] border border-border/60 max-h-32 overflow-y-auto">
-          <button
-            type="button"
-            onClick={() => setActiveFolder("ALL")}
-            className={cn(
-              "px-3 py-1.5 text-[10px] font-mono font-bold uppercase rounded-[2px] border transition-all cursor-pointer flex items-center gap-1.5",
-              activeFolder === "ALL"
-                ? "bg-[#1E2631] text-white border-[#1E2631] shadow-sm scale-[1.02]"
-                : "bg-surface text-text-muted border-border hover:text-text hover:border-text/40"
-            )}
-          >
-            <span>All Storage ({localAssets.length})</span>
-          </button>
+        {/* Categories Section */}
+        <div className="space-y-1.5">
+          <div className="text-[9px] font-mono font-bold text-text-muted/70 uppercase tracking-widest px-1">
+            Category Folders
+          </div>
+          <div className="flex flex-wrap gap-1.5 p-2 bg-bg/40 rounded-[3px] border border-border/60">
+            <button
+              type="button"
+              onClick={() => setActiveFolder("ALL")}
+              className={cn(
+                "px-3 py-1.5 text-[10px] font-mono font-bold uppercase rounded-[2px] border transition-all cursor-pointer flex items-center gap-1.5",
+                activeFolder === "ALL"
+                  ? "bg-[#1E2631] text-white border-[#1E2631] shadow-sm scale-[1.02]"
+                  : "bg-surface text-text-muted border-border hover:text-text hover:border-text/40"
+              )}
+            >
+              <span>All Storage ({localAssets.length})</span>
+            </button>
 
-          {folders.map((f) => {
-            const folderKey = f.path || f.name.toLowerCase();
-            const isCur = activeFolder.toLowerCase() === folderKey.toLowerCase();
-            const count = localAssets.filter((item) => (item.folder || "").toLowerCase() === folderKey.toLowerCase()).length;
-            return (
-              <button
-                key={folderKey}
-                type="button"
-                onClick={() => setActiveFolder(folderKey)}
-                className={cn(
-                  "px-3 py-1.5 text-[10px] font-mono font-bold uppercase rounded-[2px] border transition-all cursor-pointer flex items-center gap-1.5",
-                  isCur
-                    ? "bg-[#1E2631] text-white border-[#1E2631] shadow-sm scale-[1.02]"
-                    : "bg-surface text-text-muted border-border hover:text-text hover:border-text/40"
-                )}
-              >
-                <FontAwesomeIcon icon={faFolder} className="text-[9px]" />
-                <span>{f.name}</span>
-                <span className={cn("text-[9px] px-1 py-0.2 rounded font-mono", isCur ? "bg-white/20 text-white" : "bg-bg text-text-muted")}>
-                  {count}
-                </span>
-              </button>
-            );
-          })}
+            {folders.filter(f => !('group' in f) || (f as any).group === "Categories").map((f) => {
+              const folderKey = f.path || f.name.toLowerCase();
+              const isCur = activeFolder.toLowerCase() === folderKey.toLowerCase();
+              const count = localAssets.filter((item) => {
+                const ifold = (item.folder || "").toLowerCase();
+                const icat = (item.category_folder || item.category_name || "").toLowerCase();
+                const target = folderKey.toLowerCase();
+                return ifold === target || ifold.includes(target) || icat === target || icat.replace(/[^a-z0-9]/g, "") === target.replace(/[^a-z0-9]/g, "");
+              }).length;
+
+              return (
+                <button
+                  key={folderKey}
+                  type="button"
+                  onClick={() => setActiveFolder(folderKey)}
+                  className={cn(
+                    "px-3 py-1.5 text-[10px] font-mono font-bold uppercase rounded-[2px] border transition-all cursor-pointer flex items-center gap-1.5",
+                    isCur
+                      ? "bg-[#1E2631] text-white border-[#1E2631] shadow-sm scale-[1.02]"
+                      : "bg-surface text-text-muted border-border hover:text-text hover:border-text/40"
+                  )}
+                >
+                  <FontAwesomeIcon icon={faFolder} className="text-[9px]" />
+                  <span>{f.name}</span>
+                  <span className={cn("text-[9px] px-1 py-0.2 rounded font-mono", isCur ? "bg-white/20 text-white" : "bg-bg text-text-muted")}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Brands Section */}
+        <div className="space-y-1.5">
+          <div className="text-[9px] font-mono font-bold text-text-muted/70 uppercase tracking-widest px-1">
+            Brand Cloud Folders
+          </div>
+          <div className="flex flex-wrap gap-1.5 p-2 bg-bg/40 rounded-[3px] border border-border/60 max-h-32 overflow-y-auto">
+            {folders.filter(f => (f as any).group === "Brands").map((f) => {
+              const folderKey = f.path || f.name.toLowerCase();
+              const isCur = activeFolder.toLowerCase() === folderKey.toLowerCase();
+              const count = localAssets.filter((item) => {
+                const ifold = (item.folder || "").toLowerCase();
+                const ibrand = (item.brand_folder || item.brand || "").toLowerCase();
+                const target = folderKey.toLowerCase();
+                return ifold.startsWith(target) || ibrand === target || ibrand.replace(/[^a-z0-9]/g, "") === target.replace(/[^a-z0-9]/g, "");
+              }).length;
+
+              return (
+                <button
+                  key={folderKey}
+                  type="button"
+                  onClick={() => setActiveFolder(folderKey)}
+                  className={cn(
+                    "px-2.5 py-1 text-[10px] font-mono font-bold uppercase rounded-[2px] border transition-all cursor-pointer flex items-center gap-1.5",
+                    isCur
+                      ? "bg-[#1E2631] text-white border-[#1E2631] shadow-sm scale-[1.02]"
+                      : "bg-surface text-text-muted border-border hover:text-text hover:border-text/40"
+                  )}
+                >
+                  <FontAwesomeIcon icon={faFolder} className="text-[9px]" />
+                  <span>{f.name}</span>
+                  <span className={cn("text-[9px] px-1 py-0.2 rounded font-mono", isCur ? "bg-white/20 text-white" : "bg-bg text-text-muted")}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
